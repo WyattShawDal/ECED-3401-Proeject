@@ -45,4 +45,5 @@ void InitTiles();
 void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY);
 void CameraControl();
 
+
 #endif //EXAMPLE_DEPENDENCIES_H
