@@ -14,6 +14,7 @@ typedef enum Type {
     ACCIDENT
 }Tile_Type;
 
+
 typedef enum Status {
     IDLE,
     TRANSIT,
@@ -21,17 +22,22 @@ typedef enum Status {
     UNLOADING
 }AEDV_STATUS;
 
+typedef struct Coordinate {
+    int x;
+    int y;
+} Cord;
+
 typedef struct Tile {
     int i;
     int j;
     bool isOccupied;
     Tile_Type Type;
-
 }Tile;
 
 typedef struct AEDV {
-    Vector2 location;
-    Vector2 destination;
+    int EVIN;
+    Cord position;
+    Cord destination;
     Vector2 drawSize;
     Color color;
     AEDV_STATUS currStatus;

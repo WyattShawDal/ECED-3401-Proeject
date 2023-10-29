@@ -4,6 +4,7 @@
 
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
+#include "stdio.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
@@ -42,7 +43,7 @@ void avenue_movement(AEDV *vehicle, int direction);
  */
 void street_movement(AEDV *vehicle, int direction);
 void InitTiles();
-void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY);
+void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
 void CameraControl();
 
 
