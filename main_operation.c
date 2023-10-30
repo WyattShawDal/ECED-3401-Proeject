@@ -9,7 +9,7 @@
 ********************************************************************************************/
 #include "dependencies.h"
 #include "structs.h"
-#define gridDrawing
+
 
 //----------------------------------------------------------------------------------
 // Const Defines
@@ -19,14 +19,13 @@
 //----------------------------------------------------------------------------------
 // Global Variables Definition
 //----------------------------------------------------------------------------------
-const int screenWidth = 900;
-const int screenHeight = 900;
+const int screenWidth = 1000;
+const int screenHeight = 1000;
 Camera2D camera = { 0 };
-const int cellWidth = screenWidth / MAX_COLS;
-const int cellHeight = screenHeight / MAX_ROWS;
+const int cellWidth = screenWidth/MAX_COLS;
+const int cellHeight = screenWidth/MAX_COLS;
 bool _showLocationData = false;
 bool atDestination = false;
-
 
 static AEDV wAEDV;
 static AEDV xAEDV;
@@ -48,6 +47,9 @@ int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+    SetConfigFlags()
+
     camera.zoom = 1.0f;
     //TODO it kind of works but random needs some help
     //Loop through the AEDV's generating some initial conditions. I'm not yet sure where in the
@@ -56,12 +58,6 @@ int main()
         InitAEDV(listOfVehicles[i], 4 + i * 4, i * 4, 10, 12, i);
     }
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
-#ifdef MANUAL_ALLOC
-    InitAEDV(&wAEDV, 18, 0, 0, 16); //sets the conditions for spawning an AEDV
-    InitAEDV(&xAEDV, 0, 0, 16, 14); //sets the conditions for spawning an AEDV
-    InitAEDV(&yAEDV, 0, 0, 16, 14); //sets the conditions for spawning an AEDV
-    InitAEDV(&zAEDV, 0, 0, 16, 14); //sets the conditions for spawning an AEDV
-#endif
 
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     SetTargetFPS(5);// Set our simulation to run at x frames-per-second
@@ -86,12 +82,18 @@ void UpdateDrawFrame(void)
     //----------------------------------------------------------------------------------
     // Raylib Functions:
     BeginDrawing();
-    ClearBackground(GRAY);
+    ClearBackground(BLACK);
     BeginMode2D(camera);
     //Draw the map into the window using tile data generated in main
     for (int CURR_COL = 0; CURR_COL < MAX_COLS; ++CURR_COL) {
         for(int CURR_ROW = 0; CURR_ROW < MAX_ROWS; ++CURR_ROW) {
-            drawMap(map[CURR_COL][CURR_ROW]);
+            if(CURR_COL == 0) {
+                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, 20, WHITE);
+            }
+            if(CURR_ROW == 0) {
+                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, 20, WHITE);
+            }
+            DrawMap(map[CURR_COL][CURR_ROW]);
         }
     }
     //If the destination value is invalid don't bother attempting to nav
@@ -101,13 +103,13 @@ void UpdateDrawFrame(void)
     //begin navigation
     else{
         for (int i = 0; i < 4; ++i) {
-            map_navigation(listOfVehicles[i]);
+            MapNavigation(listOfVehicles[i]);
         }
     }
     EndDrawing();
     //----------------------------------------------------------------------------------
 }
-void drawMap(Tile tile) {
+void DrawMap(Tile tile) {
     int CURR_COL = tile.location.x;
     int CURR_ROW = tile.location.y;
     if(map[CURR_COL][CURR_ROW].Type == BUILDING) {
@@ -123,8 +125,7 @@ void drawMap(Tile tile) {
     DrawRectangleLines(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLACK);
 }
 //TODO Will need to implement one-way movement for these two functions
-void street_movement(AEDV *vehicle, int direction) {
-
+void StreetMovement(AEDV *vehicle, int direction) {
     DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
     if(direction == EAST) {
         vehicle->position.x += 1;
@@ -132,8 +133,7 @@ void street_movement(AEDV *vehicle, int direction) {
     else vehicle->position.x -= 1;
 }
 
-void avenue_movement(AEDV *vehicle, int direction) {
-
+void AvenueMovement(AEDV *vehicle, int direction) {
     DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
     if(direction == SOUTH) {
         vehicle->position.y += 1;
@@ -143,7 +143,7 @@ void avenue_movement(AEDV *vehicle, int direction) {
 
 //NOTE
 //Most likely some errors from me swapping destination and x. Should check those first when debugging
-void map_navigation(AEDV * vehicle) {
+void MapNavigation(AEDV * vehicle) {
     //Delivering to an Avenue
     if(map[vehicle->destination.x][vehicle->destination.y].Type == AVENUE) {
         //TODO this is the state that should take user input
@@ -155,19 +155,18 @@ void map_navigation(AEDV * vehicle) {
         //at the wrong x, move in the direction that decreases distance
         else if((map[vehicle->position.x][vehicle->position.y].Type == JUNCTION && vehicle->position.x != vehicle->destination.x) || map[vehicle->destination.x][vehicle->position.y].Type == STREET) {
             if(vehicle->destination.x > vehicle->position.x) {
-                street_movement(vehicle, EAST);
+                StreetMovement(vehicle, EAST);
             }
-            else if (vehicle->destination.x < vehicle->position.x) street_movement(vehicle, WEST);
+            else if (vehicle->destination.x < vehicle->position.x) StreetMovement(vehicle, WEST);
         }
         //at a junction with the correct x value, now move north or south to decrease distance
         else{
             if(vehicle->destination.y > vehicle->position.y) {
-                avenue_movement(vehicle, SOUTH);
+                AvenueMovement(vehicle, SOUTH);
             }
-            else if (vehicle->destination.y < vehicle->position.y)avenue_movement(vehicle, NORTH);
+            else if (vehicle->destination.y < vehicle->position.y)AvenueMovement(vehicle, NORTH);
             //If we've made it to our destination we can set our state to be unloading(idle)
             if(vehicle->position.y == vehicle->destination.y) {
-
                 vehicle->currStatus = UNLOADING;
             }
         }
@@ -188,16 +187,16 @@ void map_navigation(AEDV * vehicle) {
         //If you're at a junction and not at the right street height, adjust to correct height
        if((map[vehicle->position.x][vehicle->position.y].Type == JUNCTION && vehicle->position.y != vehicle->destination.y) || map[vehicle->position.x][vehicle->position.y].Type == AVENUE ) {
            if (vehicle->destination.y > vehicle->position.y) {
-               avenue_movement(vehicle, SOUTH);
-           } else if (vehicle->destination.y < vehicle->position.y) avenue_movement(vehicle, NORTH);
+               AvenueMovement(vehicle, SOUTH);
+           } else if (vehicle->destination.y < vehicle->position.y) AvenueMovement(vehicle, NORTH);
        }
 
        //At the correct height now pick a direction to go to either east or west (depend on street direction)
        else{
            if(vehicle->destination.x > vehicle->position.x) {
-               street_movement(vehicle, EAST);
+               StreetMovement(vehicle, EAST);
            }
-           else if (vehicle->destination.x < vehicle->position.x) street_movement(vehicle, WEST);
+           else if (vehicle->destination.x < vehicle->position.x) StreetMovement(vehicle, WEST);
            //If we've made it to our destination we can set our state to be unloading(idle)
            if(vehicle->position.x == vehicle->destination.x) {
                vehicle->currStatus = UNLOADING;
@@ -211,7 +210,6 @@ void InitTiles() {
             map[i][j] = (Tile) {.location.x = i, .location.y  = j};
             if(i % 4 == 0 && j % 4 == 0 && (i + j) != 0) {
                 map[i][j].Type = JUNCTION;
-
             }
             else if(i % 4 == 0 && map[i][j].Type != JUNCTION) {
                 map[i][j].Type = AVENUE;
