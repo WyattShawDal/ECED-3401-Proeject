@@ -9,6 +9,8 @@
 #include "raymath.h"
 #include "rlgl.h"
 #include "structs.h"
+#include <malloc.h>
+
 
 #define SOUTH 0
 #define NORTH 1

@@ -1,5 +1,5 @@
 TODO'S FOR MONDAY
- - Change Max Rows and Cols to be editable at startup (map generation)
+ - Change Max Rows and Cols to be editable at startup (map generation) (DONE)
  - Update Building Generation (NE, N, NW ...)
     - Nice to have Building Type (Stable, Charger, Both)
  - Update Road Generation (One Ways, E-->W, N-->S)
