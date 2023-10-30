@@ -5,11 +5,19 @@
 
 #ifndef EXAMPLE_STRUCTS_H
 #define EXAMPLE_STRUCTS_H
+
 typedef enum Type {
     STREET = 0,
+    STREET_E,
+    STREET_W,
     AVENUE,
+    AVENUE_N,
+    AVENUE_S,
     JUNCTION,
     BUILDING,
+    STABLE,
+    CHARGER,
+    BOTH,
     CONSTRUCTION,
     ACCIDENT
 }Tile_Type;
@@ -32,6 +40,7 @@ typedef struct Tile {
     int j;
     bool isOccupied;
     Tile_Type Type;
+
 }Tile;
 
 typedef struct AEDV {
@@ -41,6 +50,7 @@ typedef struct AEDV {
     Vector2 drawSize;
     Color color;
     AEDV_STATUS currStatus;
+
 }AEDV;
 
 #endif //EXAMPLE_STRUCTS_H

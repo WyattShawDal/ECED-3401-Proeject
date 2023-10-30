@@ -17,6 +17,8 @@
 #define EAST 0
 #define WEST 1
 
+extern int MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
+extern Tile** dynamicMap;
 
 /**
  * @brief Function draws the map and then calls the navigations function
@@ -47,6 +49,10 @@ void StreetMovement(AEDV *vehicle, int direction);
 void InitTiles();
 void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
 void CameraControl();
+void setPerimeterRoads(int i, int j);
+void allocDynamicMap();
+void AEDVInput();
+void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
 
 
 #endif //EXAMPLE_DEPENDENCIES_H
