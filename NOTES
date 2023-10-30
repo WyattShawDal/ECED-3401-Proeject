@@ -1,8 +1,13 @@
-- invalid delivery address is not caught/handled and leads to unexpected behaviour
-- add ability for aedv's to go left and up
-- add user input
-- cry
-- add one ways
-- cry again
-- add aedv characteristics
-- cry
+TODO'S FOR MONDAY
+ - Change Max Rows and Cols to be editable at startup (map generation) (DONE)
+ - Update Building Generation (NE, N, NW ...)
+    - Nice to have Building Type (Stable, Charger, Both)
+ - Update Road Generation (One Ways, E-->W, N-->S)
+    -Update Movement to handle this
+ - Add Handle for adjacent navigation (Deliver to a building square)
+    - When you reach the adjacent square move into the building (nice to have)
+ - Add user input for consecutive deliveries (AddNewDelivery())
+    - User should type in new coordinates and AEDV should then begin to move
+ - List Coordinates above and to the left of the map
+ - Ensure constant "aspect ratio" of grid tiles regardless of column/row count
+ - Shouldn't begin with all 4 AEDV's add ability for user to dispatch one at a time with custom delivery locations
