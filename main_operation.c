@@ -76,7 +76,7 @@ int main()
         AEDVInput();
 
     }
-    camera.zoom = 1.0f;
+    camera.zoom = 0.95f;
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(3);// Set our simulation to run at x frames-per-second

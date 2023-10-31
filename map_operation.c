@@ -34,15 +34,27 @@ void DrawMap(Tile tile) {
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == AVENUE_N) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, RED);
+        if(CURR_ROW == 1) {
+            DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+        }
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == AVENUE_S) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
+        if(CURR_ROW == 1) {
+            DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+        }
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_E) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, PINK);
+        if(CURR_COL == 1) {
+            DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+        }
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_W) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
+        if(CURR_COL == 1) {
+            DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+        }
     }
     else{ //Normal Road Section
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
@@ -69,6 +81,12 @@ void InitTiles() {
         for (int j = 1; j < MAX_ROWS - 1; ++j) {
             setInternalTiles(i, j, firstStreetDirction, firstAvenueDirection);
         }
+    }
+    for(int i = 0;i < MAX_COLS;i++) {
+        for(int j = 0;j < MAX_ROWS;j++) {
+            printf("%d ", dynamicMap[i][j].Type);
+        }
+        printf("\n");
     }
 }
 
@@ -107,10 +125,10 @@ void setPerimeterRoads(int i, int j) {
     if(i % 4 == 0 && j % 4 == 0) {
         dynamicMap[i][j].Type = JUNCTION;
     }
-    else if((i == 0 || i == MAX_COLS) && dynamicMap[i][j].Type != JUNCTION) {
+    else if((i == 0 || i == MAX_COLS - 1) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = AVENUE;
     }
-    else if((j == 0 || j == MAX_ROWS) && dynamicMap[i][j].Type != JUNCTION) {
+    else if((j == 0 || j == MAX_ROWS - 1) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = STREET;
     }
 }

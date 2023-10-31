@@ -4,6 +4,7 @@
 
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
+#define OLDNAV
 #include "stdio.h"
 #include "raylib.h"
 #include "raymath.h"
