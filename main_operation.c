@@ -136,13 +136,13 @@ void UpdateDrawFrame(void)
 
     //begin navigation
     if(defaultTest == 'Y') {
-        //MapNavigation(listOfVehicles[0]);
-        OneWayNavigation(listOfVehicles[0]);
+        MapNavigation(listOfVehicles[0]);
+        //OneWayNavigation(listOfVehicles[0]);
     }
     else{
         for (int i = 0; i < maxAEDV; ++i) {
-           OneWayNavigation(listOfVehicles[i]);
-           //MapNavigation(listOfVehicles[i]);
+           //OneWayNavigation(listOfVehicles[i]);
+           MapNavigation(listOfVehicles[i]);
         }
     }
 
