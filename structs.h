@@ -36,8 +36,7 @@ typedef struct Coordinate {
 } Cord;
 
 typedef struct Tile {
-    int i;
-    int j;
+    Cord location;
     bool isOccupied;
     Tile_Type Type;
 

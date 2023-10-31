@@ -47,7 +47,7 @@ int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    //Allows Window Resizing (Doesn't effect the Grid Dimensions)
+    //Allows Window Resizing (Doesn't affect the Grid Dimensions)
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
     //Disables INFO output in console window at startup

@@ -5,7 +5,7 @@
 */
 #include "dependencies.h"
 
-
+char *NESWArray[3][3] = {"NW", "W", "SW", "N", "", "S", "NE", "E", "SE"};
 
 void allocDynamicMap() {
     dynamicMap = (Tile**) malloc(MAX_COLS * sizeof (Tile));
