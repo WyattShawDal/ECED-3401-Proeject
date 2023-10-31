@@ -266,7 +266,7 @@ void MapNavigation(AEDV * vehicle) {
     }
         //Delivering to a street
     else if(destinationTile == STREET || destinationTile == STREET_E || destinationTile == STREET_W){
-        //at a junction at the wrong y OR on a avenue, move in the direction that decreases distance
+        //at a junction at the wrong y OR on an avenue, move in the direction that decreases distance
 
         if((currentTile == JUNCTION && (vehicle->position.y != vehicle->destination.y)) || (currentTile == AVENUE || currentTile == AVENUE_N || currentTile == AVENUE_S)) {
             if(vehicle->destination.y > vehicle->position.y)
