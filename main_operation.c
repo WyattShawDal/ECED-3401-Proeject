@@ -79,7 +79,7 @@ int main()
     camera.zoom = 1.0f;
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
-    SetTargetFPS(8);// Set our simulation to run at x frames-per-second
+    SetTargetFPS(3);// Set our simulation to run at x frames-per-second
     //--------------------------------------------------------------------------------------
     // Main simulation loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -104,13 +104,17 @@ void UpdateDrawFrame(void)
 
     //----------------------------------------------------------------------------------
     // Raylib Functions:
-    for (int i = 0; i < 4; ++i) {
-        if(listOfVehicles[0]->currStatus == UNLOADING) {
-            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[0]->EVIN);
-            scanf("%d %d", &listOfVehicles[0]->destination.x,&listOfVehicles[0]->destination.y);
-            listOfVehicles[0]->currStatus = TRANSIT;
+    int count = 0;
+    while(listOfVehicles[count]->currStatus==UNLOADING) {
+        count++;
+    }
+    //If every AEDV is unlaoding then we can go ahead and input all their new destinations
+    for (int i = 0; count == maxAEDV && i < 4; ++i) {
+        if(listOfVehicles[i]->currStatus == UNLOADING) {
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[i]->EVIN);
+            scanf("%d %d", &listOfVehicles[i]->destination.x,&listOfVehicles[i]->destination.y);
+            listOfVehicles[i]->currStatus = TRANSIT;
         }
-        //MapNavigation(listOfVehicles[i]);
     }
 
     BeginDrawing();
@@ -132,13 +136,13 @@ void UpdateDrawFrame(void)
 
     //begin navigation
     if(defaultTest == 'Y') {
+        //MapNavigation(listOfVehicles[0]);
         OneWayNavigation(listOfVehicles[0]);
-
     }
     else{
         for (int i = 0; i < maxAEDV; ++i) {
-            OneWayNavigation(listOfVehicles[i]);
-            //MapNavigation(listOfVehicles[i]);
+           OneWayNavigation(listOfVehicles[i]);
+           //MapNavigation(listOfVehicles[i]);
         }
     }
 
@@ -172,6 +176,7 @@ void AEDVInput() {
 }
 void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
     vehicle->EVIN = 10000 + identifierCode;
+    vehicle->junctionToTry = 0;
     vehicle->drawSize = (Vector2) {cellWidth, cellHeight};
     vehicle->position =  (Cord){locationX, locationY};
     vehicle->destination =  (Cord){destinationX, destinationY};

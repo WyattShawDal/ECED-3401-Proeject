@@ -45,6 +45,7 @@ typedef struct Tile {
 
 typedef struct AEDV {
     int EVIN;
+    int junctionToTry;
     Cord position;
     Cord destination;
     Vector2 drawSize;

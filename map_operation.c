@@ -80,15 +80,21 @@ void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDir
     }
     else if((j % 4 == 0 && j % 8 != 0) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = firstStreetDirection;
+        //dynamicMap[i][j].Type = STREET;
     }
     else if((j % 8 == 0) && dynamicMap[i][j].Type != JUNCTION) {
         firstStreetDirection == STREET_E ? (dynamicMap[i][j].Type = firstStreetDirection+1) :( dynamicMap[i][j].Type = firstStreetDirection -1);
+        //firstStreetDirection == STREET_E ? (dynamicMap[i][j].Type = STREET) :( dynamicMap[i][j].Type =STREET);
+
     }
     else if((i % 4 == 0 && i % 8 != 0) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = firstAvenueDirection;
+        //dynamicMap[i][j].Type = AVENUE;
     }
     else if((i % 8 == 0) && dynamicMap[i][j].Type != JUNCTION) {
         firstAvenueDirection == AVENUE_N ? (dynamicMap[i][j].Type = firstAvenueDirection+1) :( dynamicMap[i][j].Type = firstAvenueDirection -1);
+        //firstAvenueDirection == AVENUE_N ? (dynamicMap[i][j].Type = AVENUE) :( dynamicMap[i][j].Type = AVENUE);
+
     }
     else {
         dynamicMap[i][j].Type =  BUILDING;

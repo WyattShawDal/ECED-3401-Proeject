@@ -58,5 +58,6 @@ void OneWayNavigation(AEDV * vehicle);
 bool IsValidDirection(AEDV* vehicle, int direction);
 void StreetMoves(int currentTile, AEDV *vehicle);
 void FindAdjacentJunctions(AEDV* vehicle, int destinationTile, Cord* desiredJunctions);
+bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile);
 
 #endif //EXAMPLE_DEPENDENCIES_H
