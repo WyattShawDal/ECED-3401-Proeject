@@ -1,16 +1,12 @@
 TODO'S FOR MONDAY
- - Change Max Rows and Cols to be editable at startup (map generation) (DONE)
- - Update Building Generation (NE, N, NW ...) (ON HOLD)
-    - Nice to have Building Type (Stable, Charger, Both)
- - Update Road Generation (One Ways, E-->W, N-->S) (DONE)
-    -Update Movement to handle this
- - Add Handle for adjacent navigation (Deliver to a building square)
-    - When you reach the adjacent square move into the building (nice to have)
- - Add user input for consecutive deliveries (AddNewDelivery())
-    - User should type in new coordinates and AEDV should then begin to move
- - List Coordinates above and to the left of the map (DONE)
- - Ensure constant "aspect ratio" of grid tiles regardless of column/row count (DONE)
- - Shouldn't begin with all 4 AEDV's add ability for user to dispatch one at a time with custom delivery locations (DONE)
+ - Testing
 
- FOR CAM
- -
+
+TODO's LONG TERM
+ - Optimize One Way Pathing
+  - Update Building Generation (NE, N, NW ...) (ON HOLD)
+     - Nice to have Building Type (Stable, Charger, Both)
+  - Add Handle for adjacent navigation (Deliver to a building square) (LOL)
+     - When you reach the adjacent square move into the building (nice to have)
+  - Add user input for consecutive deliveries (AddNewDelivery())
+     - User should type in new coordinates and AEDV should then begin to move

@@ -9,13 +9,14 @@
 #include "raymath.h"
 #include "rlgl.h"
 #include "structs.h"
+
 #include <malloc.h>
 
 
 #define SOUTH 0
 #define NORTH 1
-#define EAST 0
-#define WEST 1
+#define EAST 2
+#define WEST 3
 
 extern int MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
 extern Tile** dynamicMap;
@@ -53,6 +54,9 @@ void setPerimeterRoads(int i, int j);
 void allocDynamicMap();
 void AEDVInput();
 void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
-
+void OneWayNavigation(AEDV * vehicle);
+bool IsValidDirection(AEDV* vehicle, int direction);
+void StreetMoves(int currentTile, AEDV *vehicle);
+void FindAdjacentJunctions(AEDV* vehicle, int destinationTile, Cord* desiredJunctions);
 
 #endif //EXAMPLE_DEPENDENCIES_H

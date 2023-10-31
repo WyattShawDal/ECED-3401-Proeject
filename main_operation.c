@@ -79,7 +79,7 @@ int main()
     camera.zoom = 1.0f;
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
-    SetTargetFPS(5);// Set our simulation to run at x frames-per-second
+    SetTargetFPS(8);// Set our simulation to run at x frames-per-second
     //--------------------------------------------------------------------------------------
     // Main simulation loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -100,8 +100,19 @@ int main()
 
 void UpdateDrawFrame(void)
 {
+
+
     //----------------------------------------------------------------------------------
     // Raylib Functions:
+    for (int i = 0; i < 4; ++i) {
+        if(listOfVehicles[0]->currStatus == UNLOADING) {
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[0]->EVIN);
+            scanf("%d %d", &listOfVehicles[0]->destination.x,&listOfVehicles[0]->destination.y);
+            listOfVehicles[0]->currStatus = TRANSIT;
+        }
+        //MapNavigation(listOfVehicles[i]);
+    }
+
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
@@ -121,11 +132,13 @@ void UpdateDrawFrame(void)
 
     //begin navigation
     if(defaultTest == 'Y') {
-        MapNavigation(listOfVehicles[0]);
+        OneWayNavigation(listOfVehicles[0]);
+
     }
     else{
         for (int i = 0; i < maxAEDV; ++i) {
-            MapNavigation(listOfVehicles[i]);
+            OneWayNavigation(listOfVehicles[i]);
+            //MapNavigation(listOfVehicles[i]);
         }
     }
 

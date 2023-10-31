@@ -26,6 +26,8 @@ void DrawMap(Tile tile) {
     int CURR_ROW = tile.location.y;
     if(dynamicMap[CURR_COL][CURR_ROW].Type == BUILDING) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
+        DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, 20, WHITE);
+        //FillTiles(), to draw NW, N, NE ...
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == JUNCTION) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
@@ -37,7 +39,7 @@ void DrawMap(Tile tile) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_E) {
-        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BROWN);
+        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, PINK);
     }
     else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_W) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
