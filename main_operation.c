@@ -52,6 +52,7 @@ int main()
 
     //Disables INFO output in console window at startup
     SetTraceLogLevel(LOG_ERROR);
+    //Camera Settings to show who picture
     camera.zoom = 0.94f;
     camera.target = (Vector2) {.x = -45, .y = -45};
     
@@ -129,20 +130,21 @@ void UpdateDrawFrame(void)
     }
 
     for (int i = 0; count == maxAEDV && i < maxAEDV; ++i) {
-        int tempDestX, tempDestY;
-        while(1) {
+        int tempDestX, tempDestY, isValid = 1;
+        while(isValid != 0) {
             printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[i]->EVIN);
             scanf("%d %d", &tempDestX,&tempDestY);
             if(isValidDestination(tempDestX, tempDestY)) {
                 listOfVehicles[i]->destination.x = tempDestX;
                 listOfVehicles[i]->destination.y = tempDestY;
                 listOfVehicles[i]->currStatus = TRANSIT;
-                break;
+                isValid = 0;
             }
-            printf("Invalid destination\n");
+            else
+                printf("Invalid destination\n");
         }
     }
-#ifdef OLD1 //Old assignment of new destinations
+#ifdef OLD_ASSIGNMENT_OF_DESTINATIONS //Old assignment of new destinations
     //If every AEDV is unlaoding then we can go ahead and input all their new destinations
     for (int i = 0; count == maxAEDV && i < 4; ++i) {
         if(listOfVehicles[i]->currStatus == UNLOADING) {
