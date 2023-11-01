@@ -205,24 +205,29 @@ void UpdateDrawFrame(void)
 }
 void AEDVInput() {
     int tempCordX, tempCordY,tempDestX, tempDestY;
-    printf("Number of AEDV's (1-4): ");
-    scanf("%d", &maxAEDV);
-    if(maxAEDV < 1) {
-        TraceLog(LOG_ERROR, "No AEDV :(");
-        exit(-1);
-    }
-    if(maxAEDV > 4) {
-        TraceLog(LOG_ERROR, "Can't have more than 4 AEDV's :(");
-        exit(-1);
-    }
+    do {
+        printf("Number of AEDV's (1-4): ");
+        scanf("%d", &maxAEDV);
+        if(maxAEDV < 1) {
+            printf("No AEDV's to assign orders\n");
+        }
+        if(maxAEDV > 4) {
+            printf("Too many AEDV's to assign\n");
+        }
+    }while(maxAEDV > 4 || maxAEDV < 1);
+
+
+
 
     for (int i = 0; i < maxAEDV; ++i) {
+        do {
         printf("Input starting location of AEDV [1000%d] x, y: ", i);
         scanf("%d %d", &tempCordX, &tempCordY);
         if(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS) {
-            TraceLog(LOG_ERROR, "Starting Out of Bounds");
-            exit(-1);
+            printf("Starting Out of Bounds\n");
         }
+        }while(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS);
+
 
         do {
             printf("Input destination of AEDV [1000%d] x, y: ", i);
