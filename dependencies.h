@@ -1,6 +1,9 @@
-//
-// Created by wyatt on 2023-10-18.
-//
+/*
+ * Created By: Wyatt Shaw and Cameron Archibald
+ * Date: October 31st 2023
+ * Module Info : Contains required libraries as well as function prototypes
+ *
+ */
 
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
@@ -10,14 +13,14 @@
 //#define OLD //Functions from one-way experimenting
 //#define OLD1 //Fixed readability and efficiency by Cameron on 31st of October
 
-#include "stdio.h"
-#include "raylib.h"
-#include "raymath.h"
-#include "rlgl.h"
-#include "structs.h"
-#include <ctype.h>
+#include "stdio.h" // included for regular c functionality printf, scanf etc
+#include "raylib.h" // included for graphical output
+#include "raymath.h" // required by raylib.h
+#include "rlgl.h" //required by raylib.h
+#include "typedefs.h" // included for function prototypes
+#include <ctype.h> // included for tolower
 
-#include <malloc.h>
+#include <malloc.h> // included for dynamic allocation using malloc
 
 
 #define SOUTH 0
@@ -138,5 +141,11 @@ bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTil
  * @return
  */
 bool isValidDestination(int col, int row);
+
+void SetupInitialConditions();
+
+void UpdateMap();
+
+void AssignNewOrders();
 
 #endif //EXAMPLE_DEPENDENCIES_H

@@ -1,6 +1,8 @@
-//
-// Created by wyatt on 2023-10-18.
-//
+/*
+ * Created By: Wyatt Shaw & Cameron Archibald
+ * Date: October 31st 2023
+ * Module Info: Contains definition of Enum and Structs
+ */
 #include "dependencies.h"
 
 #ifndef EXAMPLE_STRUCTS_H
@@ -15,11 +17,13 @@ typedef enum Type {
     AVENUE_S,
     JUNCTION,
     BUILDING,
+#ifdef TASK6
     STABLE,
     CHARGER,
     BOTH,
     CONSTRUCTION,
     ACCIDENT
+#endif
 }Tile_Type;
 
 

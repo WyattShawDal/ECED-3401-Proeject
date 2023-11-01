@@ -1,6 +1,6 @@
 /**
 * Author: Wyatt Shaw & Cameron Archibald
- * Date 2023-10-30
+ * Date October 31st 2023
  * Module Info: Contains function definitions for initalization and construction of the map.
 */
 #include "dependencies.h"
@@ -26,6 +26,7 @@ void DrawMap(Tile tile) {
     int CURR_ROW = tile.location.y;
     int currentType = dynamicMap[tile.location.x][tile.location.y].Type;
 
+    //Switch case is used to fill in the colours of the different squares, and add tile information characters (N, NE, E etc.)
     switch(currentType) {
         case BUILDING:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
@@ -201,4 +202,20 @@ bool isValidDestination(int col, int row) {
         isValid = false;
     //Last two could be XOR
     return isValid;
+}
+void UpdateMap() {
+    for (int CURR_COL = 0; CURR_COL < MAX_COLS; ++CURR_COL) {
+        for(int CURR_ROW = 0; CURR_ROW < MAX_ROWS; ++CURR_ROW) {
+            //Draws the Row Counter to the left of the map
+            if(CURR_COL == 0) {
+                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, 20, WHITE);
+            }
+            //Draws the Column Counter above the map
+            if(CURR_ROW == 0) {
+                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, 20, WHITE);
+            }
+            //Fills in the given cell
+            DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
+        }
+    }
 }
