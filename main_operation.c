@@ -36,6 +36,7 @@ static AEDV xAEDV;
 static AEDV yAEDV;
 static AEDV zAEDV;
 
+
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 
 Tile **dynamicMap;
@@ -52,7 +53,8 @@ int main()
 
     //Disables INFO output in console window at startup
     SetTraceLogLevel(LOG_ERROR);
-    //Camera Settings to show who picture
+
+    //Camera Settings to show whole picture
     camera.zoom = 0.94f;
     camera.target = (Vector2) {.x = -45, .y = -45};
     
@@ -70,9 +72,9 @@ int main()
             InitAEDV(listOfVehicles[0], 1, 0, 10, 12, 0);
         }
         else if(tolower(defaultTest) == 'n'){
-            printf("Number of buildings horizontally:");
+            printf("Number of buildings horizontally: ");
             scanf("%d",&MAX_COLS);
-            printf("Number of buildings vertically:");
+            printf("Number of buildings vertically: ");
             scanf("%d",&MAX_ROWS);
             printf("You inputted %d x %d buildings\n", MAX_COLS, MAX_ROWS);
             MAX_COLS = MAX_COLS * 4 + 1;
@@ -83,29 +85,24 @@ int main()
             AEDVInput();
 
         }
-
+    //Stored In while loop to allow for bad inputs to be rectified
     } while((tolower(defaultTest) != 'y') && (tolower(defaultTest) != 'n'));
 #ifdef DEBUG //Testing of isValidDestination function
-    /*
-    while(1) {
-        int tempcol, temprow;
-        printf("Enter destination (col row):");
-        scanf("%d %d", &tempcol, &temprow);
-        if(isValidDestination(tempcol, temprow)) printf("valid\n");
-        else printf("invalid\n");
-    }
-     */
-#endif
 
+#endif
+    int frameTarget = 10;
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
-    SetTargetFPS(3);// Set our simulation to run at x frames-per-second
+    SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
+
     //--------------------------------------------------------------------------------------
     // Main simulation loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+
         CameraControl();
         UpdateDrawFrame();
+
     }
     // De-Initialization
     //--------------------------------------------------------------------------------------
@@ -120,15 +117,39 @@ int main()
 
 void UpdateDrawFrame(void)
 {
-
-
     //----------------------------------------------------------------------------------
     // Raylib Functions:
     int count = 0;
+    //Check the amount of IDLE AEDV's
+#define MANUALORDER
+#ifdef MANUALORDER
+    if(GetKeyPressed() == KEY_F) {
+        int AEDVNum, tempDestX, tempDestY, AEDVIndex;
+        printf("Enter AEDV EVIN: ");
+        scanf("%d", &AEDVNum);
+        printf("You entered %d\n", AEDVNum);
+        AEDVIndex = AEDVNum - 10000;
+        if(AEDVIndex > maxAEDV-1) {
+            printf("Invalid AEDV Number (Out of Bounds \n)");
+        }
+        else {
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[AEDVIndex]->EVIN);
+            scanf("%d %d", &tempDestX,&tempDestY);
+            if(isValidDestination(tempDestX, tempDestY)) {
+                listOfVehicles[AEDVIndex]->destination.x = tempDestX;
+                listOfVehicles[AEDVIndex]->destination.y = tempDestY;
+                listOfVehicles[AEDVIndex]->currStatus = TRANSIT;
+                return;
+            }
+            else
+                printf("Invalid Destination, F again to reorder\n");
+        }
+    }
+#endif
+#ifdef AUTOORDERS
     while(listOfVehicles[count]->currStatus==UNLOADING) {
         count++;
     }
-
     for (int i = 0; count == maxAEDV && i < maxAEDV; ++i) {
         int tempDestX, tempDestY, isValid = 1;
         while(isValid != 0) {
@@ -144,7 +165,8 @@ void UpdateDrawFrame(void)
                 printf("Invalid destination\n");
         }
     }
-#ifdef OLD_ASSIGNMENT_OF_DESTINATIONS //Old assignment of new destinations
+#endif
+#ifdef OLD1 //Old assignment of new destinations
     //If every AEDV is unlaoding then we can go ahead and input all their new destinations
     for (int i = 0; count == maxAEDV && i < 4; ++i) {
         if(listOfVehicles[i]->currStatus == UNLOADING) {

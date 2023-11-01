@@ -38,8 +38,9 @@ void UpdateDrawFrame(void);     // Update and Draw one frame
  */
 void DrawMap(Tile tile);
 /**
- * @brief Calculates and then updates the positions of the AEDV's in the map
- * @param vehicle AEDV to move around, will be updated to an array of AEDV's
+ * @brief Calculates and then updates the position of the AEDV in the map
+ * @param vehicle AEDV to move around
+ * @note algorithm works on a two-way rule free road system
  */
 void MapNavigation(AEDV *vehicle);
 /**
@@ -54,18 +55,88 @@ void AvenueMovement(AEDV *vehicle, int direction);
  * @param direction Esat/West
  */
 void StreetMovement(AEDV *vehicle, int direction);
-void InitTiles();
-void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
+/**
+ * @brief allows for moving and resizing of the camera
+ */
 void CameraControl();
-void setPerimeterRoads(int i, int j);
+/**
+ * @brief  the size of the map array using the input rows and columns
+ */
 void allocDynamicMap();
+/**
+ * @brief function takes user input and then calls InitAEDV to assign provided values
+ */
 void AEDVInput();
+/**
+ * @brief populates AEDV struct with inital values
+ */
+void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
+/**
+ * @brief initializes values of the tiles in the map
+ * @note Uses setPerimeterRoads() and setInternalTiles()
+ */
+void InitTiles();
+/**
+ * @brief sets the values of the boundary roads (either two way roads or junctions)
+ * @param i col
+ * @param j row
+ */
+void setPerimeterRoads(int i, int j);
+/**
+ * @brief sets the value of the internal tiles according to road directions set
+ * @param i
+ * @param j
+ * @param firstStreetDirection
+ * @param firstAvenueDirection
+ */
 void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
+/**
+ * @brief One way pathing navigation algorithm
+ *
+ * @param vehicle
+ *
+ * @note Algorithm is dumb, only checking one tile ahead and without considering rules of the road. Ommitted from Task 5 Code
+ */
 void OneWayNavigation(AEDV * vehicle);
+/**
+ * @brief function used for one way navigation, determines whether the input direction is able to be travelled
+ * @param vehicle
+ * @param direction
+ * @note used in one way, omitted for task 5
+ * @return True or False
+ */
 bool IsValidDirection(AEDV* vehicle, int direction);
+/**
+ *
+ * @param currentTile
+ * @param vehicle
+ * @note used in one way, omitted for task 5
+ */
 void StreetMoves(int currentTile, AEDV *vehicle);
+/**
+ *
+ * @param vehicle
+ * @param destinationTile
+ * @param desiredJunctions
+ * @note used in one way omitted in task 5
+ */
 void FindAdjacentJunctions(AEDV* vehicle, int destinationTile, Cord* desiredJunctions);
+/**
+ *
+ * @param vehicle
+ * @param desiredJunctions
+ * @param destinationTile
+ * @note utilized in one way, omitted in task 5
+ * @return
+ */
 bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile);
+/**
+ * @brief uses generation rules to determine if the tile chosen is a deliverable location
+ * @param col
+ * @param row
+ * @note function uses col and row instead of a tile type because it can be called before tiles have been generated
+ * @return
+ */
 bool isValidDestination(int col, int row);
 
 #endif //EXAMPLE_DEPENDENCIES_H

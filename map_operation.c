@@ -69,7 +69,7 @@ void DrawMap(Tile tile) {
     //Add gridlines for readability
     DrawRectangleLines(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLACK);
 
-#ifdef OLD1
+#ifdef OLD
 
     if(dynamicMap[CURR_COL][CURR_ROW].Type == BUILDING) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
@@ -186,7 +186,12 @@ void setPerimeterRoads(int i, int j) {
 
 bool isValidDestination(int col, int row) {
     bool isValid = true;
-
+    /* List of conditions you can't navigate to
+     * 0 < cols <= max
+     * 0 < rows <= max
+     * junctions
+     * buildings
+   */
     if((col >= MAX_COLS) ||
     (col < 0) ||
     (row >= MAX_ROWS)||
@@ -195,6 +200,5 @@ bool isValidDestination(int col, int row) {
     ((col % 4) != 0) && ((row % 4) != 0))
         isValid = false;
     //Last two could be XOR
-
     return isValid;
 }
