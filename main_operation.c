@@ -10,7 +10,6 @@
 #include "dependencies.h"
 #include "structs.h"
 
-
 //----------------------------------------------------------------------------------
 // Const Defines
 //----------------------------------------------------------------------------------
@@ -25,21 +24,22 @@ const int cellHeight = screenWidth/MAX_COLS;
 //----------------------------------------------------------------------------------
 const int screenWidth = 1000;
 const int screenHeight = 1000;
-int cellHeight;
-int cellWidth;
-int MAX_COLS, MAX_ROWS;
 Camera2D camera = { 0 };
+
+
+int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
+
+char defaultTest;
 
 static AEDV wAEDV;
 static AEDV xAEDV;
 static AEDV yAEDV;
 static AEDV zAEDV;
+
+
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 
-//Tile map[MAX_COLS][MAX_ROWS];
 Tile **dynamicMap;
-
-void AEDVInput();
 
 //----------------------------------------------------------------------------------
 // Main Entry Point
@@ -48,35 +48,61 @@ int main()
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    //Allows Window Resizing (Doesn't effect the Grid Dimensions)
+    //Allows Window Resizing (Doesn't affect the Grid Dimensions)
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
 
     //Disables INFO output in console window at startup
     SetTraceLogLevel(LOG_ERROR);
 
+    //Camera Settings to show whole picture
+    camera.zoom = 0.94f;
+    camera.target = (Vector2) {.x = -45, .y = -45};
+    
+    do {
+        printf("Default Test? (Y or N):");
+        scanf("%c", &defaultTest);
 
-    printf("Number of Columns: ");
-    scanf("%d",&MAX_COLS);
-    printf("Number of Rows: ");
-    scanf("%d",&MAX_ROWS);
-    printf("You inputted %d x %d dimensions\n", MAX_COLS, MAX_ROWS);
-    cellHeight = screenWidth/MAX_COLS;
-    cellWidth = screenWidth/MAX_COLS;
+        if(tolower(defaultTest) == 'y') {
+            maxAEDV = 1;
+            MAX_COLS = 21;
+            MAX_ROWS = 21;
+            cellHeight = screenWidth/MAX_COLS;
+            cellWidth = screenWidth/MAX_COLS;
+            printf("Dimensions of map defaulted to %d columns by %d rows\n", MAX_COLS, MAX_ROWS);
+            InitAEDV(listOfVehicles[0], 1, 0, 10, 12, 0);
+        }
+        else if(tolower(defaultTest) == 'n'){
+            printf("Number of buildings horizontally: ");
+            scanf("%d",&MAX_COLS);
+            printf("Number of buildings vertically: ");
+            scanf("%d",&MAX_ROWS);
+            printf("You inputted %d x %d buildings\n", MAX_COLS, MAX_ROWS);
+            MAX_COLS = MAX_COLS * 4 + 1;
+            MAX_ROWS = MAX_ROWS * 4 + 1;
+            printf("Equals %d x %d tiles\n", MAX_COLS, MAX_ROWS);
+            cellHeight = screenWidth/MAX_COLS;
+            cellWidth = screenWidth/MAX_COLS;
+            AEDVInput();
 
+        }
+    //Stored In while loop to allow for bad inputs to be rectified
+    } while((tolower(defaultTest) != 'y') && (tolower(defaultTest) != 'n'));
+#ifdef DEBUG //Testing of isValidDestination function
 
-    AEDVInput();
-    camera.zoom = 1.0f;
-    //Initalization Loop
-
-    InitWindow(screenWidth, screenHeight, "AEDV Live Map");
+#endif
+    int frameTarget = 10;
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
-    SetTargetFPS(5);// Set our simulation to run at x frames-per-second
+    InitWindow(screenWidth, screenHeight, "AEDV Live Map");
+    SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
+
     //--------------------------------------------------------------------------------------
     // Main simulation loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+
         CameraControl();
         UpdateDrawFrame();
+
     }
     // De-Initialization
     //--------------------------------------------------------------------------------------
@@ -88,10 +114,69 @@ int main()
 //----------------------------------------------------------------------------------
 // Module Functions Definition
 //----------------------------------------------------------------------------------
+
 void UpdateDrawFrame(void)
 {
     //----------------------------------------------------------------------------------
     // Raylib Functions:
+    int count = 0;
+    //Check the amount of IDLE AEDV's
+#define MANUALORDER
+#ifdef MANUALORDER
+    if(GetKeyPressed() == KEY_F) {
+        int AEDVNum, tempDestX, tempDestY, AEDVIndex;
+        printf("Enter AEDV EVIN: ");
+        scanf("%d", &AEDVNum);
+        printf("You entered %d\n", AEDVNum);
+        AEDVIndex = AEDVNum - 10000;
+        if(AEDVIndex > maxAEDV-1) {
+            printf("Invalid AEDV Number (Out of Bounds \n)");
+        }
+        else {
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[AEDVIndex]->EVIN);
+            scanf("%d %d", &tempDestX,&tempDestY);
+            if(isValidDestination(tempDestX, tempDestY)) {
+                listOfVehicles[AEDVIndex]->destination.x = tempDestX;
+                listOfVehicles[AEDVIndex]->destination.y = tempDestY;
+                listOfVehicles[AEDVIndex]->currStatus = TRANSIT;
+                return;
+            }
+            else
+                printf("Invalid Destination, F again to reorder\n");
+        }
+    }
+#endif
+#ifdef AUTOORDERS
+    while(listOfVehicles[count]->currStatus==UNLOADING) {
+        count++;
+    }
+    for (int i = 0; count == maxAEDV && i < maxAEDV; ++i) {
+        int tempDestX, tempDestY, isValid = 1;
+        while(isValid != 0) {
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[i]->EVIN);
+            scanf("%d %d", &tempDestX,&tempDestY);
+            if(isValidDestination(tempDestX, tempDestY)) {
+                listOfVehicles[i]->destination.x = tempDestX;
+                listOfVehicles[i]->destination.y = tempDestY;
+                listOfVehicles[i]->currStatus = TRANSIT;
+                isValid = 0;
+            }
+            else
+                printf("Invalid destination\n");
+        }
+    }
+#endif
+#ifdef OLD1 //Old assignment of new destinations
+    //If every AEDV is unlaoding then we can go ahead and input all their new destinations
+    for (int i = 0; count == maxAEDV && i < 4; ++i) {
+        if(listOfVehicles[i]->currStatus == UNLOADING) {
+
+            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[i]->EVIN);
+            scanf("%d %d", &listOfVehicles[i]->destination.x,&listOfVehicles[i]->destination.y);
+            listOfVehicles[i]->currStatus = TRANSIT;
+        }
+    }
+#endif
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
@@ -107,25 +192,98 @@ void UpdateDrawFrame(void)
             DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
         }
     }
-    //If the destination value is invalid don't bother attempting to nav
 
     //begin navigation
+    for (int i = 0; i < maxAEDV; ++i) {
+       //OneWayNavigation(listOfVehicles[i]);
+       MapNavigation(listOfVehicles[i]);
+    }
 
-        for (int i = 0; i < 4; ++i) {
-            MapNavigation(listOfVehicles[i]);
-        }
 
     EndDrawing();
     //----------------------------------------------------------------------------------
 }
+void AEDVInput() {
+    int tempCordX, tempCordY,tempDestX, tempDestY;
+    printf("Number of AEDV's (1-4): ");
+    scanf("%d", &maxAEDV);
+    if(maxAEDV < 1) {
+        TraceLog(LOG_ERROR, "No AEDV :(");
+        exit(-1);
+    }
+    if(maxAEDV > 4) {
+        TraceLog(LOG_ERROR, "Can't have more than 4 AEDV's :(");
+        exit(-1);
+    }
+
+    for (int i = 0; i < maxAEDV; ++i) {
+        printf("Input starting location of AEDV [1000%d] x, y: ", i);
+        scanf("%d %d", &tempCordX, &tempCordY);
+        if(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS) {
+            TraceLog(LOG_ERROR, "Starting Out of Bounds");
+            exit(-1);
+        }
+
+        do {
+            printf("Input destination of AEDV [1000%d] x, y: ", i);
+            scanf("%d %d", &tempDestX, &tempDestY);
+            if(!isValidDestination(tempDestX, tempDestY))
+                printf("Invalid destination\n");
+        } while(!isValidDestination(tempDestX, tempDestY));
+
+
+        InitAEDV(listOfVehicles[i], tempCordX, tempCordY, tempDestX, tempDestY, i);
+    }
+}
+
+void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
+    vehicle->EVIN = 10000 + identifierCode;
+    vehicle->drawSize = (Vector2) {cellWidth, cellHeight};
+    vehicle->position =  (Cord){locationX, locationY};
+    vehicle->destination =  (Cord){destinationX, destinationY};
+    vehicle->color = (Color) {GetRandomValue(0, 255), GetRandomValue(0, 127), GetRandomValue(0, 127), 255};
+    vehicle->currStatus = TRANSIT;
+}
+
+void CameraControl() {
+    if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))  {
+        Vector2 delta  = GetMouseDelta();
+        delta = Vector2Scale(delta, -1.0f/camera.zoom);
+
+        camera.target = Vector2Add(camera.target, delta);
+    }
+    float wheel = GetMouseWheelMove();
+    if(wheel != 0) {
+        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), camera);
+        camera.offset = GetMousePosition();
+        camera.target = mouseWorldPos;
+        const float zoomIncrement = 0.125f;
+
+        camera.zoom += (wheel*zoomIncrement);
+        if(camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
+    }
+}
+#ifdef OLD
 void DrawMap(Tile tile) {
     int CURR_COL = tile.location.x;
     int CURR_ROW = tile.location.y;
-    if(map[CURR_COL][CURR_ROW].Type == BUILDING) {
+    if(dynamicMap[CURR_COL][CURR_ROW].Type == BUILDING) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
     }
-    else if(map[CURR_COL][CURR_ROW].Type == JUNCTION) {
+    else if(dynamicMap[CURR_COL][CURR_ROW].Type == JUNCTION) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
+    }
+    else if(dynamicMap[CURR_COL][CURR_ROW].Type == AVENUE_N) {
+        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, RED);
+    }
+    else if(dynamicMap[CURR_COL][CURR_ROW].Type == AVENUE_S) {
+        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
+    }
+    else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_E) {
+        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BROWN);
+    }
+    else if(dynamicMap[CURR_COL][CURR_ROW].Type == STREET_W) {
+        DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
     }
     else{ //Normal Road Section
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
@@ -214,85 +372,61 @@ void MapNavigation(AEDV * vehicle) {
     }
 }
 void InitTiles() {
+    allocDynamicMap();
 
-    dynamicMap = (Tile**) malloc(MAX_COLS * sizeof (Tile));
-    if(dynamicMap == NULL){
-        TraceLog(LOG_ERROR, "ERROR ALLOCATING ROW MEMORY FOR MAP");
-        exit (-1);
-    }
-    for (int i = 0; i < MAX_COLS; ++i) {
-        dynamicMap[i] = (Tile*) malloc(MAX_ROWS * sizeof (Tile));
-        if(dynamicMap[i] == NULL) {
-            TraceLog(LOG_ERROR, "ERROR ALLOCATING ROW MEMORY FOR MAP");
-            exit (-1);
-        }
-    }
+    int firstStreetDirction, firstAvenueDirection;
+    printf("Input the direction of the first street (1 for E, 2 for W): ");
+    scanf("%d", &firstStreetDirction);
+
+    printf("Input the direction of the first avenue: (4 for N, 5 for S): ");
+    scanf("%d", &firstAvenueDirection);
+
     for (int i = 0; i < MAX_COLS; ++i) {
         for (int j = 0; j < MAX_ROWS; ++j) {
-            dynamicMap[i][j] = (Tile) {.location.x = i, .location.y  = j};
-            if(i % 4 == 0 && j % 4 == 0 && (i + j) != 0) {
-                dynamicMap[i][j].Type = JUNCTION;
-            }
-            else if(i % 4 == 0 && dynamicMap[i][j].Type != JUNCTION) {
-                dynamicMap[i][j].Type = AVENUE;
-            }
-            else if(j % 4 == 0 && dynamicMap[i][j].Type != JUNCTION) {
-                dynamicMap[i][j].Type = STREET;
-            }
-            else {
-                dynamicMap[i][j].Type = BUILDING;
-            }
+            setPerimeterRoads(i, j);
+        }
+    }
+    for (int i = 1; i < MAX_COLS - 1; ++i) {
+        for (int j = 1; j < MAX_ROWS - 1; ++j) {
+            setInternalTiles(i, j, firstStreetDirction, firstAvenueDirection);
         }
     }
 }
-void AEDVInput() {
-    int maxAEDV, tempCordX, tempCordY,tempDestX, tempDestY;
-    printf("Number of AEDV's (1-4): ");
-    scanf("%d", &maxAEDV);
-    if(maxAEDV < 1) {
-        TraceLog(LOG_ERROR, "No AEDV :(");
-        exit(-1);
-    }
 
-    for (int i = 0; i < maxAEDV; ++i) {
-        printf("Input starting location of AEDV [1000%d] x, y: ", i);
-        scanf("%d %d", &tempCordX, &tempCordY);
-        if(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS) {
-            TraceLog(LOG_ERROR, "Starting Out of Bounds");
-            exit(-1);
-        }
-        printf("Input destination of AEDV [1000%d] x, y: ", i);
-        scanf("%d %d", &tempDestX, &tempDestY);
-        if(tempDestX < 0 || tempDestX > MAX_COLS || tempDestY < 0 || tempDestY > MAX_ROWS) {
-            TraceLog(LOG_ERROR, "Destination Out of Bounds");
-            exit(-1);
-        }
-        InitAEDV(listOfVehicles[i], tempCordX, tempCordY, tempDestX, tempDestY, i);
+void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection) {
+    dynamicMap[i][j] = (Tile) {.location.x = i, .location.y  = j};
+    //Multi Directional Roads
+    if(i % 4 == 0 && j % 4 == 0) {
+        dynamicMap[i][j].Type = JUNCTION;
+    }
+    else if((j % 4 == 0 && j % 8 != 0) && dynamicMap[i][j].Type != JUNCTION) {
+        dynamicMap[i][j].Type = firstStreetDirection;
+    }
+    else if((j % 8 == 0) && dynamicMap[i][j].Type != JUNCTION) {
+        firstStreetDirection == STREET_E ? (dynamicMap[i][j].Type = firstStreetDirection+1) :( dynamicMap[i][j].Type = firstStreetDirection -1);
+    }
+    else if((i % 4 == 0 && i % 8 != 0) && dynamicMap[i][j].Type != JUNCTION) {
+        dynamicMap[i][j].Type = firstAvenueDirection;
+    }
+    else if((i % 8 == 0) && dynamicMap[i][j].Type != JUNCTION) {
+        firstAvenueDirection == AVENUE_N ? (dynamicMap[i][j].Type = firstAvenueDirection+1) :( dynamicMap[i][j].Type = firstAvenueDirection -1);
+    }
+    else {
+        dynamicMap[i][j].Type =  BUILDING;
     }
 }
 
-void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
-    vehicle->EVIN = 10000 + identifierCode;
-    vehicle->drawSize = (Vector2) {cellWidth, cellHeight};
-    vehicle->position =  (Cord){locationX, locationY};
-    vehicle->destination =  (Cord){destinationX, destinationY};
-    vehicle->color = (Color) {GetRandomValue(0, 255), GetRandomValue(0, 127), GetRandomValue(0, 127), 255};
-}
-void CameraControl() {
-    if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))  {
-        Vector2 delta  = GetMouseDelta();
-        delta = Vector2Scale(delta, -1.0f/camera.zoom);
-
-        camera.target = Vector2Add(camera.target, delta);
+void setPerimeterRoads(int i, int j) {
+    dynamicMap[i][j] = (Tile) {.location.x = i, .location.y  = j};
+    //Multi Directional Roads
+    if(i % 4 == 0 && j % 4 == 0) {
+        dynamicMap[i][j].Type = JUNCTION;
     }
-    float wheel = GetMouseWheelMove();
-    if(wheel != 0) {
-        Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), camera);
-        camera.offset = GetMousePosition();
-        camera.target = mouseWorldPos;
-        const float zoomIncrement = 0.125f;
-
-        camera.zoom += (wheel*zoomIncrement);
-        if(camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
+    else if((i == 0 || i == MAX_COLS) && dynamicMap[i][j].Type != JUNCTION) {
+        dynamicMap[i][j].Type = AVENUE;
+    }
+    else if((j == 0 || j == MAX_ROWS) && dynamicMap[i][j].Type != JUNCTION) {
+        dynamicMap[i][j].Type = STREET;
     }
 }
+#endif

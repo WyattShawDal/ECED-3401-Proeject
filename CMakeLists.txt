@@ -30,6 +30,9 @@ endif()
 
 add_executable(${PROJECT_NAME} main_operation.c
         structs.h
-        dependencies.h)
+        dependencies.h
+        navigation_functions.c
+        map_operation.c
+)
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
