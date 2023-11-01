@@ -4,12 +4,18 @@
 
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
-#define OLDNAV
+
+#define TWOWAY //Allows for two-way navigation
+//#define DEBUG //Allows for diagnostic printing
+//#define OLD //Functions from one-way experimenting
+//#define OLD1 //Fixed readability and efficiency by Cameron on 31st of October
+
 #include "stdio.h"
 #include "raylib.h"
 #include "raymath.h"
 #include "rlgl.h"
 #include "structs.h"
+#include <ctype.h>
 
 #include <malloc.h>
 
@@ -60,5 +66,6 @@ bool IsValidDirection(AEDV* vehicle, int direction);
 void StreetMoves(int currentTile, AEDV *vehicle);
 void FindAdjacentJunctions(AEDV* vehicle, int destinationTile, Cord* desiredJunctions);
 bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile);
+bool isValidDestination(int col, int row);
 
 #endif //EXAMPLE_DEPENDENCIES_H

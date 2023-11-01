@@ -24,6 +24,53 @@ void allocDynamicMap() {
 void DrawMap(Tile tile) {
     int CURR_COL = tile.location.x;
     int CURR_ROW = tile.location.y;
+    int currentType = dynamicMap[tile.location.x][tile.location.y].Type;
+
+    switch(currentType) {
+        case BUILDING:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
+            DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, 20, WHITE);
+            break;
+        case JUNCTION:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
+            break;
+        case AVENUE_N:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, RED);
+            if(CURR_ROW == 1) {
+                DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+            }
+            break;
+        case AVENUE_S:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
+            if(CURR_ROW == 1) {
+                DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+            }
+            break;
+        case STREET_E:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, PINK);
+            if(CURR_COL == 1) {
+                DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+            }
+            break;
+        case STREET_W:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
+            if(CURR_COL == 1) {
+                DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+            }
+            break;
+        case AVENUE:
+        case STREET:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
+            break;
+        default:
+            break;
+    }
+
+    //Add gridlines for readability
+    DrawRectangleLines(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLACK);
+
+#ifdef OLD1
+
     if(dynamicMap[CURR_COL][CURR_ROW].Type == BUILDING) {
         DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
         DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, 20, WHITE);
@@ -61,13 +108,14 @@ void DrawMap(Tile tile) {
     }
     //Add gridlines for readability
     DrawRectangleLines(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLACK);
+#endif
 }
 void InitTiles() {
     allocDynamicMap();
 
-    int firstStreetDirction, firstAvenueDirection;
+    int firstStreetDirection, firstAvenueDirection;
     printf("Input the direction of the first street (1 for E, 2 for W): ");
-    scanf("%d", &firstStreetDirction);
+    scanf("%d", &firstStreetDirection);
 
     printf("Input the direction of the first avenue: (4 for N, 5 for S): ");
     scanf("%d", &firstAvenueDirection);
@@ -79,15 +127,18 @@ void InitTiles() {
     }
     for (int i = 1; i < MAX_COLS - 1; ++i) {
         for (int j = 1; j < MAX_ROWS - 1; ++j) {
-            setInternalTiles(i, j, firstStreetDirction, firstAvenueDirection);
+            setInternalTiles(i, j, firstStreetDirection, firstAvenueDirection);
         }
     }
+
+#ifdef DEBUG //prints map of tile types for diagnostic
     for(int i = 0;i < MAX_COLS;i++) {
         for(int j = 0;j < MAX_ROWS;j++) {
-            printf("%d ", dynamicMap[i][j].Type);
+            printf("%d ", dynamicMap[j][i].Type);
         }
         printf("\n");
     }
+#endif
 }
 
 void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection) {
@@ -133,3 +184,17 @@ void setPerimeterRoads(int i, int j) {
     }
 }
 
+bool isValidDestination(int col, int row) {
+    bool isValid = true;
+
+    if((col >= MAX_COLS) ||
+    (col < 0) ||
+    (row >= MAX_ROWS)||
+    (row < 0) ||
+    ((col % 4) == 0) && ((row % 4) == 0) ||
+    ((col % 4) != 0) && ((row % 4) != 0))
+        isValid = false;
+    //Last two could be XOR
+
+    return isValid;
+}

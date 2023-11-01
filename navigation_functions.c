@@ -5,8 +5,8 @@
 */
 
 #include "dependencies.h"
-//#define dont
-//#define OLDNAV
+
+#ifdef TWOWAY
 void StreetMovement(AEDV *vehicle, int direction) {
     DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
     if(direction == EAST) {
@@ -22,7 +22,98 @@ void AvenueMovement(AEDV *vehicle, int direction) {
     }
     else vehicle->position.y -= 1;
 }
-#ifdef Blah
+
+void MapNavigation(AEDV * vehicle) {
+    int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
+    int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
+    if(vehicle->currStatus == TRANSIT) printf("AEDV [%d] currently at %d, %d --- Navigating to %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
+    else if(vehicle->currStatus == UNLOADING) printf("AEDV [%d] arrived at destination %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
+    if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
+        vehicle->currStatus = UNLOADING;
+        DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
+        return;
+    }
+    //Delivering to an Avenue
+    if(destinationTile == AVENUE || destinationTile == AVENUE_N || destinationTile == AVENUE_S || destinationTile == JUNCTION) {
+//        if(vehicle->currStatus == UNLOADING) {
+//            DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth, .y = vehicle->position.y * cellHeight},
+//                           vehicle->drawSize, GREEN);
+//            return;
+//        }
+            //at a junction at the wrong x OR on a street, move in the direction that decreases distance
+        if((currentTile == JUNCTION && (vehicle->position.x != vehicle->destination.x)) || (currentTile == STREET || currentTile == STREET_E || currentTile == STREET_W)) {
+            if(vehicle->destination.x > vehicle->position.x)
+                StreetMovement(vehicle, EAST);
+            else
+                StreetMovement(vehicle, WEST);
+        }
+            //at a junction with the correct x value, now move north or south to decrease distance
+        else if(currentTile == JUNCTION) {
+            if(vehicle->destination.y > vehicle->position.y)
+                AvenueMovement(vehicle, SOUTH);
+            else
+                AvenueMovement(vehicle, NORTH);
+        }
+            //on an avenue
+        else {
+            if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
+                vehicle->currStatus = UNLOADING;
+                DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
+                return;
+            }
+            else if(vehicle->destination.x == vehicle->position.x) {
+                //On the destination avenue, move up or down
+                if(vehicle->destination.y > vehicle->position.y)
+                    AvenueMovement(vehicle, SOUTH);
+                else
+                    AvenueMovement(vehicle, NORTH);
+            }
+            else
+                //On the wrong avenue, move up
+                AvenueMovement(vehicle, NORTH);
+        }
+    }
+        //Delivering to a street
+    else if(destinationTile == STREET || destinationTile == STREET_E || destinationTile == STREET_W){
+        //at a junction at the wrong y OR on an avenue, move in the direction that decreases distance
+
+        if((currentTile == JUNCTION && (vehicle->position.y != vehicle->destination.y)) || (currentTile == AVENUE || currentTile == AVENUE_N || currentTile == AVENUE_S)) {
+            if(vehicle->destination.y > vehicle->position.y)
+                AvenueMovement(vehicle, SOUTH);
+            else
+                AvenueMovement(vehicle, NORTH);
+        }
+        //at a junction with the correct y value, now move east or west to decrease distance
+        else if(currentTile == JUNCTION) {
+            if(vehicle->destination.x > vehicle->position.x)
+                StreetMovement(vehicle, EAST);
+            else
+                StreetMovement(vehicle, WEST);
+        }
+            //on a street
+        else {
+            if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
+                vehicle->currStatus = UNLOADING;
+                DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
+                return;
+            }
+            else if(vehicle->destination.y == vehicle->position.y) {
+                //On the destination street, move up or down
+                if(vehicle->destination.x > vehicle->position.x)
+                    StreetMovement(vehicle, EAST);
+                else
+                    StreetMovement(vehicle, WEST);
+            }
+            else
+                //On the wrong avenue, move up
+                StreetMovement(vehicle, WEST);
+        }
+    }
+}
+
+#endif
+
+#ifdef OLD
 void OneWayNavigation(AEDV * vehicle) {
     int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
     int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
@@ -124,46 +215,8 @@ void OneWayNavigation(AEDV * vehicle) {
     }
 }
 #endif
-bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile) {
-    if(vehicle->position.x == desiredJunctions[0].x && vehicle->position.y == desiredJunctions[0].y) {
-        return true;
-    }
-    else if (vehicle->position.x == desiredJunctions[1].x && vehicle->position.y == desiredJunctions[1].y) {
-        return true;
-    }
-    else return false;
-}
-bool IsValidDirection(AEDV* vehicle, int direction) {
-    switch (direction) {
-        case NORTH:
-            if((dynamicMap[vehicle->position.x][vehicle->position.y-1].Type == AVENUE_N) ||(dynamicMap[vehicle->position.x][vehicle->position.y-1].Type == AVENUE)) {
-                return true;
-            }
-            return false;
 
-        case EAST:
-            if((dynamicMap[vehicle->position.x+1][vehicle->position.y].Type == STREET_E) ||(dynamicMap[vehicle->position.x+1][vehicle->position.y].Type == STREET)) {
-                return true;
-            }
-            return false;
-
-        case SOUTH:
-            if((dynamicMap[vehicle->position.x][vehicle->position.y+1].Type == AVENUE_S) ||(dynamicMap[vehicle->position.x][vehicle->position.y+1].Type == AVENUE)) {
-                return true;
-            }
-            return false;
-
-        case WEST:
-            if((dynamicMap[vehicle->position.x-1][vehicle->position.y].Type == STREET_W) ||(dynamicMap[vehicle->position.x-1][vehicle->position.y].Type == STREET)) {
-                return true;
-            }
-            return false;
-        default:
-            return false;
-    }
-}
-
-#ifdef HOLD
+#ifdef OLD
 void OneWayNavigation(AEDV* vehicle) {
     int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
     int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
@@ -213,95 +266,45 @@ void OneWayNavigation(AEDV* vehicle) {
 
 }
 #endif
-#define OLDNAV
-#ifdef OLDNAV
-void MapNavigation(AEDV * vehicle) {
-    int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
-    int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
-    printf("Currently at %d, %d --- Navigating to %d, %d\n", vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
-    if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
-        vehicle->currStatus = UNLOADING;
-        DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
-        return;
-    }
-    //Delivering to an Avenue
-    if(destinationTile == AVENUE || destinationTile == AVENUE_N || destinationTile == AVENUE_S || destinationTile == JUNCTION) {
-//        if(vehicle->currStatus == UNLOADING) {
-//            DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth, .y = vehicle->position.y * cellHeight},
-//                           vehicle->drawSize, GREEN);
-//            return;
-//        }
-            //at a junction at the wrong x OR on a street, move in the direction that decreases distance
-        if((currentTile == JUNCTION && (vehicle->position.x != vehicle->destination.x)) || (currentTile == STREET || currentTile == STREET_E || currentTile == STREET_W)) {
-            if(vehicle->destination.x > vehicle->position.x)
-                StreetMovement(vehicle, EAST);
-            else
-                StreetMovement(vehicle, WEST);
-        }
-            //at a junction with the correct x value, now move north or south to decrease distance
-        else if(currentTile == JUNCTION) {
-            if(vehicle->destination.y > vehicle->position.y)
-                AvenueMovement(vehicle, SOUTH);
-            else
-                AvenueMovement(vehicle, NORTH);
-        }
-            //on an avenue
-        else {
-            if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
-                vehicle->currStatus = UNLOADING;
-                DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
-                return;
-            }
-            else if(vehicle->destination.x == vehicle->position.x) {
-                //On the destination avenue, move up or down
-                if(vehicle->destination.y > vehicle->position.y)
-                    AvenueMovement(vehicle, SOUTH);
-                else
-                    AvenueMovement(vehicle, NORTH);
-            }
-            else
-                //On the wrong avenue, move up
-                AvenueMovement(vehicle, NORTH);
-        }
-    }
-        //Delivering to a street
-    else if(destinationTile == STREET || destinationTile == STREET_E || destinationTile == STREET_W){
-        //at a junction at the wrong y OR on an avenue, move in the direction that decreases distance
 
-        if((currentTile == JUNCTION && (vehicle->position.y != vehicle->destination.y)) || (currentTile == AVENUE || currentTile == AVENUE_N || currentTile == AVENUE_S)) {
-            if(vehicle->destination.y > vehicle->position.y)
-                AvenueMovement(vehicle, SOUTH);
-            else
-                AvenueMovement(vehicle, NORTH);
-        }
-        //at a junction with the correct y value, now move east or west to decrease distance
-        else if(currentTile == JUNCTION) {
-            if(vehicle->destination.x > vehicle->position.x)
-                StreetMovement(vehicle, EAST);
-            else
-                StreetMovement(vehicle, WEST);
-        }
-            //on a street
-        else {
-            if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
-                vehicle->currStatus = UNLOADING;
-                DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
-                return;
+#ifdef OLD
+bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile) {
+    if(vehicle->position.x == desiredJunctions[0].x && vehicle->position.y == desiredJunctions[0].y) {
+        return true;
+    }
+    else if (vehicle->position.x == desiredJunctions[1].x && vehicle->position.y == desiredJunctions[1].y) {
+        return true;
+    }
+    else return false;
+}
+bool IsValidDirection(AEDV* vehicle, int direction) {
+    switch (direction) {
+        case NORTH:
+            if((dynamicMap[vehicle->position.x][vehicle->position.y-1].Type == AVENUE_N) ||(dynamicMap[vehicle->position.x][vehicle->position.y-1].Type == AVENUE)) {
+                return true;
             }
-            else if(vehicle->destination.y == vehicle->position.y) {
-                //On the destination street, move up or down
-                if(vehicle->destination.x > vehicle->position.x)
-                    StreetMovement(vehicle, EAST);
-                else
-                    StreetMovement(vehicle, WEST);
+            return false;
+
+        case EAST:
+            if((dynamicMap[vehicle->position.x+1][vehicle->position.y].Type == STREET_E) ||(dynamicMap[vehicle->position.x+1][vehicle->position.y].Type == STREET)) {
+                return true;
             }
-            else
-                //On the wrong avenue, move up
-                StreetMovement(vehicle, WEST);
-        }
+            return false;
+
+        case SOUTH:
+            if((dynamicMap[vehicle->position.x][vehicle->position.y+1].Type == AVENUE_S) ||(dynamicMap[vehicle->position.x][vehicle->position.y+1].Type == AVENUE)) {
+                return true;
+            }
+            return false;
+
+        case WEST:
+            if((dynamicMap[vehicle->position.x-1][vehicle->position.y].Type == STREET_W) ||(dynamicMap[vehicle->position.x-1][vehicle->position.y].Type == STREET)) {
+                return true;
+            }
+            return false;
+        default:
+            return false;
     }
 }
-
 #endif
-
 

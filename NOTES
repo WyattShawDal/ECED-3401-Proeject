@@ -10,3 +10,7 @@ TODO's LONG TERM
      - When you reach the adjacent square move into the building (nice to have)
   - Add user input for consecutive deliveries (AddNewDelivery())
      - User should type in new coordinates and AEDV should then begin to move
+
+
+TESTS:
+If vehicles arrive at the same time, no arrival message is displayed.
