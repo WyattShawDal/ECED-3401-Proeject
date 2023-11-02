@@ -1,27 +1,18 @@
 /*******************************************************************************************
-*  Author: Wyatt Shaw and Cameron Archibald
+*  Author: Wyatt Shaw & Cameron Archibald
 *  Date: October 31 2023
 *  Module Info: The following module implements 'dumb' AEDV movement, allowing up to four AEDVs to navigate to given destination points
-*  Dependency Info: In order to handle graphical output, the module utilizes Raylib.h
+*  Dependency Info: In order to handle graphical output, the program utilizes the open source library Raylib.h
 *  https://github.com/raysan5/raylib
 *  Copyright (c) 2015 Ramon Santamaria (@raysan5)
 *
 ********************************************************************************************/
 #include "dependencies.h"
-#include "structs.h"
+#include "typedefs.h"
 
-//----------------------------------------------------------------------------------
-// Const Defines
-//----------------------------------------------------------------------------------
-#ifdef OLD
-#define MAX_COLS 21
-#define MAX_ROWS 21
-const int cellWidth = screenWidth/MAX_COLS;
-const int cellHeight = screenWidth/MAX_COLS;
-#endif
-//----------------------------------------------------------------------------------
 // Global Variables Definition
-//----------------------------------------------------------------------------------
+
+//Screen definitions
 const int screenWidth = 1000;
 const int screenHeight = 1000;
 Camera2D camera = { 0 };
@@ -36,117 +27,88 @@ static AEDV xAEDV;
 static AEDV yAEDV;
 static AEDV zAEDV;
 
-
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 
 Tile **dynamicMap;
 
-//----------------------------------------------------------------------------------
 // Main Entry Point
-//----------------------------------------------------------------------------------
-int main()
-{
-    // Initialization
-    //--------------------------------------------------------------------------------------
+
+int main() {
     //Allows Window Resizing (Doesn't affect the Grid Dimensions)
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-
-    //Disables INFO output in console window at startup
+    //Disables INFO output in console window at startup allows tracelogs to alert hard errors
     SetTraceLogLevel(LOG_ERROR);
-
     //Camera Settings to show whole picture
     camera.zoom = 0.94f;
     camera.target = (Vector2) {.x = -45, .y = -45};
-    
-    do {
-        printf("Default Test? (Y or N):");
-        scanf("%c", &defaultTest);
-
-        if(tolower(defaultTest) == 'y') {
-            maxAEDV = 1;
-            MAX_COLS = 21;
-            MAX_ROWS = 21;
-            cellHeight = screenWidth/MAX_COLS;
-            cellWidth = screenWidth/MAX_COLS;
-            printf("Dimensions of map defaulted to %d columns by %d rows\n", MAX_COLS, MAX_ROWS);
-            InitAEDV(listOfVehicles[0], 1, 0, 10, 12, 0);
-        }
-        else if(tolower(defaultTest) == 'n'){
-            printf("Number of buildings horizontally: ");
-            scanf("%d",&MAX_COLS);
-            printf("Number of buildings vertically: ");
-            scanf("%d",&MAX_ROWS);
-            printf("You inputted %d x %d buildings\n", MAX_COLS, MAX_ROWS);
-            MAX_COLS = MAX_COLS * 4 + 1;
-            MAX_ROWS = MAX_ROWS * 4 + 1;
-            printf("Equals %d x %d tiles\n", MAX_COLS, MAX_ROWS);
-            cellHeight = screenWidth/MAX_COLS;
-            cellWidth = screenWidth/MAX_COLS;
-            AEDVInput();
-
-        }
-    //Stored In while loop to allow for bad inputs to be rectified
-    } while((tolower(defaultTest) != 'y') && (tolower(defaultTest) != 'n'));
-#ifdef DEBUG //Testing of isValidDestination function
-
-#endif
+    //adjusting frame target will speed up operation of the navigation screen , recommended is 10 or less
+    //although higher is possible
     int frameTarget = 10;
+    //Initialization Functions
+    SetupInitialConditions();
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
 
-    //--------------------------------------------------------------------------------------
     // Main simulation loop
-    while (!WindowShouldClose())    // Detect window close button or ESC key
+    while (!WindowShouldClose())   // Detect window close button or ESC key
     {
-
         CameraControl();
         UpdateDrawFrame();
-
     }
     // De-Initialization
-    //--------------------------------------------------------------------------------------
-    CloseWindow();        // Close window and OpenGL context
-    //--------------------------------------------------------------------------------------
+    // Close window and OpenGL context
+    CloseWindow();
+    free(dynamicMap);
     return 0;
 }
-
-//----------------------------------------------------------------------------------
 // Module Functions Definition
-//----------------------------------------------------------------------------------
+void UpdateDrawFrame(void) {
+    // Allows user to press F to input new destination for an AEDV
+    if(GetKeyPressed() == KEY_F) {
+        AssignNewOrders();
+    }
+    // begins drawing a new frame
+    BeginDrawing();
+    ClearBackground(BLACK);
+    BeginMode2D(camera);
+    // Draw the map into the window using tile data generated in main
+    UpdateMap();
+    // begin navigation
+    for (int i = 0; i < maxAEDV; ++i) {
+       //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
+       MapNavigation(listOfVehicles[i]);
+    }
+    EndDrawing();
+}
 
-void UpdateDrawFrame(void)
-{
-    //----------------------------------------------------------------------------------
-    // Raylib Functions:
+
+/* Initialization and Assigment Functions */
+void AssignNewOrders() {
+    int AEDVNum, tempDestX, tempDestY, AEDVIndex;
+    printf("Enter AEDV EVIN: ");
+    scanf("%d", &AEDVNum);
+    printf("You entered %d\n", AEDVNum);
+    AEDVIndex = AEDVNum - 10000;
+    if(AEDVIndex > maxAEDV-1) {
+        printf("Invalid AEDV Number (Out of Bounds \n)");
+    }
+    else {
+        printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[AEDVIndex]->EVIN);
+        scanf("%d %d", &tempDestX,&tempDestY);
+        if(isValidDestination(tempDestX, tempDestY)) {
+            listOfVehicles[AEDVIndex]->destination.x = tempDestX;
+            listOfVehicles[AEDVIndex]->destination.y = tempDestY;
+            listOfVehicles[AEDVIndex]->currStatus = TRANSIT;
+            return;
+        }
+        else
+            printf("Invalid Destination, F again to reorder\n");
+    }
+    //Waits until all AEDV's are idle before prompting user to give new directions
+#ifdef AUTOORDERS
     int count = 0;
     //Check the amount of IDLE AEDV's
-#define MANUALORDER
-#ifdef MANUALORDER
-    if(GetKeyPressed() == KEY_F) {
-        int AEDVNum, tempDestX, tempDestY, AEDVIndex;
-        printf("Enter AEDV EVIN: ");
-        scanf("%d", &AEDVNum);
-        printf("You entered %d\n", AEDVNum);
-        AEDVIndex = AEDVNum - 10000;
-        if(AEDVIndex > maxAEDV-1) {
-            printf("Invalid AEDV Number (Out of Bounds \n)");
-        }
-        else {
-            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[AEDVIndex]->EVIN);
-            scanf("%d %d", &tempDestX,&tempDestY);
-            if(isValidDestination(tempDestX, tempDestY)) {
-                listOfVehicles[AEDVIndex]->destination.x = tempDestX;
-                listOfVehicles[AEDVIndex]->destination.y = tempDestY;
-                listOfVehicles[AEDVIndex]->currStatus = TRANSIT;
-                return;
-            }
-            else
-                printf("Invalid Destination, F again to reorder\n");
-        }
-    }
-#endif
-#ifdef AUTOORDERS
     while(listOfVehicles[count]->currStatus==UNLOADING) {
         count++;
     }
@@ -166,63 +128,28 @@ void UpdateDrawFrame(void)
         }
     }
 #endif
-#ifdef OLD1 //Old assignment of new destinations
-    //If every AEDV is unlaoding then we can go ahead and input all their new destinations
-    for (int i = 0; count == maxAEDV && i < 4; ++i) {
-        if(listOfVehicles[i]->currStatus == UNLOADING) {
-
-            printf("Enter New Destination for AEDV[%d]: ", listOfVehicles[i]->EVIN);
-            scanf("%d %d", &listOfVehicles[i]->destination.x,&listOfVehicles[i]->destination.y);
-            listOfVehicles[i]->currStatus = TRANSIT;
-        }
-    }
-#endif
-    BeginDrawing();
-    ClearBackground(BLACK);
-    BeginMode2D(camera);
-    //Draw the map into the window using tile data generated in main
-    for (int CURR_COL = 0; CURR_COL < MAX_COLS; ++CURR_COL) {
-        for(int CURR_ROW = 0; CURR_ROW < MAX_ROWS; ++CURR_ROW) {
-            if(CURR_COL == 0) {
-                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, 20, WHITE);
-            }
-            if(CURR_ROW == 0) {
-                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, 20, WHITE);
-            }
-            DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
-        }
-    }
-
-    //begin navigation
-    for (int i = 0; i < maxAEDV; ++i) {
-       //OneWayNavigation(listOfVehicles[i]);
-       MapNavigation(listOfVehicles[i]);
-    }
-
-
-    EndDrawing();
-    //----------------------------------------------------------------------------------
 }
 void AEDVInput() {
     int tempCordX, tempCordY,tempDestX, tempDestY;
-    printf("Number of AEDV's (1-4): ");
-    scanf("%d", &maxAEDV);
-    if(maxAEDV < 1) {
-        TraceLog(LOG_ERROR, "No AEDV :(");
-        exit(-1);
-    }
-    if(maxAEDV > 4) {
-        TraceLog(LOG_ERROR, "Can't have more than 4 AEDV's :(");
-        exit(-1);
-    }
+    do {
+        printf("Number of AEDV's (1-4): ");
+        scanf("%d", &maxAEDV);
+        if(maxAEDV < 1) {
+            printf("No AEDV's to assign orders\n");
+        }
+        if(maxAEDV > 4) {
+            printf("Too many AEDV's to assign\n");
+        }
+    }while(maxAEDV > 4 || maxAEDV < 1);
 
     for (int i = 0; i < maxAEDV; ++i) {
+        do {
         printf("Input starting location of AEDV [1000%d] x, y: ", i);
         scanf("%d %d", &tempCordX, &tempCordY);
         if(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS) {
-            TraceLog(LOG_ERROR, "Starting Out of Bounds");
-            exit(-1);
+            printf("Starting Out of Bounds\n");
         }
+        }while(tempCordX < 0 || tempCordX > MAX_COLS || tempCordY < 0 || tempCordY > MAX_ROWS);
 
         do {
             printf("Input destination of AEDV [1000%d] x, y: ", i);
@@ -230,7 +157,6 @@ void AEDVInput() {
             if(!isValidDestination(tempDestX, tempDestY))
                 printf("Invalid destination\n");
         } while(!isValidDestination(tempDestX, tempDestY));
-
 
         InitAEDV(listOfVehicles[i], tempCordX, tempCordY, tempDestX, tempDestY, i);
     }
@@ -262,6 +188,38 @@ void CameraControl() {
         camera.zoom += (wheel*zoomIncrement);
         if(camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
     }
+}
+
+void SetupInitialConditions() {
+    do {
+        printf("Default Test? (Y or N):");
+        scanf("%c", &defaultTest);
+
+        if(tolower(defaultTest) == 'y') {
+            maxAEDV = 1;
+            MAX_COLS = 21;
+            MAX_ROWS = 21;
+            cellHeight = screenWidth/MAX_COLS;
+            cellWidth = screenWidth/MAX_COLS;
+            printf("Dimensions of map defaulted to %d columns by %d rows\n", MAX_COLS, MAX_ROWS);
+            InitAEDV(listOfVehicles[0], 1, 0, 10, 12, 0);
+        }
+        else if(tolower(defaultTest) == 'n'){
+            printf("Number of buildings horizontally: ");
+            scanf("%d",&MAX_COLS);
+            printf("Number of buildings vertically: ");
+            scanf("%d",&MAX_ROWS);
+            printf("You inputted %d x %d buildings\n", MAX_COLS, MAX_ROWS);
+            MAX_COLS = MAX_COLS * 4 + 1;
+            MAX_ROWS = MAX_ROWS * 4 + 1;
+            printf("Equals %d x %d tiles\n", MAX_COLS, MAX_ROWS);
+            cellHeight = screenWidth/MAX_COLS;
+            cellWidth = screenWidth/MAX_COLS;
+            AEDVInput();
+
+        }
+        //Stored In while loop to allow for bad inputs to be rectified
+    } while((tolower(defaultTest) != 'y') && (tolower(defaultTest) != 'n'));
 }
 #ifdef OLD
 void DrawMap(Tile tile) {

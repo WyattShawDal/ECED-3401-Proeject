@@ -1,12 +1,15 @@
 /**
-* Author: Wyatt Shaw & Cameron Archibald
- * Date 2023-10-30
+ * Author: Wyatt Shaw & Cameron Archibald
+ * Date: October 31st 2023
  * Module Info: Contains function definitions for moving vehicles around the map.
 */
 
 #include "dependencies.h"
 
 #ifdef TWOWAY
+
+
+
 void StreetMovement(AEDV *vehicle, int direction) {
     DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
     if(direction == EAST) {
@@ -26,27 +29,23 @@ void AvenueMovement(AEDV *vehicle, int direction) {
 void MapNavigation(AEDV * vehicle) {
     int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
     int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
+
     if(vehicle->currStatus == TRANSIT) printf("AEDV [%d] currently at %d, %d --- Navigating to %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
     else if(vehicle->currStatus == UNLOADING) printf("AEDV [%d] arrived at destination %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
+
     if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
         vehicle->currStatus = UNLOADING;
-
         DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, GREEN);
         return;
     }
     //Delivering to an Avenue
     if(destinationTile == AVENUE || destinationTile == AVENUE_N || destinationTile == AVENUE_S || destinationTile == JUNCTION) {
-
         //at a junction at the wrong x OR on a street, move in the direction that decreases distance
         if((currentTile == JUNCTION && (vehicle->position.x != vehicle->destination.x)) || (currentTile == STREET || currentTile == STREET_E || currentTile == STREET_W)) {
-            int direction = (vehicle->destination.x > vehicle->position.x) ? EAST : WEST;
-            StreetMovement( vehicle, direction);
-#ifdef TEMP_1101
             if(vehicle->destination.x > vehicle->position.x)
                 StreetMovement(vehicle, EAST);
             else
                 StreetMovement(vehicle, WEST);
-#endif
         }
         //at a junction with the correct x value, now move north or south to decrease distance
         else if(currentTile == JUNCTION) {
@@ -110,7 +109,6 @@ void MapNavigation(AEDV * vehicle) {
         }
     }
 }
-
 #endif
 
 #ifdef OLD

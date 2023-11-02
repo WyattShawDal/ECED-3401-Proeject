@@ -29,7 +29,7 @@ endif()
 # Our Project
 
 add_executable(${PROJECT_NAME} main_operation.c
-        structs.h
+        typedefs.h
         dependencies.h
         navigation_functions.c
         map_operation.c
