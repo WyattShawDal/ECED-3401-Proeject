@@ -8,6 +8,7 @@
 #ifndef EXAMPLE_STRUCTS_H
 #define EXAMPLE_STRUCTS_H
 
+/* Enums */
 typedef enum Type {
     STREET = 0,
     STREET_E,
@@ -26,6 +27,11 @@ typedef enum Type {
 #endif
 }Tile_Type;
 
+typedef enum ScreenSetting {
+    NavigationMap,
+    InputScreen,
+    DiagnosticScreen
+}ScreenSetting;
 
 typedef enum Status {
     IDLE,
@@ -34,6 +40,7 @@ typedef enum Status {
     UNLOADING
 }AEDV_STATUS;
 
+/* Structs */
 typedef struct Coordinate {
     int x;
     int y;
@@ -56,5 +63,6 @@ typedef struct AEDV {
     AEDV_STATUS currStatus;
 
 }AEDV;
+
 
 #endif //EXAMPLE_STRUCTS_H

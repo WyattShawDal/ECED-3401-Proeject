@@ -18,6 +18,7 @@
 #include "raymath.h" // required by raylib.h
 #include "rlgl.h" //required by raylib.h
 #include "typedefs.h" // included for function prototypes
+#include "raygui.h" // included for alt screen buttons and boxes
 #include <ctype.h> // included for tolower
 
 #include <malloc.h> // included for dynamic allocation using malloc
@@ -147,5 +148,8 @@ void SetupInitialConditions();
 void UpdateMap();
 
 void AssignNewOrders();
+
+void UpdateInputScreen();
+
 
 #endif //EXAMPLE_DEPENDENCIES_H

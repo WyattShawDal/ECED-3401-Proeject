@@ -33,6 +33,8 @@ add_executable(${PROJECT_NAME} main_operation.c
         dependencies.h
         navigation_functions.c
         map_operation.c
+        raygui.h
+        raygui.c
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

@@ -31,6 +31,8 @@ AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 
 Tile **dynamicMap;
 
+int frameCount = 0;
+
 // Main Entry Point
 
 int main() {
@@ -38,11 +40,15 @@ int main() {
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     //Disables INFO output in console window at startup allows tracelogs to alert hard errors
     SetTraceLogLevel(LOG_ERROR);
+    //Screen Settings
+    ScreenSetting currentScreen = NavigationMap;
+
     //Camera Settings to show whole picture
     camera.zoom = 0.94f;
     camera.target = (Vector2) {.x = -45, .y = -45};
     //adjusting frame target will speed up operation of the navigation screen , recommended is 10 or less
     //although higher is possible
+
     int frameTarget = 10;
     //Initialization Functions
     SetupInitialConditions();
@@ -54,7 +60,18 @@ int main() {
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
         CameraControl();
-        UpdateDrawFrame();
+
+        switch (currentScreen) {
+            case NavigationMap:
+
+                UpdateDrawFrame();
+                printf("Time: %f , Frame: %d\n", GetTime(), frameCount);
+                break;
+            case InputScreen:
+                printf("Time: %f , Frame # : %d\n", GetTime(), frameCount);
+                //UpdateInputScreen();
+                break;
+        }
     }
     // De-Initialization
     // Close window and OpenGL context
@@ -70,15 +87,19 @@ void UpdateDrawFrame(void) {
     }
     // begins drawing a new frame
     BeginDrawing();
-    ClearBackground(BLACK);
-    BeginMode2D(camera);
-    // Draw the map into the window using tile data generated in main
-    UpdateMap();
-    // begin navigation
-    for (int i = 0; i < maxAEDV; ++i) {
-       //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
-       MapNavigation(listOfVehicles[i]);
-    }
+        //functions indented because they are tied directly to the behaviour of BeginDrawing and EndDrawing
+        BeginMode2D(camera);
+
+        ClearBackground(BLACK);
+        // Draw the map into the window using tile data generated in main
+        UpdateMap();
+        // begin navigation
+
+        for (int i = 0; i < maxAEDV; ++i) {
+           //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
+           MapNavigation(listOfVehicles[i]);
+        }
+
     EndDrawing();
 }
 
@@ -383,8 +404,36 @@ void setPerimeterRoads(int i, int j) {
     else if((i == 0 || i == MAX_COLS) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = AVENUE;
     }
+
     else if((j == 0 || j == MAX_ROWS) && dynamicMap[i][j].Type != JUNCTION) {
         dynamicMap[i][j].Type = STREET;
     }
+}
+#endif
+
+#ifdef InputScreenDisplay
+void UpdateInputScreen() {
+    BeginDrawing();
+    ClearBackground(BLACK);
+    int tempWidth = GetScreenWidth();
+    //200 is magic number for trying to center but we'll need to do some math to figure out the size of the text int the screen
+    DrawText("Input Navigation Info Below", tempWidth/2-200, 10, 30, WHITE);
+
+    //417 is also magic number, do more math or something idk
+    Rectangle back  = {tempWidth/2-200,  60, 415, 10 };
+    DrawRectangleRec(back, WHITE);
+    //Rectangle valueBox1 = {40, 200, 100, 25};
+    Rectangle valueBox2 = {tempWidth/2-200, 80, 100, 150};
+    // sets value of pointer to the desired value
+    static char message[10];
+    char* text = message;
+    //int xVal , yVal;
+    //GuiValueBox(valueBox1, "X Cord", &xVal, 0, MAX_COLS, true);
+    GuiTextInputBox(valueBox2, "AEDV Order", message,"Reset;Done", text, 10, false);
+    //parse data using text
+    //printf("Time: %f; Text Box: %s\n",GetTime(), text);
+
+    EndDrawing();
+
 }
 #endif
