@@ -1,0 +1,39 @@
+/*
+ *Author: Wyatt on 
+ *Created on: 2023-11-12
+*/
+
+#ifndef EXAMPLE_INITS_H
+#define EXAMPLE_INITS_H
+#include "dependencies.h"
+void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
+/**
+ * @brief initializes values of the tiles in the map
+ * @note Uses setPerimeterRoads() and setInternalTiles()
+ */
+void InitTiles();
+/**
+ * @brief sets the values of the boundary roads (either two way roads or junctions)
+ * @param i col
+ * @param j row
+ */
+void setPerimeterRoads(int i, int j);
+/**
+ * @brief sets the value of the internal tiles according to road directions set
+ * @param i
+ * @param j
+ * @param firstStreetDirection
+ * @param firstAvenueDirection
+ */
+void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
+/**
+* @brief  the size of the map array using the input rows and columns
+*/
+void allocDynamicMap();
+
+void SetupInitialConditions();
+void AEDVInput();
+/**
+ * @brief populates AEDV struct with inital values
+ */
+#endif //EXAMPLE_INITS_H

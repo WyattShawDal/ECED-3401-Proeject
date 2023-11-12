@@ -29,7 +29,9 @@ typedef enum Type {
 
 typedef enum Status {
     IDLE,
+    PICKUP,
     TRANSIT,
+    DELIVERING,
     RECHARGING,
     UNLOADING
 }AEDV_STATUS;
@@ -49,6 +51,10 @@ typedef struct Tile {
 typedef struct AEDV {
     int EVIN;
     int junctionToTry;
+    int distanceTravelled;
+    int currentCharge;
+    int maxCharge;
+    int chargeRate;
     Cord position;
     Cord destination;
     Vector2 drawSize;

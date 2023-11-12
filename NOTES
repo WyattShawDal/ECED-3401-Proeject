@@ -1,8 +1,4 @@
-TODO'S FOR MONDAY
- - Testing
-
-
-TODO's LONG TERM
+TODO's TASK 6
  - Optimize One Way Pathing
   - Update Building Generation (NE, N, NW ...) (ON HOLD)
      - Nice to have Building Type (Stable, Charger, Both)
@@ -11,6 +7,3 @@ TODO's LONG TERM
   - Add user input for consecutive deliveries (AddNewDelivery())
      - User should type in new coordinates and AEDV should then begin to move
 
-
-TESTS:
-If vehicles arrive at the same time, no arrival message is displayed.

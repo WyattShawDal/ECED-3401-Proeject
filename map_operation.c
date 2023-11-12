@@ -11,16 +11,19 @@ void allocDynamicMap() {
     dynamicMap = (Tile**) malloc(MAX_COLS * sizeof (Tile));
     if(dynamicMap == NULL){
         TraceLog(LOG_ERROR, "ERROR ALLOCATING ROW MEMORY FOR MAP");
+        //If heap memory is exceeded, trying to rectify garbage is more trouble than it's worth. Exit
         exit (-1);
     }
     for (int i = 0; i < MAX_COLS; ++i) {
         dynamicMap[i] = (Tile*) malloc(MAX_ROWS * sizeof (Tile));
         if(dynamicMap[i] == NULL) {
             TraceLog(LOG_ERROR, "ERROR ALLOCATING ROW MEMORY FOR MAP");
+            //If heap memory is exceeded, trying to rectify garbage is more trouble than it's worth. Exit
             exit (-1);
         }
     }
 }
+
 void DrawMap(Tile tile) {
     int CURR_COL = tile.location.x;
     int CURR_ROW = tile.location.y;
@@ -30,7 +33,7 @@ void DrawMap(Tile tile) {
     switch(currentType) {
         case BUILDING:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
-            DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, 20, WHITE);
+            DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, DEFAULTFONTSIZE, WHITE);
             break;
         case JUNCTION:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
@@ -38,25 +41,25 @@ void DrawMap(Tile tile) {
         case AVENUE_N:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, RED);
             if(CURR_ROW == 1) {
-                DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+                DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case AVENUE_S:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
             if(CURR_ROW == 1) {
-                DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, 20, WHITE);
+                DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case STREET_E:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, PINK);
             if(CURR_COL == 1) {
-                DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+                DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case STREET_W:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
             if(CURR_COL == 1) {
-                DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, 20, WHITE);
+                DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case AVENUE:
@@ -208,11 +211,11 @@ void UpdateMap() {
         for(int CURR_ROW = 0; CURR_ROW < MAX_ROWS; ++CURR_ROW) {
             //Draws the Row Counter to the left of the map
             if(CURR_COL == 0) {
-                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, 20, WHITE);
+                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, DEFAULTFONTSIZE, WHITE);
             }
             //Draws the Column Counter above the map
             if(CURR_ROW == 0) {
-                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, 20, WHITE);
+                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, DEFAULTFONTSIZE, WHITE);
             }
             //Fills in the given cell
             DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
