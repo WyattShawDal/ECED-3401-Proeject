@@ -24,7 +24,7 @@ static AEDV yAEDV;
 static AEDV zAEDV;
 /* TODO update this to linked list :) */
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
-AEDV_Node ** ActiveList;
+Node * ActiveList = NULL;
 Tile **dynamicMap;
 
 // Main Entry Point
@@ -38,7 +38,7 @@ int main() {
     camera.target = (Vector2) {.x = -DEFAULTOFFSET, .y = -DEFAULTOFFSET};
     //adjusting frame target will speed up operation of the navigation screen , recommended is 10 or less
     //although higher is possible
-    int frameTarget = 10;
+    int frameTarget = 10; //each tick is .1 seconds
     //Initialization Functions
     SetupInitialConditions();
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm

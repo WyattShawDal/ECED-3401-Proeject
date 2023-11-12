@@ -1,7 +1,7 @@
 /*
  *Author: Wyatt Shaw 
  *Created on: 2023-11-12
- *Module Info:
+ *Module Info: Contains Frame and Camera update functions, which make the core "loop" functions declared in main
 */
 #include "dependencies.h"
 // Module Functions Definition
@@ -17,10 +17,15 @@ void UpdateDrawFrame(void) {
     // Draw the map into the window using tile data generated in main
     UpdateMap();
     // begin navigation
-    for (int i = 0; i < maxAEDV; ++i) {
-        //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
-        MapNavigation(listOfVehicles[i]);
+    Node* curr = ActiveList;
+    while(curr != NULL) {
+        MapNavigation(&(curr->data));
+        curr = curr->next;
     }
+//    for (int i = 0; i < maxAEDV; ++i) {
+//        //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
+//        MapNavigation(listOfVehicles[i]);
+//    }
     EndDrawing();
 }
 
@@ -35,11 +40,11 @@ void CameraControl() {
         camera.target = Vector2Add(camera.target, delta);
     }
     float wheel = GetMouseWheelMove();
-    if(wheel != 0) {
+    if(wheel != NOMOVEMENT) {
         Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), camera);
         camera.offset = GetMousePosition();
         camera.target = mouseWorldPos;
-        const float zoomIncrement = 0.125f;
+        const float zoomIncrement = 0.125f; //float value to adjust the level of zoom
 
         camera.zoom += (wheel*zoomIncrement);
         if(camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;

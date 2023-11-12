@@ -1,7 +1,7 @@
 /*
  *Author: Wyatt Shaw 
  *Created on: 2023-11-12
- *Module Info:
+ *Module Info: Contains functions that handle the initialization/assignments of AEDVs and their Orders
 */
 #include "dependencies.h"
 void AssignNewOrders() {
@@ -103,9 +103,9 @@ void SetupInitialConditions() {
             cellHeight = screenWidth/MAX_COLS;
             cellWidth = screenWidth/MAX_COLS;
             printf("Dimensions of map defaulted to %d columns by %d rows\n", MAX_COLS, MAX_ROWS);
-//#define LLTest
+#define LLTest
 #ifdef LLTest
-            AddToListBeginning(ActiveList, 0, 0, 10, 12, EVINBASE);
+            AddToListBeginning(&ActiveList, 0, 0, 10, 12, 0);
 #else
             InitAEDV(listOfVehicles[0], 1, 0, 10, 12, 0);
 #endif

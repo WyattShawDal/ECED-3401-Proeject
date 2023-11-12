@@ -1,12 +1,12 @@
 /*
  *Author: Wyatt Shaw 
  *Created on: 2023-11-12
- *Module Info:
+ *Module Info: Contains linked list function definitions
 */
 #include "dependencies.h"
 
-void AddToListBeginning(AEDV_Node** listRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
-    AEDV_Node* new_vehicle = malloc(sizeof(AEDV_Node));
+void AddToListBeginning(Node** listRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
+    Node* new_vehicle = malloc(sizeof(Node));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
         exit(-1);
@@ -20,4 +20,7 @@ void AddToListBeginning(AEDV_Node** listRoot, int locationX, int locationY, int 
 
     new_vehicle->next = *listRoot;
     *listRoot = new_vehicle;
+}
+void SwapBetweenLists(Node** List1, Node** List2, Node* SwapNode) {
+
 }

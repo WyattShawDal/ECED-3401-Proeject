@@ -37,6 +37,7 @@
     #define DEFAULTFONTSIZE 20
     //others
     #define EVINBASE 10000
+    #define NOMOVEMENT 0
 
 /* Global Externs */
 extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
@@ -45,18 +46,7 @@ extern AEDV *listOfVehicles[4];
 extern const int screenWidth;
 extern const int screenHeight;
 extern Camera2D camera;
-extern AEDV_Node ** ActiveList;
-
-
-/**
- * @brief function takes user input and then calls InitAEDV to assign provided values
- */
-
-
-
-
-
-
+extern Node * ActiveList;
 
 
 #endif //EXAMPLE_DEPENDENCIES_H
