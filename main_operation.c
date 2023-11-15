@@ -25,6 +25,7 @@ static AEDV zAEDV;
 /* TODO update this to linked list :) */
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 Node * ActiveList = NULL;
+Node * InactiveList = NULL;
 Tile **dynamicMap;
 
 // Main Entry Point
@@ -41,6 +42,21 @@ int main() {
     int frameTarget = 10; //each tick is .1 seconds
     //Initialization Functions
     SetupInitialConditions();
+    SwapBetweenLists(ActiveList, InactiveList, 10000);
+#define LLTest3
+#ifdef LLTest3 //tests the searching function
+    while(1) {
+        int code;
+        printf("Enter desired AEDV code: ");
+        scanf("%d", &code);
+        Node* nodal = FindInList(InactiveList, code);
+        if(nodal == NULL)
+            printf("NULL\n");
+        else
+            printf("Found: %d %d\n", nodal->data.position.x, nodal->data.position.y);
+    }
+#endif
+
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second

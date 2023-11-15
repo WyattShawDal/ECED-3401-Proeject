@@ -21,6 +21,58 @@ void AddToListBeginning(Node** listRoot, int locationX, int locationY, int desti
     new_vehicle->next = *listRoot;
     *listRoot = new_vehicle;
 }
-void SwapBetweenLists(Node** List1, Node** List2, Node* SwapNode) {
 
+
+
+void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN) {
+    Node* prev = NULL;
+    Node* curr = Origin;
+    bool found = false;
+    while(curr->next != NULL) {
+        if(curr->data.EVIN == SwapEVIN) {
+            found = true;
+            break;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+    Node* temp = curr;
+    temp->next = Destination;
+    Destination = temp;
+    if((!found) && (prev != NULL)) {
+        prev->next = NULL;
+        //node is at the end (curr)
+    }
+    else if(prev == NULL) {
+        Origin = curr->next;
+        //node is at the start (curr)
+    }
+    else {
+        prev->next = curr->next;
+        //node is in the middle (curr)
+    }
+    Node* ne = Destination;
+    Node* old = Origin;
+}
+
+void MoveToListBeginning(Node** listRoot, Node* addNode) {
+
+}
+
+Node* FindInList(Node* listRoot, int identifierCode) {
+    Node* curr = listRoot;
+    bool found = false;
+
+    while(curr->next != NULL) {
+        if(curr->data.EVIN == identifierCode) {
+            found = true; //curr now points to the node with the given identifier code.
+            break;
+        }
+        curr = curr->next;
+    }
+    if((!found) && (curr->data.EVIN == identifierCode))
+        found = true; //checks if the value lies at either the last node, or the only node of a 1 list.
+
+    if(found) return curr;
+    else return NULL;
 }

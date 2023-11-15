@@ -47,6 +47,7 @@ extern const int screenWidth;
 extern const int screenHeight;
 extern Camera2D camera;
 extern Node * ActiveList;
+extern Node * InactiveList;
 
 
 #endif //EXAMPLE_DEPENDENCIES_H

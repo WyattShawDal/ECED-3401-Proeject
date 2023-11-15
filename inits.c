@@ -77,8 +77,13 @@ void AEDVInput() {
             if(!isValidDestination(tempDestX, tempDestY))
                 printf("Invalid destination\n");
         } while(!isValidDestination(tempDestX, tempDestY));
-
+#define LLTest2
+#ifdef LLTest2
+        AddToListBeginning(&ActiveList, tempCordX, tempCordY, tempDestX, tempDestY, i);
+#else
         InitAEDV(listOfVehicles[i], tempCordX, tempCordY, tempDestX, tempDestY, i);
+#endif
+
     }
 }
 
@@ -92,11 +97,12 @@ void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int
 }
 void SetupInitialConditions() {
     char defaultTest;
+    bool validCharacter = false;
     do {
         printf("Default Test? (Y or N):");
         scanf("%c", &defaultTest);
-
         if(tolower(defaultTest) == 'y') {
+            validCharacter = true;
             maxAEDV = 1;
             MAX_COLS = 21;
             MAX_ROWS = 21;
@@ -111,6 +117,7 @@ void SetupInitialConditions() {
 #endif
         }
         else if(tolower(defaultTest) == 'n'){
+            validCharacter = true;
             printf("Number of buildings horizontally: ");
             scanf("%d",&MAX_COLS);
             printf("Number of buildings vertically: ");
@@ -125,5 +132,5 @@ void SetupInitialConditions() {
 
         }
         //Stored In while loop to allow for bad inputs to be rectified
-    } while((tolower(defaultTest) != 'y') && (tolower(defaultTest) != 'n'));
+    } while(!validCharacter);
 }

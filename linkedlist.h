@@ -12,7 +12,9 @@ typedef struct Node {
     struct Node *next;
 }Node;
 void AddToListBeginning(Node** ListRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode ); // Initialize AEDV at start of list
-void SwapBetweenLists(Node** List1, Node** List2, Node* SwapNode); //swap AEDV between Active/Inactive || Inactive/Active
+void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN); //swap AEDV between Active/Inactive || Inactive/Active
+void MoveToListBeginning(Node** listRoot, Node* addNode);
+Node* FindInList(Node* listRoot, int identifierCode);
 
 
 
