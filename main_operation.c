@@ -11,26 +11,34 @@
 #include "typedefs.h"
 
 /* Global Variables Definition */
-
+//File Pointers
+FILE* BuildingFileDescriptor;
 //Screen definitions
 const int screenWidth = 1000;
 const int screenHeight = 1000;
 Camera2D camera = { 0 };
+//Int Vars
 int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
 
+//Aedv's REMOVE
 static AEDV wAEDV;
 static AEDV xAEDV;
 static AEDV yAEDV;
 static AEDV zAEDV;
-/* TODO update this to linked list :) */
+
+//AEDV Lists
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 Node * ActiveList = NULL;
 Node * InactiveList = NULL;
+//Map
 Tile **dynamicMap;
 
 // Main Entry Point
 int main() {
     //Allows Window Resizing (Doesn't affect the Grid Dimensions)
+    OpenBinaryFile();
+    GenerateBuildFile();
+#ifdef Files
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     //Disables INFO output in console window at startup allows tracelogs to alert hard errors
     SetTraceLogLevel(LOG_ERROR);
@@ -43,7 +51,7 @@ int main() {
     //Initialization Functions
     SetupInitialConditions();
     SwapBetweenLists(ActiveList, InactiveList, 10000);
-#define LLTest3
+//#define LLTest3
 #ifdef LLTest3 //tests the searching function
     while(1) {
         int code;
@@ -56,7 +64,6 @@ int main() {
             printf("Found: %d %d\n", nodal->data.position.x, nodal->data.position.y);
     }
 #endif
-
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
@@ -70,9 +77,11 @@ int main() {
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();
+    //free rows, then free cols
     for (int i = 0; i < MAX_ROWS; ++i) {
         free(dynamicMap[i]);
     }
     free(dynamicMap);
+#endif
     return 0;
 }

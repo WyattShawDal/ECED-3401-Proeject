@@ -13,17 +13,27 @@
 //#define OLD //Functions from one-way experimenting
 //#define OLD1 //Fixed readability and efficiency by Cameron on 31st of October
 
+/* C Headers */
 #include "stdio.h" // included for regular c functionality printf, scanf etc
+#include "stdlib.h"
+#include <malloc.h> // included for dynamic allocation using malloc
+#include <ctype.h> // included for tolower
+#include "stdbool.h"
+#include <string.h>
+#include <io.h>
+#include <fcntl.h>     /* for _O_TEXT and _O_BINARY */
+/* Raylib Headers */
 #include "raylib.h" // included for graphical output
 #include "raymath.h" // required by raylib.h
 #include "rlgl.h" //required by raylib.h
+
+/* Project Headers */
 #include "typedefs.h" // included for function prototypes
-#include <ctype.h> // included for tolower
 #include "drawing.h" // included for functions that change the window
-#include "inits.h" // included for functions that run at startup
 #include "navigations.h" // inlcuded for functions that relate to the movement and navigation of AEDVs
+#include "inits.h" // included for functions that run at startup
 #include "linkedlist.h"
-#include <malloc.h> // included for dynamic allocation using malloc
+#include "files.h"
 
 /* Magic Number Defines */
     //directions
@@ -48,6 +58,6 @@ extern const int screenHeight;
 extern Camera2D camera;
 extern Node * ActiveList;
 extern Node * InactiveList;
-
+extern FILE* BuildingFileDescriptor;
 
 #endif //EXAMPLE_DEPENDENCIES_H
