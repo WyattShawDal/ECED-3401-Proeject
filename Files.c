@@ -6,15 +6,22 @@
 */
 
 #include "files.h"
-const char* GenFile = "GenFile.dat";
+const char* genFile = "genFile.dat";
+
 /**
  * @brief create a binary file for writing for generation
  *
  */
-int OpenBinaryFile() {
+int WriteBinaryFile() {
     //_set_fmode(_O_BINARY);
 
-    return (BuildingFileDescriptor = fopen(GenFile, "wb")) != NULL;
+    return (BuildingFileDescriptor = fopen(genFile, "wb")) != NULL;
+}
+
+int ReadBinaryFile() {
+
+    return (BuildingFileDescriptor = fopen(genFile, "rb")) != NULL;
+
 }
 
 void GenerateBuildFile() {
@@ -86,7 +93,7 @@ void GenerateBuildFile() {
 
     }
 
-    /* End with 0 0 */
+    /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
 
     fwrite(&xLength, sizeof(int), 1, BuildingFileDescriptor);
@@ -96,8 +103,6 @@ void GenerateBuildFile() {
 
     (void) getchar(); /* Eat last EOLN */
 }
-
-
 bool CheckDirectionChar(char direction) {
     char check = tolower(direction);
     switch (check) {
