@@ -41,11 +41,12 @@ typedef struct Coordinate {
     int y;
 } Cord;
 
+
 typedef struct Tile {
     Cord location;
     bool isOccupied;
     Tile_Type Type;
-
+    bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
 typedef struct AEDV {
@@ -62,5 +63,9 @@ typedef struct AEDV {
     AEDV_STATUS currStatus;
 
 }AEDV;
+
+
+
+
 
 #endif //EXAMPLE_STRUCTS_H

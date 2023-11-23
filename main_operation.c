@@ -27,6 +27,8 @@ AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 Node * ActiveList = NULL;
 Node * InactiveList = NULL;
 Tile **dynamicMap;
+queue * notVisitedQueue;
+queue * visitedQueue;
 
 // Main Entry Point
 int main() {
@@ -41,15 +43,71 @@ int main() {
     //although higher is possible
     int frameTarget = 10; //each tick is .1 seconds
     //Initialization Functions
+
+    //queueSetup(searchQueue);
+    notVisitedQueue = (queue*) malloc(sizeof(queue));
+    notVisitedQueue->front = NULL;
+    notVisitedQueue->rear = NULL;
+
+    visitedQueue = (queue*) malloc(sizeof(queue));
+    visitedQueue->front = NULL;
+    visitedQueue->rear = NULL;
+
+#define SEARCHTEST2
+#ifdef SEARCHTEST2
+    TileNode* tile;
+    Cord location;
+    char tmp;
+    while(1) {
+        printf("Enter x y to search or enqueue or clear:\n");
+        scanf("%d %d %c", &location.x, &location.y, &tmp);
+        if(tmp == 'e')
+            enQueue(location, notVisitedQueue);
+        else if(tmp == 's')
+            printf("Found if 1, not found if 0: %d\n",searchQueue(location, notVisitedQueue));
+        else if(tmp == 'c')
+            //emptyList(notVisitedQueue);
+        tile = notVisitedQueue->front;
+    }
+#endif
+
+
+
+
+//#define SEARCHTEST
+#ifdef SEARCHTEST
+    Cord coordinate;
+    coordinate.x = 0;
+    coordinate.y = 1;
+    enQueue(coordinate, searchQueue);
+    coordinate.x ++;
+    coordinate.y ++;
+    enQueue(coordinate, searchQueue);
+    deQueue(searchQueue);
+    queue* q = searchQueue;
+#endif
     SetupInitialConditions();
-    SwapBetweenLists(ActiveList, InactiveList, 10000);
-#define LLTest3
+//#define LLTest4 //Tests the swapping function
+#ifdef LLTest4
+    SwapBetweenLists(&ActiveList, &InactiveList, 10000);
+    SwapBetweenLists(&ActiveList, &InactiveList, 10001);
+    SwapBetweenLists(&ActiveList, &InactiveList, 10002);
+    SwapBetweenLists(&ActiveList, &InactiveList, 10003);
+    SwapBetweenLists(&InactiveList, &ActiveList, 10002);
+    //SwapBetweenLists(&InactiveList, &ActiveList, 10000);
+    //SwapBetweenLists(&InactiveList, &ActiveList, 10000);
+
+    Node* active = ActiveList;
+    Node* inactive = InactiveList;
+#endif
+    //SwapBetweenLists(&InactiveList, &ActiveList, 10000);
+//#define LLTest3
 #ifdef LLTest3 //tests the searching function
     while(1) {
         int code;
         printf("Enter desired AEDV code: ");
         scanf("%d", &code);
-        Node* nodal = FindInList(InactiveList, code);
+        Node* nodal = FindInList(ActiveList, code);
         if(nodal == NULL)
             printf("NULL\n");
         else

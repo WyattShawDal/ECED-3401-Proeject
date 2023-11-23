@@ -49,5 +49,13 @@ extern Camera2D camera;
 extern Node * ActiveList;
 extern Node * InactiveList;
 
+extern TileNode * queueFront;
+extern TileNode * queueRear;
+extern queue * notVisitedQueue;
+extern queue * visitedQueue;
+
+
+
+
 
 #endif //EXAMPLE_DEPENDENCIES_H

@@ -24,9 +24,9 @@ void AddToListBeginning(Node** listRoot, int locationX, int locationY, int desti
 
 
 
-void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN) {
+void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
     Node* prev = NULL;
-    Node* curr = Origin;
+    Node* curr = *Origin;
     bool found = false;
     while(curr->next != NULL) {
         if(curr->data.EVIN == SwapEVIN) {
@@ -36,21 +36,24 @@ void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN) {
         prev = curr;
         curr = curr->next;
     }
-    Node* temp = curr;
-    temp->next = Destination;
-    Destination = temp;
+
     if((!found) && (prev != NULL)) {
         prev->next = NULL;
         //node is at the end (curr)
     }
     else if(prev == NULL) {
-        Origin = curr->next;
+        *Origin = curr->next;
         //node is at the start (curr)
     }
     else {
         prev->next = curr->next;
         //node is in the middle (curr)
     }
+
+    Node* temp = curr;
+    temp->next = *Destination;
+    *Destination = temp;
+
     Node* ne = Destination;
     Node* old = Origin;
 }
@@ -76,3 +79,68 @@ Node* FindInList(Node* listRoot, int identifierCode) {
     if(found) return curr;
     else return NULL;
 }
+
+void queueSetup(queue* m) {
+    m = (queue*) malloc(sizeof(queue));
+    m->front = NULL;
+    m->rear = NULL;
+}
+
+
+void enQueue(Cord loc, queue* q) {
+    TileNode * new_tile = malloc(sizeof(TileNode));
+    if(q->front == NULL) {
+        q->front = new_tile;
+        q->rear = new_tile;
+    } else {
+        q->front->queuePrev = new_tile;
+        q->rear = new_tile;
+    }
+    new_tile->queuePrev = NULL;
+    new_tile->coordinate = loc;
+}
+
+void deQueue(queue* q) {
+    TileNode * temp = q->front;
+    q->front = q->front->queuePrev;
+    if(q->front == NULL) q->rear = NULL;
+    temp->queuePrev = NULL;
+}
+
+bool searchQueue(Cord loc, queue* q) {
+    TileNode* temp = q->front;
+    bool found = false;
+    if(temp != NULL) {
+        while(temp->queuePrev != NULL) {
+            if(temp->coordinate.x == loc.x && temp->coordinate.y == loc.y)
+                found = true;
+            temp = temp->queuePrev;
+        }
+        if(!found)
+            if(temp->coordinate.x == loc.x && temp->coordinate.y == loc.y)
+                found = true;
+    }
+    return found;
+}
+
+/*bool emptyList(queue* q) {
+    TileNode* temp = q->front;
+    TileNode* freeTemp;
+    bool wasEmpty = true;
+    if(temp != NULL) {
+        wasEmpty = false;
+        while(temp->queuePrev != NULL) {
+            freeTemp = temp;
+            temp = temp->queuePrev;
+            free(freeTemp);
+        }
+        free(temp);
+    }
+    return wasEmpty;
+}*/
+
+
+
+
+
+

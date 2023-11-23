@@ -6,6 +6,10 @@
 #ifndef EXAMPLE_INITS_H
 #define EXAMPLE_INITS_H
 #include "dependencies.h"
+
+#define NOT_TWO_WAY_ROW() ((j != 0) && (j != MAX_ROWS - 1))
+#define NOT_TWO_WAY_COL() ((i != 0) && (i != MAX_COLS - 1))
+
 void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
 /**
  * @brief initializes values of the tiles in the map
@@ -29,6 +33,9 @@ void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDir
 /**
 * @brief  the size of the map array using the input rows and columns
 */
+void setDirection(int i, int j);
+void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenueDirection);
+
 void allocDynamicMap();
 
 void SetupInitialConditions();
