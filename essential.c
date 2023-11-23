@@ -26,6 +26,7 @@ void UpdateDrawFrame(void) {
 //        //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
 //        MapNavigation(listOfVehicles[i]);
 //    }
+    frameCount++;
     EndDrawing();
 }
 

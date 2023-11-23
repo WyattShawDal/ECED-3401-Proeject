@@ -134,3 +134,20 @@ void SetupInitialConditions() {
         //Stored In while loop to allow for bad inputs to be rectified
     } while(!validCharacter);
 }
+
+void InitRoutine() {
+    /*Raylib Setup Settings */
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE); //allows window resizing
+    SetTraceLogLevel(LOG_ERROR); //allows for tracelog output for debugging/warnings
+    //Camera Settings to show whole map
+    camera.zoom = DEFAULTZOOM;
+    camera.target = (Vector2) {.x = -DEFAULTOFFSET, .y = -DEFAULTOFFSET};
+
+    int frameTarget = 50; //Amount of ticks/second
+    frameCount = 90;
+    //Initialization Functions
+    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
+    InitWindow(screenWidth, screenHeight, "AEDV Live Map"); //creates the window
+    SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
+    ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
+}

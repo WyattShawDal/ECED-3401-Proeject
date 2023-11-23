@@ -76,3 +76,22 @@ Node* FindInList(Node* listRoot, int identifierCode) {
     if(found) return curr;
     else return NULL;
 }
+
+void AddEvent(EventNode** root, EVENT Event) {
+    EventNode *newEvent = malloc(sizeof(EventNode));
+    if(newEvent == NULL) {
+        exit(-1);
+    }
+    newEvent->eventData = Event;
+    newEvent->nextEvent = NULL;
+    if(*root == NULL) {
+        newEvent->nextEvent = NULL;
+        *root = newEvent;
+        return;
+    }
+    EventNode* curr = *root;
+    while (curr->nextEvent != NULL) {
+        curr = curr->nextEvent;
+    }
+    curr->nextEvent = newEvent;
+}

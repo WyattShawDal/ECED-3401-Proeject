@@ -115,14 +115,16 @@ void DrawMap(Tile tile) {
 #endif
 }
 void InitTiles() {
-    allocDynamicMap();
-
     int firstStreetDirection, firstAvenueDirection;
-    printf("Input the direction of the first street (1 for E, 2 for W): ");
-    scanf("%d", &firstStreetDirection);
+    ReadBuildFile(&firstStreetDirection, &firstAvenueDirection);
 
-    printf("Input the direction of the first avenue: (4 for N, 5 for S): ");
-    scanf("%d", &firstAvenueDirection);
+
+    allocDynamicMap();
+//    printf("Input the direction of the first street (1 for E, 2 for W): ");
+//    scanf("%d", &firstStreetDirection);
+//
+//    printf("Input the direction of the first avenue: (4 for N, 5 for S): ");
+//    scanf("%d", &firstAvenueDirection);
 
     for (int i = 0; i < MAX_COLS; ++i) {
         for (int j = 0; j < MAX_ROWS; ++j) {

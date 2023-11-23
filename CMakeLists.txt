@@ -42,6 +42,8 @@ add_executable(${PROJECT_NAME} main_operation.c
         linkedlist.h
         Files.c
         files.h
+        events.c
+        events.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

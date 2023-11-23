@@ -7,68 +7,74 @@
 
 #include "files.h"
 const char* genFile = "genFile.dat";
+const char* eventFile = "eventFile.txt";
 
 /**
  * @brief create a binary file for writing for generation
  *
  */
-int WriteBinaryFile() {
+
+int OpenFile(Operation OPERATION, char* fileName) {
     //_set_fmode(_O_BINARY);
-
-    return (BuildingFileDescriptor = fopen(genFile, "wb")) != NULL;
+    if(OPERATION == WRITE_BINARY) {
+        return (FileDescriptor = fopen(fileName, "wb")) != NULL;
+    }
+    else if(OPERATION == READ_BINARY) {
+        return (FileDescriptor = fopen(fileName, "rb")) != NULL;
+    }
+    else if(OPERATION == WRITE_TEXT) {
+        return (FileDescriptor = fopen(fileName, "w")) != NULL;
+    }
+    else if(OPERATION == READ_TEXT) {
+        return (FileDescriptor = fopen(fileName, "r")) != NULL;
+    }
 }
 
-int ReadBinaryFile() {
-
-    return (BuildingFileDescriptor = fopen(genFile, "rb")) != NULL;
-
-}
-
+/* Building File Functions */
 void GenerateBuildFile() {
     int xLength, yLength;
-    char streetDirection, avenueDirection;
+    int streetDirection, avenueDirection;
     BUILDINGDATA building;
 
-
-    printf("Enter #X and #Y Buildings: _ _\n");
+    printf("Enter #X and #Y Buildings: ");
     (void) fscanf(stdin, "%d %d", &xLength, &yLength);
     (void) getchar(); /* Eat last EOLN */
 
     printf("You inputted %d x %d buildings\n", xLength, yLength);
-    fwrite(&xLength, sizeof(int), 1, BuildingFileDescriptor);
-    fwrite(&yLength, sizeof(int), 1, BuildingFileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
+    fwrite(&yLength, sizeof(int), 1, FileDescriptor);
 
     do {
-        printf("Enter Direction of first street (E/W): ");
-        fscanf(stdin, "%c", &streetDirection);
+        printf("Enter Direction of first street (1 for E, 2 for W): ");
+        fscanf(stdin, "%d", &streetDirection);
         (void) getchar(); /* Eat last EOLN */
 
-    }while(CheckDirectionChar(streetDirection) == false);
+    }while(!(streetDirection >= STREET_E && streetDirection <= STREET_W));
 
-    fwrite(&streetDirection, sizeof(char), 1, BuildingFileDescriptor);
+    fwrite(&streetDirection, sizeof(int), 1, FileDescriptor);
 
     do {
-        printf("Enter Direction of first street (N/S): ");
-        fscanf(stdin, "%c", &avenueDirection);
+        printf("Enter Direction of first street (4 for N, 5 for S): ");
+        fscanf(stdin, "%d", &avenueDirection);
         (void) getchar(); /* Eat last EOLN */
 
-    }while(CheckDirectionChar(avenueDirection) == false);
+    }while(!(avenueDirection >= AVENUE_N && avenueDirection <= AVENUE_S));
 
-    fwrite(&avenueDirection, sizeof(char), 1, BuildingFileDescriptor);
+    fwrite(&avenueDirection, sizeof(int), 1, FileDescriptor);
 
     printf("Enter Building's Row (<1 to break, 1 is first row): ");
     (void) fscanf(stdin, "%d", &building.location.x);
     (void) getchar(); /* Eat last EOLN */
 
     while(building.location.x > 0){
-        printf("Enter building's Y coordinate (>0)\n");
+        printf("Enter building's Column (<1 to break): ");
         (void) fscanf(stdin, "%d", &building.location.y);
         (void) getchar(); /* Eat last EOLN */
 
 
         do
         {
-            printf("Enter building type (Charge = 0; Stable = 1, Both = 2)\n");
+            printf("Enter building type (Charge = 0; Stable = 1, Both = 2): ");
             (void) fscanf(stdin, "%d", &building.type);
             (void) getchar(); /* Eat last EOLN */
 
@@ -77,7 +83,7 @@ void GenerateBuildFile() {
 
         do
         {
-            printf("Enter quad (N = 0, S = 1, E = 2, W = 3)\n");
+            printf("Enter quad (N = 0, S = 1, E = 2, W = 3): ");
             (void) fscanf(stdin, "%d", &building.quad);
             (void) getchar(); /* Eat last EOLN */
 
@@ -85,9 +91,9 @@ void GenerateBuildFile() {
         while (!(building.quad >= N && building.quad < INVALID_QUAD));
 
         /* Write the bldg_data to the file */
-        fwrite(&building, sizeof(building), 1, BuildingFileDescriptor);
+        fwrite(&building, sizeof(building), 1, FileDescriptor);
 
-        printf("Enter building's X coordinate (<=0 to stop); \n");
+        printf("Enter building's X coordinate (<=0 to stop): ");
         (void) fscanf(stdin, "%d", &building.location.x);
         (void) getchar(); /* Eat last EOLN */
 
@@ -96,38 +102,125 @@ void GenerateBuildFile() {
     /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
 
-    fwrite(&xLength, sizeof(int), 1, BuildingFileDescriptor);
-    fwrite(&xLength, sizeof(int), 1, BuildingFileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
 
-    fclose(BuildingFileDescriptor);
+    fclose(FileDescriptor);
 
     (void) getchar(); /* Eat last EOLN */
 }
-bool CheckDirectionChar(char direction) {
-    char check = tolower(direction);
-    switch (check) {
-        case 'n':
-            return true;
-        case 'e':
-            return true;
-        case 's':
-            return true;
-        case 'w':
-            return true;
-        default:
-            return false;
+
+void ReadBuildFile(int * streetDir, int * avenueDir) {
+    OpenFile(READ_BINARY, "GenerationFile.dat");
+    int xLength, yLength;
+    char streetDirection, avenueDirection;
+    BUILDINGDATA building;
+
+    fread(&xLength, sizeof(int), 1, FileDescriptor);
+    fread(&yLength, sizeof(int), 1, FileDescriptor);
+    MAX_COLS = xLength*4+1;
+    MAX_ROWS = yLength*4+1;
+    cellHeight = screenWidth/MAX_COLS;
+    cellWidth = screenWidth/MAX_COLS;
+    printf("You entered %d x %d, which forms %d Cols and %d Rows\n", xLength, yLength, MAX_COLS, MAX_ROWS);
+
+    fread(streetDir, sizeof(int), 1, FileDescriptor);
+    fread(avenueDir, sizeof(int), 1, FileDescriptor);
+
+    if(*streetDir == STREET_E) {
+        streetDirection = 'E';
     }
+    else {
+        streetDirection = 'W';
+    }
+    if(*avenueDir == AVENUE_S) {
+        avenueDirection = 'S';
+    }
+    else {
+        avenueDirection = 'N';
+    }
+
+    printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
+
+    fread(&building, sizeof(building), 1, FileDescriptor);
+    while (building.location.x > 0)
+    {
+        printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
+        /* Read next record */
+        fread(&building, sizeof(building), 1, FileDescriptor);
+    }
+    (void) getchar();
+    fclose(FileDescriptor);
 }
-bool CheckBuildingChar(char building) {
-    char check = tolower(building);
-    switch (check) {
-        case 'b':
-            return true;
-        case 's':
-            return true;
-        case 'c':
-            return true;
-        default:
-            return false;
+/*
+ * Event File is a sequential, tab seperated file. So, to read it we can just do normal reading procedures while parsing out data
+ */
+void ReadEventFile(char *fileName) {
+    char line[MAXSTRLEN];
+    char eventName;
+    int iteration = 0;
+    int time, origin, destination, weight;
+    EVENT currentEvent;
+    OpenFile(READ_TEXT, fileName);
+
+    while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
+        if(iteration == 0) {
+            printf("Header Values..\n");
+        }
+        else {
+            sscanf(line, "%d\t%c\t%d\t%d\t%d\t", &time, &eventName, &origin, &destination, &weight);
+
+            printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
+            currentEvent.time = time;
+            currentEvent.type = eventName;
+            currentEvent.originID = origin;
+            currentEvent.destinationID = destination;
+            currentEvent.weight = weight;
+            AddEvent(&EventList, currentEvent);
+        }
+        iteration++;
     }
+    (void) getchar();
+    fclose(FileDescriptor);
+}
+void ReadCustomerFile(int originCode, int destinationCode) {
+    Customer customerInfo;
+    OpenFile(READ_TEXT, "CustomerFile.txt");
+    int originGoal = originCode - CUSTOMERBASE;
+    int destinationGoal = destinationCode - CUSTOMERBASE;
+    int iteration = 0;
+    char line[sizeof(Customer)];
+
+    // Read and display each record sequentially
+    while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
+
+        if(iteration == originGoal+1) {
+            sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
+            printf(" CustNum: %d", customerInfo.custNum);
+            printf("  First Name: %s", customerInfo.firstName);
+            printf("  Last Name: %s", customerInfo.lastName);
+            printf("  Building: %s", customerInfo.building);
+            printf("  Entrance: %s", customerInfo.entrance);
+            printf("  Floor: %d\n", customerInfo.floor);
+        }
+        else if(iteration == destinationGoal+1) {
+            sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
+            printf(" CustNum: %d", customerInfo.custNum);
+            printf("  First Name: %s", customerInfo.firstName);
+            printf("  Last Name: %s", customerInfo.lastName);
+            printf("  Building: %s", customerInfo.building);
+            printf("  Entrance: %s", customerInfo.entrance);
+            printf("  Floor: %d\n", customerInfo.floor);
+        }
+        else {
+            //printf("Wrong Record..\n");
+        }
+        iteration++;
+        // Add other fields as needed
+
+    }
+
+    // Close the file
+    fclose(FileDescriptor);
+
 }

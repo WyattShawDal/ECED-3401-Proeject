@@ -12,13 +12,14 @@
 
 /* Global Variables Definition */
 //File Pointers
-FILE* BuildingFileDescriptor;
+FILE* FileDescriptor;
+
 //Screen definitions
 const int screenWidth = 1000;
 const int screenHeight = 1000;
 Camera2D camera = { 0 };
 //Int Vars
-int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight;
+int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 
 //Aedv's REMOVE
 static AEDV wAEDV;
@@ -30,47 +31,29 @@ static AEDV zAEDV;
 AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
 Node * ActiveList = NULL;
 Node * InactiveList = NULL;
+//Files Lists
+EventNode * EventList = NULL;
 //Map
 Tile **dynamicMap;
 
 // Main Entry Point
 int main() {
     //Allows Window Resizing (Doesn't affect the Grid Dimensions)
-    OpenBinaryFile();
-    GenerateBuildFile();
-#ifdef Files
-    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-    //Disables INFO output in console window at startup allows tracelogs to alert hard errors
-    SetTraceLogLevel(LOG_ERROR);
-    //Camera Settings to show whole picture
-    camera.zoom = DEFAULTZOOM;
-    camera.target = (Vector2) {.x = -DEFAULTOFFSET, .y = -DEFAULTOFFSET};
-    //adjusting frame target will speed up operation of the navigation screen , recommended is 10 or less
-    //although higher is possible
-    int frameTarget = 10; //each tick is .1 seconds
-    //Initialization Functions
-    SetupInitialConditions();
-    SwapBetweenLists(ActiveList, InactiveList, 10000);
-//#define LLTest3
-#ifdef LLTest3 //tests the searching function
-    while(1) {
-        int code;
-        printf("Enter desired AEDV code: ");
-        scanf("%d", &code);
-        Node* nodal = FindInList(InactiveList, code);
-        if(nodal == NULL)
-            printf("NULL\n");
-        else
-            printf("Found: %d %d\n", nodal->data.position.x, nodal->data.position.y);
+    printf("Do you want to generate a new map file? Y/N :");
+    char check;
+    fscanf(stdin, "%c", &check);
+    if(toupper(check) == 'Y') {
+        OpenFile(WRITE_BINARY, "GenerationFile.dat");
+        GenerateBuildFile();
     }
-#endif
-    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
-    InitWindow(screenWidth, screenHeight, "AEDV Live Map");
-    SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
-
+    else printf("Resuming operation with old map..");
+    InitRoutine();
+    EventNode *current = EventList; //create a pointer to linked list root
+    int eventTime = current->eventData.time;
     // Main simulation loop
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
+        if(frameCount == eventTime) eventTime = EventHandler(eventTime, &current);
         CameraControl();
         UpdateDrawFrame();
     }
@@ -82,6 +65,5 @@ int main() {
         free(dynamicMap[i]);
     }
     free(dynamicMap);
-#endif
     return 0;
 }

@@ -11,31 +11,14 @@
 
 #define TRUNCATE(name)	name[strlen(name)-1] = '\0'
 #define NAMELEN	16	/* Filename length */
+int OpenFile(Operation OPERATION, char* fileName);
 
-typedef enum EVENT_TYPE {
-    Delivery,
-    Construction,
-    Spawn
-}EV_Type;
-
-typedef struct event {
-
-    EV_Type Type;
-    int Time;
-    Cord Origin;
-    Cord Destination;
-    int weight;
-}EVENT;
-typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
-typedef enum QUAD { N, S, E, W, INVALID_QUAD }QUADRANT_TYPE;
-typedef struct bldg {
-    Cord location;
-    BUILDING_TYPE type;
-    QUADRANT_TYPE quad;
-}BUILDINGDATA;
-
-int OpenBinaryFile();
 void GenerateBuildFile();
+void ReadBuildFile(int * streetDir, int * avenueDir);
+void ReadEventFile(char *fileName);
+void ReadCustomerFile(int originCode, int destinationCode);
+
+
 
 bool CheckDirectionChar(char direction);
 bool CheckBuildingChar(char building);

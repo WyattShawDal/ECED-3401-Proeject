@@ -62,5 +62,33 @@ typedef struct AEDV {
     AEDV_STATUS currStatus;
 
 }AEDV;
+typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
+
+typedef struct event {
+    char type;
+    int time;
+    int originID;
+    int destinationID;
+    int weight;
+}EVENT;
+
+#define MAX_NAME_LENGTH 50
+typedef struct {
+
+    int custNum;
+    char firstName[MAX_NAME_LENGTH];
+    char lastName[MAX_NAME_LENGTH];
+    char building[MAX_NAME_LENGTH];
+    char entrance[MAX_NAME_LENGTH];
+    int floor;
+}Customer;
+typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
+typedef enum QUAD { N, S, E, W, INVALID_QUAD }QUADRANT_TYPE;
+typedef struct bldg {
+    Cord location;
+    BUILDING_TYPE type;
+    QUADRANT_TYPE quad;
+}BUILDINGDATA;
+
 
 #endif //EXAMPLE_STRUCTS_H
