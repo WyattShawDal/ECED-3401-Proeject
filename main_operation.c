@@ -9,6 +9,7 @@
 ********************************************************************************************/
 #include "dependencies.h"
 #include "typedefs.h"
+#include "one_way.h"
 
 /* Global Variables Definition */
 
@@ -44,29 +45,25 @@ int main() {
     int frameTarget = 10; //each tick is .1 seconds
     //Initialization Functions
 
-    //queueSetup(searchQueue);
-    notVisitedQueue = (queue*) malloc(sizeof(queue));
-    notVisitedQueue->front = NULL;
-    notVisitedQueue->rear = NULL;
 
-    visitedQueue = (queue*) malloc(sizeof(queue));
-    visitedQueue->front = NULL;
-    visitedQueue->rear = NULL;
 
-#define SEARCHTEST2
+//#define SEARCHTEST2
 #ifdef SEARCHTEST2
     TileNode* tile;
     Cord location;
     char tmp;
+
     while(1) {
-        printf("Enter x y to search or enqueue or clear:\n");
+        printf("Enter x y to search or enqueue or clear or dequeue:\n");
         scanf("%d %d %c", &location.x, &location.y, &tmp);
         if(tmp == 'e')
             enQueue(location, notVisitedQueue);
         else if(tmp == 's')
             printf("Found if 1, not found if 0: %d\n",searchQueue(location, notVisitedQueue));
         else if(tmp == 'c')
-            //emptyList(notVisitedQueue);
+            emptyList(notVisitedQueue);
+        else if(tmp == 'd')
+            deQueue(notVisitedQueue);
         tile = notVisitedQueue->front;
     }
 #endif
@@ -87,6 +84,7 @@ int main() {
     queue* q = searchQueue;
 #endif
     SetupInitialConditions();
+    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
 //#define LLTest4 //Tests the swapping function
 #ifdef LLTest4
     SwapBetweenLists(&ActiveList, &InactiveList, 10000);
@@ -115,7 +113,24 @@ int main() {
     }
 #endif
 
-    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
+    //queueSetup(searchQueue);
+    notVisitedQueue = (queue*) malloc(sizeof(queue));
+    notVisitedQueue->front = NULL;
+    notVisitedQueue->rear = NULL;
+
+    visitedQueue = (queue*) malloc(sizeof(queue));
+    visitedQueue->front = NULL;
+    visitedQueue->rear = NULL;
+
+
+
+    Cord startingLoc = {.x = 0, .y = 0};
+    Cord endingLoc = {.x = 19, .y = 0};
+
+    pathCalculation(startingLoc,endingLoc);
+
+
+
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
 

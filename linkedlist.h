@@ -19,9 +19,14 @@ Node* FindInList(Node* listRoot, int identifierCode);
 typedef struct TileNode {
     struct TileNode *parent;
     struct TileNode *queuePrev;
-    struct TileNode *visitedNext;
+    struct TileNode *visitedPrev;
     Cord coordinate;
 }TileNode;
+
+typedef struct InstructionNode {
+    struct InstructionNode *child;
+    Cord nextPosition;
+}InstructionNode;
 
 typedef struct queue {
     TileNode * front;
@@ -30,13 +35,15 @@ typedef struct queue {
 
 void queueSetup(queue* m);
 
-void enQueue(Cord loc, queue* q);
+void enQueue(TileNode* new_tile, TileNode* parent, queue* q, int visited);
 
-void deQueue(queue* q);
+void deQueue(queue* q, int visited);
 
 bool searchQueue(Cord loc, queue* q);
 
 bool emptyList(queue* q);
+
+TileNode* new_tile(Cord loc);
 
 
 

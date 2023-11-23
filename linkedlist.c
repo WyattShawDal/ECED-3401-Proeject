@@ -87,34 +87,34 @@ void queueSetup(queue* m) {
 }
 
 
-void enQueue(Cord loc, queue* q) {
-    TileNode * new_tile = malloc(sizeof(TileNode));
+void enQueue(TileNode* new_tile, TileNode* parent, queue* q, int visited) {
+    if(visited == NO) new_tile->parent = parent;
+
     if(q->front == NULL) {
         q->front = new_tile;
         q->rear = new_tile;
     } else {
-        q->front->queuePrev = new_tile;
+        visited == NO ? (q->rear->queuePrev = new_tile) : (q->rear->visitedPrev = new_tile);
         q->rear = new_tile;
     }
-    new_tile->queuePrev = NULL;
-    new_tile->coordinate = loc;
+    visited == NO ? (new_tile->queuePrev = NULL) : (new_tile->visitedPrev = NULL);
 }
 
-void deQueue(queue* q) {
+void deQueue(queue* q, int visited) {
     TileNode * temp = q->front;
-    q->front = q->front->queuePrev;
+    visited == NO ? (q->front = q->front->queuePrev) : (q->front = q->front->visitedPrev);
     if(q->front == NULL) q->rear = NULL;
-    temp->queuePrev = NULL;
+    visited == NO ? (temp->queuePrev = NULL) : (temp->visitedPrev = NULL);
 }
 
 bool searchQueue(Cord loc, queue* q) {
     TileNode* temp = q->front;
     bool found = false;
     if(temp != NULL) {
-        while(temp->queuePrev != NULL) {
+        while(temp->visitedPrev != NULL) {
             if(temp->coordinate.x == loc.x && temp->coordinate.y == loc.y)
                 found = true;
-            temp = temp->queuePrev;
+            temp = temp->visitedPrev;
         }
         if(!found)
             if(temp->coordinate.x == loc.x && temp->coordinate.y == loc.y)
@@ -123,7 +123,7 @@ bool searchQueue(Cord loc, queue* q) {
     return found;
 }
 
-/*bool emptyList(queue* q) {
+bool emptyList(queue* q) {
     TileNode* temp = q->front;
     TileNode* freeTemp;
     bool wasEmpty = true;
@@ -136,8 +136,16 @@ bool searchQueue(Cord loc, queue* q) {
         }
         free(temp);
     }
+    q->front = NULL;
+    q->rear = NULL;
     return wasEmpty;
-}*/
+}
+
+TileNode* new_tile(Cord loc) {
+    TileNode* tile = malloc(sizeof(TileNode));
+    tile->coordinate = loc;
+    return tile;
+}
 
 
 

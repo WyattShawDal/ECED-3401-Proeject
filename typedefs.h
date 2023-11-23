@@ -36,6 +36,11 @@ typedef enum Status {
     UNLOADING
 }AEDV_STATUS;
 
+typedef enum Visit {
+    NO,
+    YES
+}VISITED;
+
 typedef struct Coordinate {
     int x;
     int y;
