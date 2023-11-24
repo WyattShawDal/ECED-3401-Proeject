@@ -53,6 +53,12 @@ typedef struct Tile {
     Tile_Type Type;
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
+typedef struct order {
+    Cord pickupLocation;
+    Cord dropOffLocation;
+    int pickupFloor;
+    int dropFloor;
+}OrderData;
 
 typedef struct AEDV {
     int EVIN;
@@ -69,7 +75,46 @@ typedef struct AEDV {
 
 }AEDV;
 
+typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
 
+typedef struct event {
+    char type;
+    int time;
+    int originID;
+    int destinationID;
+    int weight;
+}EVENT;
+
+#define FIRSTNAMELEN 11
+#define LASTNAMELEN 16
+#define BUILDINGLEN 3 //Fits 2 chars + \000
+
+typedef struct {
+    int custNum;
+    char firstName[FIRSTNAMELEN];
+    char lastName[LASTNAMELEN];
+    char building[BUILDINGLEN];
+    char entrance[BUILDINGLEN];
+    int floor;
+}Customer;
+typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
+typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
+typedef struct bldg {
+    Cord location;
+    BUILDING_TYPE type;
+    QUADRANT_TYPE quad;
+}BUILDINGDATA;
+
+typedef struct prompt
+{
+    char* name;
+    enum QUAD code;
+} KeyPair;
+
+//KeyPair entranceQuadrant[] = {
+//        {"NE",NE}, {"N",N}, {"NW",NW},
+//        {"E",E}, {"LBL",-1}, {"W",W},
+//        {"SE",SE}, {"S",S}, {"SW",SW} };
 
 
 

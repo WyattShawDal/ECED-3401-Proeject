@@ -22,8 +22,6 @@ void AddToListBeginning(Node** listRoot, int locationX, int locationY, int desti
     *listRoot = new_vehicle;
 }
 
-
-
 void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
     Node* prev = NULL;
     Node* curr = *Origin;
@@ -61,7 +59,6 @@ void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
 void MoveToListBeginning(Node** listRoot, Node* addNode) {
 
 }
-
 Node* FindInList(Node* listRoot, int identifierCode) {
     Node* curr = listRoot;
     bool found = false;
@@ -78,6 +75,45 @@ Node* FindInList(Node* listRoot, int identifierCode) {
 
     if(found) return curr;
     else return NULL;
+}
+
+
+void AddEvent(EventNode** root, EVENT Event) {
+    EventNode *newEvent = malloc(sizeof(EventNode));
+    if(newEvent == NULL) {
+        exit(-1);
+    }
+    newEvent->eventData = Event;
+    newEvent->nextEvent = NULL;
+    if(*root == NULL) {
+        newEvent->nextEvent = NULL;
+        *root = newEvent;
+        return;
+    }
+    EventNode* curr = *root;
+    while (curr->nextEvent != NULL) {
+        curr = curr->nextEvent;
+    }
+    curr->nextEvent = newEvent;
+}
+//Adds order to end of the order list, so oldest is at head of list.
+void AddOrderToList(OrderNode** root, OrderData Event) {
+    OrderNode *newOrder = malloc(sizeof(EventNode));
+    if(newOrder == NULL) {
+        exit(-1);
+    }
+    newOrder->data = Event;
+    newOrder->nextOrder = NULL;
+    if(*root == NULL) {
+        newOrder->nextOrder = NULL;
+        *root = newOrder;
+        return;
+    }
+    OrderNode* curr = *root;
+    while (curr->nextOrder != NULL) {
+        curr = curr->nextOrder;
+    }
+    curr->nextOrder = newOrder;
 }
 
 void queueSetup(queue** m) {
@@ -181,9 +217,3 @@ TileNode* new_tile(Cord loc) {
     tile->coordinate = loc;
     return tile;
 }
-
-
-
-
-
-

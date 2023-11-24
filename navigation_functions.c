@@ -27,8 +27,8 @@ void MapNavigation(AEDV * vehicle) {
     int destinationTile = dynamicMap[vehicle->destination.x][vehicle->destination.y].Type;
     int currentTile = dynamicMap[vehicle->position.x][vehicle->position.y].Type;
 
-    if(vehicle->currStatus == TRANSIT) printf("AEDV [%d] currently at %d, %d --- Navigating to %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
-    else if(vehicle->currStatus == UNLOADING) printf("AEDV [%d] arrived at destination %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
+    //if(vehicle->currStatus == TRANSIT) printf("AEDV [%d] currently at %d, %d --- Navigating to %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
+    //else if(vehicle->currStatus == UNLOADING) printf("AEDV [%d] arrived at destination %d, %d\n", vehicle->EVIN, vehicle->position.x, vehicle->position.y, vehicle->destination.x, vehicle->destination.y );
 
     if((vehicle->destination.x == vehicle->position.x) && (vehicle->destination.y == vehicle->position.y)) {
         vehicle->currStatus = UNLOADING;

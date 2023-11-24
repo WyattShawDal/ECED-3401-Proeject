@@ -11,10 +11,24 @@ typedef struct Node {
     AEDV data;
     struct Node *next;
 }Node;
+
+typedef struct EventNode {
+    EVENT eventData;
+    struct EventNode *nextEvent;
+}EventNode;
+
+typedef struct OrderNode {
+    OrderData data;
+    struct OrderNode *nextOrder;
+}OrderNode;
 void AddToListBeginning(Node** ListRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode ); // Initialize AEDV at start of list
 void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN); //swap AEDV between Active/Inactive || Inactive/Active
 void MoveToListBeginning(Node** listRoot, Node* addNode);
 Node* FindInList(Node* listRoot, int identifierCode);
+void AddEvent(EventNode** root, EVENT Event);
+void RemoveEvent(EventNode** root);
+void AddOrderToList(OrderNode** root, OrderData Event);
+
 
 typedef struct TileNode {
     struct TileNode *parent;

@@ -14,6 +14,7 @@ void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int
 /**
  * @brief initializes values of the tiles in the map
  * @note Uses setPerimeterRoads() and setInternalTiles()
+ * @warning Must be called after GenerateBuildFile()
  */
 void InitTiles();
 /**
@@ -43,4 +44,7 @@ void AEDVInput();
 /**
  * @brief populates AEDV struct with inital values
  */
+
+void InitRoutine();
+void GenerationCheck();
 #endif //EXAMPLE_INITS_H
