@@ -48,6 +48,13 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
     Cord position = start;
     Cord nextPosition;
 
+    if(start.x == end.x && start.y == end.y) {
+        InstructionNode* instruction;
+        instruction->child = NULL;
+        instruction->nextPosition = start;
+        return instruction;
+    }
+
     TileNode* current = new_tile(start);
     TileNode* dest;
 

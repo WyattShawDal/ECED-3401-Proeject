@@ -4,12 +4,44 @@
 
 #include "dependencies.h"
 
-int EventHandler(int time, EventNode **root) {
-    EventNode *current = *root;
+/*
+ * Checks if the Order List is empty, then check if the InActiveAEDV is empty if both are not empty
+ * It should assign the order to an AEDV, and Call Swap Lists to move that to active
+ * It should do this until either list is empty
+ *  A B C D
+ *
+ */
 
+void AEDVHandler() {
+    if(InactiveList == NULL) {
+        //printf("No Free AEDV's\n");
+        return;
+    }
+    AEDVNode *currentAEDV = InactiveList;
+    if(OrderList == NULL) {
+        //printf("No More Orders\n");
+        currentAEDV->data.currStatus = IDLE;
+        return;
+    }
+    while(InactiveList != NULL && OrderList != NULL){
+        //currentAEDV->data.pickUpFloorDelay = (OrderList->data.pickupFloor) * 5;
+        //currentAEDV->data.dropOffFloorDelay = (OrderList->data.dropFloor) * 7;
+        currentAEDV->data.pickUp = OrderList->data.pickUp;
+        currentAEDV->data.dropOff = OrderList->data.dropOff;
+        currentAEDV->data.currStatus = IDLE;
+        AEDVNode * temp = currentAEDV->next;
+        SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
+        currentAEDV =  temp;
+        OrderList = OrderList->nextOrder;
+    }
+}
+int EventHandler(int time, EventNode **root) {
+
+    EventNode *current = *root;
     int temp = time;
     //RemoveEvent(&EventList);
     printf("Calling Customer %d\n", current->eventData.originID);
+
     if(toupper(current->eventData.type) != 'D') {
         current = current->nextEvent;
         *root = current;
@@ -17,14 +49,12 @@ int EventHandler(int time, EventNode **root) {
         return time;
     }
     //Get first set of order data
-    ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
-    ReadTextCustomerFile();
+    //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
     OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
      GetCustomerInfo(current->eventData.destinationID));
     //If there are no more events after this one
     if((current = current->nextEvent) == NULL) {
         printf("No more events total amount");
-        (void)getchar();
 
     }
     //There are more events, are they at the same time?
@@ -37,7 +67,7 @@ int EventHandler(int time, EventNode **root) {
         while (temp == time) {
             temp = time;
             printf("Two events with same time\n");
-            ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
+            //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
             //Call order handler to process the next order
             OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
                          GetCustomerInfo(current->eventData.destinationID));
@@ -53,17 +83,17 @@ int EventHandler(int time, EventNode **root) {
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     OrderData newOrder;
 
-    newOrder.pickupLocation.x = Order.building[0] - 'A';
-    newOrder.pickupLocation.y = Order.building[1] - 'A';
+    newOrder.pickUp.x = Order.building[0] - 'A';
+    newOrder.pickUp.y = Order.building[1] - 'A';
     newOrder.pickupFloor = Order.floor;
     //adjust coordinates to match AEDV perspective
-    newOrder.pickupLocation = AdjustOrder(newOrder.pickupLocation);
+    newOrder.pickUp = AdjustOrder(newOrder.pickUp);
 
-    newOrder.dropOffLocation.x = Delivery.building[0] - 'A';
-    newOrder.dropOffLocation.y = Delivery.building[1] - 'A';
+    newOrder.dropOff.x = Delivery.building[0] - 'A';
+    newOrder.dropOff.y = Delivery.building[1] - 'A';
     newOrder.dropFloor = Delivery.floor;
     //adjust coordinates to match AEDV perspective
-    newOrder.dropOffLocation = AdjustOrder(newOrder.dropOffLocation);
+    newOrder.dropOff = AdjustOrder(newOrder.dropOff);
 
 
     /* Shift delivery according to entrance location
@@ -71,34 +101,34 @@ OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
      * Thus to shift for the entrance we need to move 2 tiles in the given direction
     */
     if(strcmp(Order.entrance, "N") == 0) {
-        newOrder.pickupLocation.y +=2; //navigate to the road above location
+        newOrder.pickUp.y -=2; //navigate to the road above location
     }
     else if(strcmp(Order.entrance, "S") == 0) {
-        newOrder.pickupLocation.y -=2; //navigate to the road below location
+        newOrder.pickUp.y +=2; //navigate to the road below location
     }
     else if(strcmp(Order.entrance, "E") == 0) {
-        newOrder.pickupLocation.x +=2; //navigate to the road east of location
+        newOrder.pickUp.x +=2; //navigate to the road east of location
     }
     else if(strcmp(Order.entrance, "W") == 0) {
-        newOrder.pickupLocation.x -=2; //navigate to the road west location
+        newOrder.pickUp.x -=2; //navigate to the road west location
     }
     else {
-        printf("Unexpected Entrance Location");
+        printf("Unexpected Entrance Location, %s", Order.entrance);
     }
     if(strcmp(Delivery.entrance, "N") == 0) {
-        newOrder.dropOffLocation.y +=2; //navigate to the road above location
+        newOrder.dropOff.y -=2; //navigate to the road above location
     }
     else if(strcmp(Delivery.entrance, "S") == 0) {
-        newOrder.dropOffLocation.y -=2; //navigate to the road below location
+        newOrder.dropOff.y +=2; //navigate to the road below location
     }
     else if(strcmp(Delivery.entrance, "E") == 0) {
-        newOrder.dropOffLocation.x +=2; //navigate to the road east of location
+        newOrder.dropOff.x +=2; //navigate to the road east of location
     }
     else if(strcmp(Delivery.entrance, "W") == 0) {
-        newOrder.dropOffLocation.x -=2; //navigate to the road west location
+        newOrder.dropOff.x -=2; //navigate to the road west location
     }
     else {
-        printf("Unexpected Entrance Location");
+        printf("Unexpected Entrance Location, %s", Order.entrance);
     }
     AddOrderToList(&OrderList, newOrder);
     return newOrder;
@@ -111,7 +141,7 @@ Cord AdjustOrder(Cord location) {
  * Need to shift integer value to the actual on map tile location, the first row & column this is a shift of 2
  * for all others it's a shift of location*4 + 2
  * A = 0, so Pickup Location = 0 + 2 = 2
- * So B --> 1, pickupLocation = 1*4 +2 = 6 etc.
+ * So B --> 1, pickUp = 1*4 +2 = 6 etc.
  */
     if(location.x == 0) {
         location.x += 2;
@@ -125,7 +155,5 @@ Cord AdjustOrder(Cord location) {
     else {
         location.y = (location.y*4) +2;
     }
-
-
     return location;
 }

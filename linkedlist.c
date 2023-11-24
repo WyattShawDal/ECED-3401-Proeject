@@ -5,8 +5,8 @@
 */
 #include "dependencies.h"
 
-void AddToListBeginning(Node** listRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
-    Node* new_vehicle = malloc(sizeof(Node));
+void AddToListBeginning(AEDVNode** listRoot, int locationX, int locationY, int identifierCode) {
+    AEDVNode* new_vehicle = malloc(sizeof(AEDVNode));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
         exit(-1);
@@ -14,17 +14,17 @@ void AddToListBeginning(Node** listRoot, int locationX, int locationY, int desti
     new_vehicle->data.EVIN = EVINBASE + identifierCode;
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
     new_vehicle->data.position =  (Cord){locationX, locationY};
-    new_vehicle->data.destination =  (Cord){destinationX, destinationY};
     new_vehicle->data.color = (Color) {GetRandomValue(0, 255), GetRandomValue(0, 127), GetRandomValue(0, 127), 255};
-    new_vehicle->data.currStatus = TRANSIT;
-
+    new_vehicle->data.currStatus = IDLE;
+    new_vehicle->data.nextMove = NULL;
     new_vehicle->next = *listRoot;
     *listRoot = new_vehicle;
 }
 
-void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
-    Node* prev = NULL;
-    Node* curr = *Origin;
+void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
+
+    AEDVNode* prev = NULL;
+    AEDVNode* curr = *Origin;
     bool found = false;
     while(curr->next != NULL) {
         if(curr->data.EVIN == SwapEVIN) {
@@ -34,7 +34,6 @@ void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
         prev = curr;
         curr = curr->next;
     }
-
     if((!found) && (prev != NULL)) {
         prev->next = NULL;
         //node is at the end (curr)
@@ -48,19 +47,17 @@ void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
         //node is in the middle (curr)
     }
 
-    Node* temp = curr;
+    AEDVNode* temp = curr;
     temp->next = *Destination;
     *Destination = temp;
 
-    Node* ne = Destination;
-    Node* old = Origin;
 }
 
-void MoveToListBeginning(Node** listRoot, Node* addNode) {
+void MoveToListBeginning(AEDVNode** listRoot, AEDVNode* addNode) {
 
 }
-Node* FindInList(Node* listRoot, int identifierCode) {
-    Node* curr = listRoot;
+AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode) {
+    AEDVNode* curr = listRoot;
     bool found = false;
 
     while(curr->next != NULL) {

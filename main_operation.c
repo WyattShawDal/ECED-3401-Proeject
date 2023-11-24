@@ -23,16 +23,8 @@ Camera2D camera = { 0 };
 //Int Vars
 int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 
-//Aedv's REMOVE
-static AEDV wAEDV;
-static AEDV xAEDV;
-static AEDV yAEDV;
-static AEDV zAEDV;
-
-//AEDV Lists
-AEDV *listOfVehicles[4] = {&wAEDV, &xAEDV, &yAEDV, &zAEDV};
-Node * ActiveList = NULL;
-Node * InactiveList = NULL;
+AEDVNode * ActiveList = NULL;
+AEDVNode * InactiveList = NULL;
 //Files Lists
 EventNode * EventList = NULL;
 OrderNode * OrderList = NULL;
@@ -56,6 +48,7 @@ int main() {
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
         if(frameCount == eventTime) eventTime = EventHandler(eventTime, &current);
+        if(frameCount % 10 == 0) printf("Time: %d\n", frameCount);
 
         CameraControl();
         UpdateDrawFrame();

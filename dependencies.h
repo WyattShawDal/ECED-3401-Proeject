@@ -35,6 +35,7 @@
 #include "linkedlist.h"
 #include "files.h"
 #include "handlers.h"
+#include "one_way.h"
 
 /* Magic Number Defines */
     //directions
@@ -46,6 +47,7 @@
     #define DEFAULTZOOM 0.94f
     #define DEFAULTOFFSET 45
     #define DEFAULTFONTSIZE 20
+
     //others
     #define EVINBASE 10000
     #define CUSTOMERBASE 1000
@@ -62,12 +64,12 @@
 /* Global Externs */
 extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 extern Tile** dynamicMap;
-extern AEDV *listOfVehicles[4];
+
 extern const int screenWidth;
 extern const int screenHeight;
 extern Camera2D camera;
-extern Node * ActiveList;
-extern Node * InactiveList;
+extern AEDVNode * ActiveList;
+extern AEDVNode * InactiveList;
 extern EventNode * EventList;
 extern OrderNode * OrderList;
 

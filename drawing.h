@@ -21,4 +21,6 @@ void DrawMap(Tile tile);
  */
 void CameraControl();
 void UpdateMap();
+
+void DrawVehicleMovements(AEDVNode* currentVehicle);
 #endif //EXAMPLE_DRAWING_H

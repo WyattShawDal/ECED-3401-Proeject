@@ -40,7 +40,7 @@ add_executable(${PROJECT_NAME} main_operation.c
         essential.c
         linkedlist.c
         linkedlist.h
-        Files.c
+        files.c
         files.h
         handlers.c
         handlers.h

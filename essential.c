@@ -6,28 +6,35 @@
 #include "dependencies.h"
 // Module Functions Definition
 void UpdateDrawFrame(void) {
-    // Allows user to press F to input new destination for an AEDV
-    if(GetKeyPressed() == KEY_F) {
-        AssignNewOrders();
-    }
+
     // begins drawing a new frame
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
     // Draw the map into the window using tile data generated in main
     UpdateMap();
-    // begin navigation
-    Node* curr = ActiveList;
-    while(curr != NULL) {
-        MapNavigation(&(curr->data));
+    // Intelligent Order Assignment
+    AEDVHandler();
+    // Calculate Paths if necessary
+    OneWayNavigation();
 
+
+    // Draw the new movements
+    AEDVNode* curr = ActiveList;
+    AEDVNode* inactiveCurr = InactiveList;
+    while(curr != NULL) {
+
+        DrawVehicleMovements(curr);
         curr = curr->next;
     }
-//    for (int i = 0; i < maxAEDV; ++i) {
-//        //OneWayNavigation(listOfVehicles[i]); <-- Not used for Task 5
-//        MapNavigation(listOfVehicles[i]);
-//    }
-    frameCount++;
+    while(inactiveCurr != NULL) {
+
+        DrawVehicleMovements(inactiveCurr);
+        inactiveCurr = inactiveCurr->next;
+    }
+
+
+    frameCount++; // Update Frame count to next tick
     EndDrawing();
 }
 

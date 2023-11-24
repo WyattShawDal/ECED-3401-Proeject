@@ -26,26 +26,23 @@ typedef enum Type {
 #endif
 }Tile_Type;
 
-
 typedef enum Status {
     IDLE,
     PICKUP,
     TRANSIT,
-    DELIVERING,
+    DROPOFF,
+    LOADING,
+    UNLOADING,
     RECHARGING,
-    UNLOADING
 }AEDV_STATUS;
 
 typedef enum Visit {
     NO,
     YES
 }VISITED;
-
-typedef struct Coordinate {
-    int x;
-    int y;
-} Cord;
-
+typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
+typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
+typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
 
 typedef struct Tile {
     Cord location;
@@ -53,29 +50,13 @@ typedef struct Tile {
     Tile_Type Type;
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
+
 typedef struct order {
-    Cord pickupLocation;
-    Cord dropOffLocation;
+    Cord pickUp;
+    Cord dropOff;
     int pickupFloor;
     int dropFloor;
 }OrderData;
-
-typedef struct AEDV {
-    int EVIN;
-    int junctionToTry;
-    int distanceTravelled;
-    int currentCharge;
-    int maxCharge;
-    int chargeRate;
-    Cord position;
-    Cord destination;
-    Vector2 drawSize;
-    Color color;
-    AEDV_STATUS currStatus;
-
-}AEDV;
-
-typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
 
 typedef struct event {
     char type;
@@ -84,11 +65,10 @@ typedef struct event {
     int destinationID;
     int weight;
 }EVENT;
-
+/* Need to add +1 to listed length */
 #define FIRSTNAMELEN 11
 #define LASTNAMELEN 16
-#define BUILDINGLEN 3 //Fits 2 chars + \000
-
+#define BUILDINGLEN 3
 typedef struct {
     int custNum;
     char firstName[FIRSTNAMELEN];
@@ -97,25 +77,57 @@ typedef struct {
     char entrance[BUILDINGLEN];
     int floor;
 }Customer;
-typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
-typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
+
 typedef struct bldg {
     Cord location;
     BUILDING_TYPE type;
     QUADRANT_TYPE quad;
 }BUILDINGDATA;
 
-typedef struct prompt
-{
-    char* name;
-    enum QUAD code;
-} KeyPair;
+typedef struct EventNode {
+    EVENT eventData;
+    struct EventNode *nextEvent;
+}EventNode;
 
-//KeyPair entranceQuadrant[] = {
-//        {"NE",NE}, {"N",N}, {"NW",NW},
-//        {"E",E}, {"LBL",-1}, {"W",W},
-//        {"SE",SE}, {"S",S}, {"SW",SW} };
+typedef struct OrderNode {
+    OrderData data;
+    struct OrderNode *nextOrder;
+}OrderNode;
 
+typedef struct TileNode {
+    struct TileNode *parent;
+    struct TileNode *queuePrev;
+    struct TileNode *visitedPrev;
+    Cord coordinate;
+}TileNode;
 
+typedef struct InstructionNode {
+    struct InstructionNode *child;
+    Cord nextPosition;
+}InstructionNode;
+
+typedef struct queue {
+    TileNode * front;
+    TileNode * rear;
+}queue;
+
+typedef struct AEDV {
+    int EVIN;
+    int distanceTravelled;
+    int pickUpFloorDelay;
+    int dropOffFloorDelay;
+    Cord position;
+    Cord pickUp;
+    Cord dropOff;
+    Vector2 drawSize;
+    Color color;
+    AEDV_STATUS currStatus;
+    InstructionNode * nextMove;
+}AEDV;
+
+typedef struct Node {
+    AEDV data;
+    struct Node *next;
+}AEDVNode;
 
 #endif //EXAMPLE_STRUCTS_H

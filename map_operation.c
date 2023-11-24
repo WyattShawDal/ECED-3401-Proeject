@@ -39,25 +39,25 @@ void DrawMap(Tile tile) {
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
             break;
         case AVENUE_N:
-            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, RED);
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_ROW == 1) {
                 DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case AVENUE_S:
-            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_ROW == 1) {
                 DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case STREET_E:
-            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, PINK);
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_COL == 1) {
                 DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
             }
             break;
         case STREET_W:
-            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, VIOLET);
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_COL == 1) {
                 DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
             }
@@ -117,15 +117,7 @@ void DrawMap(Tile tile) {
 void InitTiles() {
     int firstStreetDirection, firstAvenueDirection;
     ReadBuildFile(&firstStreetDirection, &firstAvenueDirection);
-
-
     allocDynamicMap();
-//    printf("Input the direction of the first street (1 for E, 2 for W): ");
-//    scanf("%d", &firstStreetDirection);
-//
-//    printf("Input the direction of the first avenue: (4 for N, 5 for S): ");
-//    scanf("%d", &firstAvenueDirection);
-
     //Set outside streets and their available directions
     for(int i = 0;i < MAX_COLS;i++) {
         setPerimeterRoads(i,0);
@@ -133,7 +125,6 @@ void InitTiles() {
         setPerimeterRoads(i, MAX_ROWS - 1);
         setDirection(i, MAX_ROWS - 1);
     }
-
     //Set outside avenues and their available directions
     for(int j = 1;j < MAX_ROWS -1;j++) {
         setPerimeterRoads(0, j);
@@ -141,7 +132,6 @@ void InitTiles() {
         setPerimeterRoads(MAX_COLS - 1,j);
         setDirection(MAX_COLS - 1, j);
     }
-
     //Set the internal tiles and their directions
     for (int i = 1; i < MAX_COLS - 1; ++i) {
         for (int j = 1; j < MAX_ROWS - 1; ++j) {
@@ -149,14 +139,12 @@ void InitTiles() {
             setDirection(i,j);
         }
     }
-
     //Set the direction of all junction tiles
     for(int i = 0;i < MAX_COLS;i += 4) {
         for(int j = 0;j < MAX_ROWS;j += 4) {
             setJunctionDirection(i,j,firstStreetDirection,firstAvenueDirection);
         }
     }
-
 //#define directionTest1 //Prints every tile's direction
 #ifdef directionTest1
     for(int i = 0;i < MAX_COLS;i++) {
@@ -164,15 +152,6 @@ void InitTiles() {
             printf("S: %d N: %d E: %d W: %d\n", dynamicMap[i][j].validDirection[SOUTH], dynamicMap[i][j].validDirection[NORTH], dynamicMap[i][j].validDirection[EAST], dynamicMap[i][j].validDirection[WEST]);
         }
         printf("New row\n");
-    }
-#endif
-
-#ifdef DEBUG //prints map of tile types for diagnostic
-    for(int i = 0;i < MAX_COLS;i++) {
-        for(int j = 0;j < MAX_ROWS;j++) {
-            printf("%d ", dynamicMap[j][i].Type);
-        }
-        printf("\n");
     }
 #endif
 }
@@ -258,7 +237,6 @@ void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenu
         if(i != 0) dynamicMap[i][j].validDirection[WEST] = true;
         if(i != MAX_COLS - 1) dynamicMap[i][j].validDirection[EAST] = true;
     }
-
     //Set EW movement
     if((j % 8 != 0) && NOT_TWO_WAY_ROW()) { //Odd numbered inside streets (located in j = 4, 12, 20..., not divisible by 8)
         if(firstStreetDirection == STREET_E && (i != MAX_COLS - 1)) //If first street E, odd streets point E
@@ -287,7 +265,6 @@ void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenu
             dynamicMap[i][j].validDirection[SOUTH] = true;
     }
 }
-
 bool isValidDestination(int col, int row) {
     bool isValid = true;
     /* List of conditions you can't navigate to
@@ -321,4 +298,26 @@ void UpdateMap() {
             DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
         }
     }
+}
+
+void DrawVehicleMovements(AEDVNode* currentVehicle) {
+    if(currentVehicle->data.currStatus == LOADING) {
+        DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
+                               .y = currentVehicle->data.position.y * cellHeight},
+                       currentVehicle->data.drawSize,
+                       GREEN);
+    }
+    else if(currentVehicle->data.currStatus == UNLOADING) {
+        DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
+                               .y = currentVehicle->data.position.y * cellHeight},
+                       currentVehicle->data.drawSize,
+                       DARKGREEN);
+    }
+    else {
+        DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
+                                            .y = currentVehicle->data.position.y * cellHeight},
+                                            currentVehicle->data.drawSize,
+                                            currentVehicle->data.color);
+    }
+
 }

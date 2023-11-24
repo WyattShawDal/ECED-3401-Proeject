@@ -8,6 +8,8 @@
 int EventHandler(int time,EventNode **current);
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery);
 Cord AdjustOrder(Cord location);
+void AEDVHandler();
+
 
 
 #endif //EXAMPLE_EVENTS_H
