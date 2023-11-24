@@ -49,6 +49,7 @@ int main() {
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
         if(frameCount == eventTime) eventTime = EventHandler(eventTime, &current);
+
         CameraControl();
         UpdateDrawFrame();
     }

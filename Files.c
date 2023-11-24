@@ -71,14 +71,11 @@ void GenerateBuildFile() {
         printf("Enter building's Column (<1 to break): ");
         (void) fscanf(stdin, "%d", &building.location.y);
         (void) getchar(); /* Eat last EOLN */
-
-
         do
         {
             printf("Enter building type (Charge = 0; Stable = 1, Both = 2): ");
             (void) fscanf(stdin, "%d", &building.type);
             (void) getchar(); /* Eat last EOLN */
-
         }
         while (!(building.type >= CHG && building.type < INVALID_TYPE));
 
@@ -164,6 +161,7 @@ void ReadEventFile(char *fileName) {
     EVENT currentEvent;
     OpenTargetFile(READ_TEXT, fileName, &FileDescriptor);
 
+    //TODO add an fgets to eat the header
     while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
         if(iteration == 0) {
             printf("Header Values..\n");

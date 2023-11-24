@@ -21,9 +21,6 @@ void AddToListBeginning(Node** listRoot, int locationX, int locationY, int desti
     new_vehicle->next = *listRoot;
     *listRoot = new_vehicle;
 }
-
-
-
 void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN) {
     Node* prev = NULL;
     Node* curr = Origin;
@@ -58,7 +55,6 @@ void SwapBetweenLists(Node* Origin, Node* Destination, int SwapEVIN) {
 void MoveToListBeginning(Node** listRoot, Node* addNode) {
 
 }
-
 Node* FindInList(Node* listRoot, int identifierCode) {
     Node* curr = listRoot;
     bool found = false;

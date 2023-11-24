@@ -77,10 +77,10 @@ OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
         newOrder.pickupLocation.y -=2; //navigate to the road below location
     }
     else if(strcmp(Order.entrance, "E") == 0) {
-        newOrder.pickupLocation.y +=2; //navigate to the road east of location
+        newOrder.pickupLocation.x +=2; //navigate to the road east of location
     }
     else if(strcmp(Order.entrance, "W") == 0) {
-        newOrder.pickupLocation.y -=2; //navigate to the road west location
+        newOrder.pickupLocation.x -=2; //navigate to the road west location
     }
     else {
         printf("Unexpected Entrance Location");
@@ -92,10 +92,10 @@ OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
         newOrder.dropOffLocation.y -=2; //navigate to the road below location
     }
     else if(strcmp(Delivery.entrance, "E") == 0) {
-        newOrder.dropOffLocation.y +=2; //navigate to the road east of location
+        newOrder.dropOffLocation.x +=2; //navigate to the road east of location
     }
     else if(strcmp(Delivery.entrance, "W") == 0) {
-        newOrder.dropOffLocation.y -=2; //navigate to the road west location
+        newOrder.dropOffLocation.x -=2; //navigate to the road west location
     }
     else {
         printf("Unexpected Entrance Location");
@@ -105,7 +105,7 @@ OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
 }
 
 Cord AdjustOrder(Cord location) {
-    /*
+/*
  * Building Codes [AA... FI]
  * Navigation uses integer values, so convert location from character to integer value
  * Need to shift integer value to the actual on map tile location, the first row & column this is a shift of 2

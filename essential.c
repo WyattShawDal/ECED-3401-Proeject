@@ -20,6 +20,7 @@ void UpdateDrawFrame(void) {
     Node* curr = ActiveList;
     while(curr != NULL) {
         MapNavigation(&(curr->data));
+
         curr = curr->next;
     }
 //    for (int i = 0; i < maxAEDV; ++i) {
