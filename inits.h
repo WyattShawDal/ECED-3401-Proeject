@@ -39,5 +39,5 @@ void AEDVInput();
  */
 
 void InitRoutine();
-
+void GenerationCheck();
 #endif //EXAMPLE_INITS_H

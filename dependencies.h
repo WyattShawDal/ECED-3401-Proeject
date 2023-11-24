@@ -34,7 +34,7 @@
 #include "inits.h" // included for functions that run at startup
 #include "linkedlist.h"
 #include "files.h"
-#include "events.h"
+#include "handlers.h"
 
 /* Magic Number Defines */
     //directions
@@ -52,6 +52,12 @@
     #define DELIVERYBASE 500
     #define NOMOVEMENT 0
     #define MAXSTRLEN 100
+    #define FILEOK 1
+    #define FILE_ERROR -1
+
+/* Macros */
+#define TRUNCATE(name)	name[strlen(name)-1] = '\0'
+
 
 /* Global Externs */
 extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
@@ -63,8 +69,10 @@ extern Camera2D camera;
 extern Node * ActiveList;
 extern Node * InactiveList;
 extern EventNode * EventList;
+extern OrderNode * OrderList;
 
-extern FILE* BuildingFileDescriptor;
+
+extern FILE* RelCustomerFileDescriptor;
 extern FILE* FileDescriptor;
 
 

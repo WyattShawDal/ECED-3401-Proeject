@@ -13,6 +13,7 @@
 /* Global Variables Definition */
 //File Pointers
 FILE* FileDescriptor;
+FILE* RelCustomerFileDescriptor;
 
 //Screen definitions
 const int screenWidth = 1000;
@@ -33,23 +34,17 @@ Node * ActiveList = NULL;
 Node * InactiveList = NULL;
 //Files Lists
 EventNode * EventList = NULL;
+OrderNode * OrderList = NULL;
 //Map
 Tile **dynamicMap;
 
 // Main Entry Point
 int main() {
-    //Allows Window Resizing (Doesn't affect the Grid Dimensions)
-    printf("Do you want to generate a new map file? Y/N :");
-    char check;
-    fscanf(stdin, "%c", &check);
-    if(toupper(check) == 'Y') {
-        OpenFile(WRITE_BINARY, "GenerationFile.dat");
-        GenerateBuildFile();
-    }
-    else printf("Resuming operation with old map..");
-    InitRoutine();
+    GenerationCheck(); //check whether user wants to create a new map file or not
+    InitRoutine(); // Run all initialization functions
+
     EventNode *current = EventList; //create a pointer to linked list root
-    int eventTime = current->eventData.time;
+    int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {

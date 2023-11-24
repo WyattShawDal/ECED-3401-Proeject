@@ -8,25 +8,26 @@
 #include "files.h"
 const char* genFile = "genFile.dat";
 const char* eventFile = "eventFile.txt";
+const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 
 /**
  * @brief create a binary file for writing for generation
  *
  */
 
-int OpenFile(Operation OPERATION, char* fileName) {
-    //_set_fmode(_O_BINARY);
+bool OpenTargetFile(Operation OPERATION, const char *fileName, FILE **FPointer) {
+
     if(OPERATION == WRITE_BINARY) {
-        return (FileDescriptor = fopen(fileName, "wb")) != NULL;
+        return (*FPointer = fopen(fileName, "wb")) != NULL;
     }
     else if(OPERATION == READ_BINARY) {
-        return (FileDescriptor = fopen(fileName, "rb")) != NULL;
+        return (*FPointer = fopen(fileName, "rb")) != NULL;
     }
     else if(OPERATION == WRITE_TEXT) {
-        return (FileDescriptor = fopen(fileName, "w")) != NULL;
+        return (*FPointer = fopen(fileName, "w")) != NULL;
     }
     else if(OPERATION == READ_TEXT) {
-        return (FileDescriptor = fopen(fileName, "r")) != NULL;
+        return (*FPointer = fopen(fileName, "r")) != NULL;
     }
 }
 
@@ -111,7 +112,7 @@ void GenerateBuildFile() {
 }
 
 void ReadBuildFile(int * streetDir, int * avenueDir) {
-    OpenFile(READ_BINARY, "GenerationFile.dat");
+    OpenTargetFile(READ_BINARY, "GenerationFile.dat", &FileDescriptor);
     int xLength, yLength;
     char streetDirection, avenueDirection;
     BUILDINGDATA building;
@@ -161,7 +162,7 @@ void ReadEventFile(char *fileName) {
     int iteration = 0;
     int time, origin, destination, weight;
     EVENT currentEvent;
-    OpenFile(READ_TEXT, fileName);
+    OpenTargetFile(READ_TEXT, fileName, &FileDescriptor);
 
     while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
         if(iteration == 0) {
@@ -185,16 +186,16 @@ void ReadEventFile(char *fileName) {
 }
 void ReadCustomerFile(int originCode, int destinationCode) {
     Customer customerInfo;
-    OpenFile(READ_TEXT, "CustomerFile.txt");
+    OpenTargetFile(READ_TEXT, "CustomerFile.txt", &FileDescriptor);
     int originGoal = originCode - CUSTOMERBASE;
     int destinationGoal = destinationCode - CUSTOMERBASE;
     int iteration = 0;
     char line[sizeof(Customer)];
 
+    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard a line
     // Read and display each record sequentially
     while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
-
-        if(iteration == originGoal+1) {
+        if(iteration == originGoal) {
             sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
             printf(" CustNum: %d", customerInfo.custNum);
             printf("  First Name: %s", customerInfo.firstName);
@@ -203,7 +204,7 @@ void ReadCustomerFile(int originCode, int destinationCode) {
             printf("  Entrance: %s", customerInfo.entrance);
             printf("  Floor: %d\n", customerInfo.floor);
         }
-        else if(iteration == destinationGoal+1) {
+        else if(iteration == destinationGoal) {
             sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
             printf(" CustNum: %d", customerInfo.custNum);
             printf("  First Name: %s", customerInfo.firstName);
@@ -222,5 +223,53 @@ void ReadCustomerFile(int originCode, int destinationCode) {
 
     // Close the file
     fclose(FileDescriptor);
+
+}
+
+void ReadTextCustomerFile() {
+    Customer customerInfo;
+    OpenTargetFile(READ_TEXT, "CustomerFile.txt", &FileDescriptor);
+    OpenTargetFile(WRITE_BINARY, "RelativeCustomerFile.dat", &RelCustomerFileDescriptor);
+    char line[sizeof(Customer)];
+
+    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard a line
+    // Read and display each record sequentially
+    while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
+        sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
+        printf(" CustNum: %d", customerInfo.custNum);
+        printf("  First Name: %s", customerInfo.firstName);
+        printf("  Last Name: %s", customerInfo.lastName);
+        printf("  Building: %s", customerInfo.building);
+        printf("  Entrance: %s", customerInfo.entrance);
+        printf("  Floor: %d\n", customerInfo.floor);
+        //write out customer info into a binary file for relative accessing
+        fwrite(&customerInfo, sizeof(Customer), 1, RelCustomerFileDescriptor);
+        // Add other fields as needed
+
+    }
+
+    // Close the file
+    fclose(FileDescriptor);
+    fclose(RelCustomerFileDescriptor);
+
+}
+
+/**
+ *
+ * @param CustomerID
+ * @return Returns customer struct for orderHandler to process
+ */
+Customer GetCustomerInfo(int CustomerID) {
+    Customer customer;
+    OpenTargetFile(READ_BINARY, relativeCustomerFile, &RelCustomerFileDescriptor);
+
+    //CustomerID's start at 1000, so subtract 1000 from id
+    long relativePosition = (CustomerID-CUSTOMERBASE) * sizeof(customer);
+    //Seek to record we want to read
+    fseek(RelCustomerFileDescriptor, relativePosition, SEEK_SET);
+    //read the customer we want into a customer struct
+    fread(&customer, sizeof(customer), 1, RelCustomerFileDescriptor);
+    //return the customer struct
+    return customer;
 
 }

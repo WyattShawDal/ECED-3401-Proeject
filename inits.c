@@ -151,3 +151,15 @@ void InitRoutine() {
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
 }
+
+void GenerationCheck() {
+    printf("Do you want to generate a new map file? Y/N :");
+    char check;
+    fscanf(stdin, "%c", &check);
+    if(toupper(check) == 'Y') {
+        OpenTargetFile(WRITE_BINARY, "GenerationFile.dat", &FileDescriptor);
+
+        GenerateBuildFile();
+    }
+    else printf("Resuming operation with old map..");
+}

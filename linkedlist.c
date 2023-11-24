@@ -95,3 +95,22 @@ void AddEvent(EventNode** root, EVENT Event) {
     }
     curr->nextEvent = newEvent;
 }
+//Adds order to end of the order list, so oldest is at head of list.
+void AddOrderToList(OrderNode** root, OrderData Event) {
+    OrderNode *newOrder = malloc(sizeof(EventNode));
+    if(newOrder == NULL) {
+        exit(-1);
+    }
+    newOrder->data = Event;
+    newOrder->nextOrder = NULL;
+    if(*root == NULL) {
+        newOrder->nextOrder = NULL;
+        *root = newOrder;
+        return;
+    }
+    OrderNode* curr = *root;
+    while (curr->nextOrder != NULL) {
+        curr = curr->nextOrder;
+    }
+    curr->nextOrder = newOrder;
+}

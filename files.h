@@ -11,12 +11,14 @@
 
 #define TRUNCATE(name)	name[strlen(name)-1] = '\0'
 #define NAMELEN	16	/* Filename length */
-int OpenFile(Operation OPERATION, char* fileName);
+bool OpenTargetFile(Operation OPERATION, const char *fileName, FILE **FPointer);
 
 void GenerateBuildFile();
 void ReadBuildFile(int * streetDir, int * avenueDir);
 void ReadEventFile(char *fileName);
 void ReadCustomerFile(int originCode, int destinationCode);
+void ReadTextCustomerFile();
+Customer GetCustomerInfo(int CustomerID);
 
 
 
