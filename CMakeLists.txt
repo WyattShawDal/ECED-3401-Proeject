@@ -44,6 +44,7 @@ add_executable(${PROJECT_NAME} main_operation.c
         files.h
         handlers.c
         handlers.h
+        one_way.c
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
