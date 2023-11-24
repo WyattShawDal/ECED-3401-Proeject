@@ -36,16 +36,22 @@ typedef enum Status {
     UNLOADING
 }AEDV_STATUS;
 
+typedef enum Visit {
+    NO,
+    YES
+}VISITED;
+
 typedef struct Coordinate {
     int x;
     int y;
 } Cord;
 
+
 typedef struct Tile {
     Cord location;
     bool isOccupied;
     Tile_Type Type;
-
+    bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 typedef struct order {
     Cord pickupLocation;
@@ -68,8 +74,6 @@ typedef struct AEDV {
     AEDV_STATUS currStatus;
 
 }AEDV;
-
-
 
 typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
 
@@ -111,6 +115,7 @@ typedef struct prompt
 //        {"NE",NE}, {"N",N}, {"NW",NW},
 //        {"E",E}, {"LBL",-1}, {"W",W},
 //        {"SE",SE}, {"S",S}, {"SW",SW} };
+
 
 
 #endif //EXAMPLE_STRUCTS_H

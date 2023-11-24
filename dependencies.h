@@ -75,5 +75,13 @@ extern OrderNode * OrderList;
 extern FILE* RelCustomerFileDescriptor;
 extern FILE* FileDescriptor;
 
+extern TileNode * queueFront;
+extern TileNode * queueRear;
+extern queue * notVisitedQueue;
+extern queue * visitedQueue;
+
+
+
+
 
 #endif //EXAMPLE_DEPENDENCIES_H

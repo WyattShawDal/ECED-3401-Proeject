@@ -9,6 +9,7 @@
 ********************************************************************************************/
 #include "dependencies.h"
 #include "typedefs.h"
+#include "one_way.h"
 
 /* Global Variables Definition */
 //File Pointers
@@ -37,11 +38,17 @@ EventNode * EventList = NULL;
 OrderNode * OrderList = NULL;
 //Map
 Tile **dynamicMap;
+queue * notVisitedQueue;
+queue * visitedQueue;
 
 // Main Entry Point
 int main() {
+
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
+
+    queueSetup(&notVisitedQueue);
+    queueSetup(&visitedQueue);
 
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
