@@ -33,7 +33,7 @@ typedef struct queue {
     TileNode * rear;
 }queue;
 
-void queueSetup(queue* m);
+void queueSetup(queue** m);
 
 void enQueue(TileNode* new_tile, TileNode* parent, queue* q, int visited);
 
@@ -41,7 +41,7 @@ void deQueue(queue* q, int visited);
 
 bool searchQueue(Cord loc, queue* q);
 
-bool emptyList(queue* q);
+bool emptyList(queue* q, int visited);
 
 TileNode* new_tile(Cord loc);
 

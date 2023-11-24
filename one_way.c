@@ -12,6 +12,7 @@ InstructionNode* reverseInstructions(TileNode* end){
 
     InstructionNode* currCopy = malloc(sizeof(InstructionNode));
     InstructionNode* nextCopy;
+
     currCopy->nextPosition = curr->coordinate;
     currCopy->child = NULL;
 
@@ -20,11 +21,11 @@ InstructionNode* reverseInstructions(TileNode* end){
         nextCopy = malloc(sizeof(InstructionNode));
         nextCopy->nextPosition = next->coordinate;
         nextCopy->child = currCopy;
-        free(curr);
+        //free(curr);
         currCopy = nextCopy;
         curr = next;
     }
-    free(next);
+    //free(next);
     return nextCopy;
 }
 
@@ -73,7 +74,8 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         deQueue(notVisitedQueue, NO);
     }
 
-
+//#define INSTRUCTIONPRINT
+#ifdef INSTRUCTIONPRINT
     TileNode* temp = current;
     while(temp->parent != NULL) {
         printf("%d %d\n", temp->coordinate.x, temp->coordinate.y);
@@ -84,7 +86,8 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         printf("%d %d\n", temp2->nextPosition.x, temp2->nextPosition.y);
         temp2 = temp2->child;
     }
-    return NULL;
+#endif
+    return reverseInstructions(current);
 }
 
 

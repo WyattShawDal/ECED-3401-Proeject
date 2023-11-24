@@ -80,10 +80,10 @@ Node* FindInList(Node* listRoot, int identifierCode) {
     else return NULL;
 }
 
-void queueSetup(queue* m) {
-    m = (queue*) malloc(sizeof(queue));
-    m->front = NULL;
-    m->rear = NULL;
+void queueSetup(queue** m) {//**m, &searchQueue
+    *m = (queue*) malloc(sizeof(queue));
+    (*m)->front = NULL;
+    (*m)->rear = NULL;
 }
 
 
@@ -123,22 +123,32 @@ bool searchQueue(Cord loc, queue* q) {
     return found;
 }
 
-bool emptyList(queue* q) {
+bool emptyList(queue* q, int visited) {
     TileNode* temp = q->front;
     TileNode* freeTemp;
     bool wasEmpty = true;
     if(temp != NULL) {
         wasEmpty = false;
-        while(temp->queuePrev != NULL) {
-            freeTemp = temp;
-            temp = temp->queuePrev;
-            free(freeTemp);
+        if(visited == NO) {
+            while(temp->queuePrev != NULL) {
+                freeTemp = temp;
+                temp = temp->queuePrev;
+                free(freeTemp);
+            }
+        } else {
+            while(temp->visitedPrev != NULL) {
+                freeTemp = temp;
+                temp = temp->visitedPrev;
+                free(freeTemp);
+            }
         }
         free(temp);
     }
     q->front = NULL;
     q->rear = NULL;
     return wasEmpty;
+
+
 }
 
 TileNode* new_tile(Cord loc) {

@@ -47,7 +47,11 @@ int main() {
 
 
 
-//#define SEARCHTEST2
+
+    SetupInitialConditions();
+    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
+
+    //#define SEARCHTEST2
 #ifdef SEARCHTEST2
     TileNode* tile;
     Cord location;
@@ -67,10 +71,6 @@ int main() {
         tile = notVisitedQueue->front;
     }
 #endif
-
-
-
-
 //#define SEARCHTEST
 #ifdef SEARCHTEST
     Cord coordinate;
@@ -83,8 +83,6 @@ int main() {
     deQueue(searchQueue);
     queue* q = searchQueue;
 #endif
-    SetupInitialConditions();
-    InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
 //#define LLTest4 //Tests the swapping function
 #ifdef LLTest4
     SwapBetweenLists(&ActiveList, &InactiveList, 10000);
@@ -113,23 +111,16 @@ int main() {
     }
 #endif
 
-    //queueSetup(searchQueue);
-    notVisitedQueue = (queue*) malloc(sizeof(queue));
-    notVisitedQueue->front = NULL;
-    notVisitedQueue->rear = NULL;
-
-    visitedQueue = (queue*) malloc(sizeof(queue));
-    visitedQueue->front = NULL;
-    visitedQueue->rear = NULL;
-
-
-
+    queueSetup(&notVisitedQueue);
+    queueSetup(&visitedQueue);
     Cord startingLoc = {.x = 0, .y = 0};
-    Cord endingLoc = {.x = 19, .y = 0};
+    Cord endingLoc = {.x = 0, .y = 7};
 
-    pathCalculation(startingLoc,endingLoc);
-
-
+    InstructionNode* t = pathCalculation(startingLoc,endingLoc);
+    emptyList(notVisitedQueue, NO);
+    emptyList(visitedQueue, NO);
+    queue * n = notVisitedQueue;
+    queue * v = visitedQueue;
 
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
