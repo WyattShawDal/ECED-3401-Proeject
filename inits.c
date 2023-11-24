@@ -68,6 +68,11 @@ void InitRoutine() {
     InitWindow(screenWidth, screenHeight, "AEDV Live Map"); //creates the window
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
+    ReadTextCustomerFile();
+
+
+    queueSetup(&notVisitedQueue);
+    queueSetup(&visitedQueue);
 }
 
 void GenerationCheck() {

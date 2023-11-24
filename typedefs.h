@@ -8,6 +8,11 @@
 #ifndef EXAMPLE_STRUCTS_H
 #define EXAMPLE_STRUCTS_H
 
+typedef struct Coordinate {
+    int x;
+    int y;
+} Cord;
+
 typedef enum Type {
     STREET = 0,
     STREET_E,

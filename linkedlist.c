@@ -175,10 +175,10 @@ bool searchQueue(Cord loc, queue* q) {
     return found;
 }
 
-bool emptyList(queue* q, int visited) {
+bool emptyList(queue** q, int visited) {
     /*Empties a specified queue, returns true if the queue was empty*/
-
-    TileNode* temp = q->front;
+    /*
+    TileNode* temp = (*q)->front;
     TileNode* freeTemp;
     bool wasEmpty = true;
 
@@ -201,10 +201,10 @@ bool emptyList(queue* q, int visited) {
         //Free the last element
         free(temp);
     }
-    //Mark the queue as empty
-    q->front = NULL;
-    q->rear = NULL;
-    return wasEmpty;
+    //Mark the queue as empty*/
+    (*q)->front = NULL;
+    (*q)->rear = NULL;
+    return 0;
 }
 
 TileNode* new_tile(Cord loc) {

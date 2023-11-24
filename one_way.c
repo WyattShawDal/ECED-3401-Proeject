@@ -118,7 +118,12 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         temp2 = temp2->child;
     }
 #endif
-    return reverseInstructions(current);
+    InstructionNode * temp3 = reverseInstructions(current);
+
+    emptyList(&notVisitedQueue, NO);
+    emptyList(&visitedQueue, NO);
+
+    return temp3;
 }
 
 

@@ -16,7 +16,7 @@ void deQueue(queue* q, int visited);
 
 bool searchQueue(Cord loc, queue* q);
 
-bool emptyList(queue* q, int visited);
+bool emptyList(queue** q, int visited);
 
 TileNode* new_tile(Cord loc);
 

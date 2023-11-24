@@ -38,10 +38,10 @@ int main() {
 
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-
-    queueSetup(&notVisitedQueue);
-    queueSetup(&visitedQueue);
-
+    AddToListBeginning(&InactiveList,0,0,0);
+    AddToListBeginning(&InactiveList,5,0,1);
+    AddToListBeginning(&InactiveList,5,0,2);
+    //InstructionNode * t = pathCalculation((Cord) {.x = 0, .y = 2}, (Cord) {.x = 10, .y = 12});
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop
