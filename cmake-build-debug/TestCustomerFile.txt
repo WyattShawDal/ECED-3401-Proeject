@@ -1,0 +1,5 @@
+CustNum	First name	Last name	Building	Entrance	Floor
+1000	Zoe	Takacs	AA	S	2
+1001	Wyatt	Shaw	GD	W	5
+1002	Cameron	Archibald	CC	W	8
+1003	Nolan	Scrutton	DD	S	4
