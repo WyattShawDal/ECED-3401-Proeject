@@ -29,26 +29,38 @@ typedef enum Type {
 
 typedef enum Status {
     IDLE,
+    PICKUP,
     TRANSIT,
+    DELIVERING,
     RECHARGING,
     UNLOADING
 }AEDV_STATUS;
+
+typedef enum Visit {
+    NO,
+    YES
+}VISITED;
 
 typedef struct Coordinate {
     int x;
     int y;
 } Cord;
 
+
 typedef struct Tile {
     Cord location;
     bool isOccupied;
     Tile_Type Type;
-
+    bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
 typedef struct AEDV {
     int EVIN;
     int junctionToTry;
+    int distanceTravelled;
+    int currentCharge;
+    int maxCharge;
+    int chargeRate;
     Cord position;
     Cord destination;
     Vector2 drawSize;
@@ -56,5 +68,9 @@ typedef struct AEDV {
     AEDV_STATUS currStatus;
 
 }AEDV;
+
+
+
+
 
 #endif //EXAMPLE_STRUCTS_H

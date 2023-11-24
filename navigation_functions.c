@@ -7,9 +7,6 @@
 #include "dependencies.h"
 
 #ifdef TWOWAY
-
-
-
 void StreetMovement(AEDV *vehicle, int direction) {
     DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
     if(direction == EAST) {
