@@ -239,65 +239,46 @@ void setDirection(int i, int j) {
         case AVENUE_S:
             dynamicMap[i][j].validDirection[SOUTH] = true;
             break;
-        /*case JUNCTION:
-            if(i == 0 || i == MAX_COLS - 1) { //Left and right columns
-                if(j != 0) dynamicMap[i][j].validDirection[NORTH] = true;
-                if(j != MAX_ROWS - 1) dynamicMap[i][j].validDirection[SOUTH] = true;
-                if((j != 0) && (j != MAX_ROWS - 1)) {
-                    if(j % 8 == 0)
-                        firstStreetDirection == STREET_E ? (dynamicMap[i][j].validDirection[NORTH])
-                        firstStreetDirection == STREET_E ? (dynamicMap[i][j].Type = firstStreetDirection+1) :( dynamicMap[i][j].Type = firstStreetDirection -1);
-                }
-            }
-            if(j == 0 || j == MAX_ROWS - 1) { //Bottom and top rows
-                if(i != 0) dynamicMap[i][j].validDirection[WEST] = true;
-                if(i != MAX_COLS - 1) dynamicMap[i][j].validDirection[EAST] = true;
-            }
-
-            if((i != 0) && (i != MAX_COLS - 1)) {
-                if(i % 8 == 0)
-
-            }
-            if((i % 8 == 0) && (i != 0) && (i != MAX_COLS - 1)) {
-                if(firstStreetDirection == STREET_E)
-            }
-            break;
-            */
-            //Internal junctions
         case BUILDING:
-            //Do nothing
+            //Do nothing, no movement instructions from a building
+        case JUNCTION:
+            //Handled in setJunctionDirection
             break;
     };
 }
 
 void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenueDirection) {
-    if((i == 0) || (i == MAX_COLS - 1)) {
+    if((i == 0) || (i == MAX_COLS - 1)) { //Outside avenues, set NS movement
         if(j != 0) dynamicMap[i][j].validDirection[NORTH] = true;
         if(j != MAX_ROWS - 1) dynamicMap[i][j].validDirection[SOUTH] = true;
     }
-    if((j == 0) || (j == MAX_ROWS - 1)) {
+    if((j == 0) || (j == MAX_ROWS - 1)) { //Outside streets, set EW movement
         if(i != 0) dynamicMap[i][j].validDirection[WEST] = true;
         if(i != MAX_COLS - 1) dynamicMap[i][j].validDirection[EAST] = true;
     }
 
-    if((j % 8 != 0) && NOT_TWO_WAY_ROW()) {
-        if(firstStreetDirection == STREET_E && (i != MAX_COLS - 1))
-            dynamicMap[i][j].validDirection[EAST] = true;
-        else if(firstStreetDirection == STREET_W && (i != 0))
-            dynamicMap[i][j].validDirection[WEST] = true;
-    } else if(j % 8 == 0 && NOT_TWO_WAY_ROW()) {
+    //Set EW movement
+    if((j % 8 != 0) && NOT_TWO_WAY_ROW()) { //Odd numbered inside streets (located in j = 4, 12, 20..., not divisible by 8)
+        if(firstStreetDirection == STREET_E && (i != MAX_COLS - 1)) //If first street E, odd streets point E
+            dynamicMap[i][j].validDirection[EAST] = true; //Set E unless at right most avenue
+        else if(firstStreetDirection == STREET_W && (i != 0)) //If first street W, odd streets point W
+            dynamicMap[i][j].validDirection[WEST] = true; //Set W unless at left most avenue
+    }
+    else if(j % 8 == 0 && NOT_TWO_WAY_ROW()) { //Even numbered inside streets (located in j = 8, 16, 24..., divisible by 8)
         if(firstStreetDirection == STREET_E && (i != 0))
             dynamicMap[i][j].validDirection[WEST] = true;
         else if(firstStreetDirection == STREET_W && (i != MAX_COLS - 1))
             dynamicMap[i][j].validDirection[EAST] = true;
     }
 
-    if((i % 8 != 0) && NOT_TWO_WAY_COL()) {
+    //Set NS movement
+    if((i % 8 != 0) && NOT_TWO_WAY_COL()) { //Odd numbered inside avenues
         if(firstAvenueDirection == AVENUE_S && (j != MAX_ROWS - 1))
             dynamicMap[i][j].validDirection[SOUTH] = true;
         else if(firstAvenueDirection == AVENUE_N && (j != 0))
             dynamicMap[i][j].validDirection[NORTH] = true;
-    } else if(i % 8 == 0 && NOT_TWO_WAY_COL()) {
+    }
+    else if(i % 8 == 0 && NOT_TWO_WAY_COL()) { //Even numbered inside avenues
         if(firstAvenueDirection == AVENUE_S && (j != 0))
             dynamicMap[i][j].validDirection[NORTH] = true;
         else if(firstAvenueDirection == AVENUE_N && (j != MAX_ROWS - 1))

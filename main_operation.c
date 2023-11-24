@@ -113,14 +113,6 @@ int main() {
 
     queueSetup(&notVisitedQueue);
     queueSetup(&visitedQueue);
-    Cord startingLoc = {.x = 0, .y = 0};
-    Cord endingLoc = {.x = 0, .y = 7};
-
-    InstructionNode* t = pathCalculation(startingLoc,endingLoc);
-    emptyList(notVisitedQueue, NO);
-    emptyList(visitedQueue, NO);
-    queue * n = notVisitedQueue;
-    queue * v = visitedQueue;
 
     InitWindow(screenWidth, screenHeight, "AEDV Live Map");
     SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
