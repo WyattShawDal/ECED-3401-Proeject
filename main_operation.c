@@ -17,8 +17,8 @@ FILE* FileDescriptor;
 FILE* RelCustomerFileDescriptor;
 
 //Screen definitions
-const int screenWidth = 1000;
-const int screenHeight = 1000;
+const int screenWidth = 1050;
+const int screenHeight = 1050;
 Camera2D camera = { 0 };
 //Int Vars
 int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
@@ -38,9 +38,10 @@ int main() {
 
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-    AddToListBeginning(&InactiveList,0,0,0);
-    AddToListBeginning(&InactiveList,5,0,1);
-    AddToListBeginning(&InactiveList,5,0,2);
+    AddAEDV(&InactiveList, 0, 0, 0);
+    AddAEDV(&InactiveList, 5, 0, 1);
+    AddAEDV(&InactiveList, 10, 12, 2);
+
     //InstructionNode * t = pathCalculation((Cord) {.x = 0, .y = 2}, (Cord) {.x = 10, .y = 12});
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
@@ -48,7 +49,7 @@ int main() {
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
         if(frameCount == eventTime) eventTime = EventHandler(eventTime, &current);
-        if(frameCount % 10 == 0) printf("Time: %d\n", frameCount);
+        if(frameCount % 10 == 0) printf("Time: %d\n", frameCount); //print the time every 10 ticks
 
         CameraControl();
         UpdateDrawFrame();

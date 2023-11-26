@@ -20,13 +20,39 @@ bool emptyList(queue** q, int visited);
 
 TileNode* new_tile(Cord loc);
 
-void AddToListBeginning(AEDVNode** ListRoot, int locationX, int locationY,  int identifierCode ); // Initialize AEDV at start of list
+/**
+ * @brief adds an AEDV to a list of choice
+ * @param listRoot list to add AEDV to
+ * @param locationX  x location to create AEDV at (stable location)
+ * @param locationY y location to create AEDV at (stable location)
+ * @param identifierCode unique EVIN for AEDV
+ */
+void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCode );
+/**
+ * @brief swaps AEDV between Active/Inactive
+ * @param Origin
+ * @param Destination
+ * @param SwapEVIN
+ */
 void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN); //swap AEDV between Active/Inactive || Inactive/Active
+//Needs explanation
 void MoveToListBeginning(AEDVNode** listRoot, AEDVNode* addNode);
 AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode);
-void AddEvent(EventNode** root, EVENT Event);
+/**
+ * @brief adds an event node to the end of the event lists
+ * @param root
+ * @param Event
+ */
+void AddEvent(EventNode** root, EventData Event);
+
+//Needs Explanation
 void RemoveEvent(EventNode** root);
-void AddOrderToList(OrderNode** root, OrderData Event);
+/**
+ * @brief adds an order to the end of the order list
+ * @param root
+ * @param Event
+ */
+void AddOrderToList(OrderNode** root, OrderData Order);
 
 
 #endif //EXAMPLE_LINKEDLIST_H

@@ -54,8 +54,8 @@
     #define DELIVERYBASE 500
     #define NOMOVEMENT 0
     #define MAXSTRLEN 100
-    #define FILEOK 1
-    #define FILE_ERROR -1
+    #define TILESHIFT 2
+    #define FONTSCALING 1.426
 
 /* Macros */
 #define TRUNCATE(name)	name[strlen(name)-1] = '\0'
@@ -63,11 +63,13 @@
 
 /* Global Externs */
 extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
-extern Tile** dynamicMap;
-
 extern const int screenWidth;
 extern const int screenHeight;
+
+extern Tile** dynamicMap;
+
 extern Camera2D camera;
+
 extern AEDVNode * ActiveList;
 extern AEDVNode * InactiveList;
 extern EventNode * EventList;

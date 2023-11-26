@@ -22,7 +22,7 @@ const char* customerFile = "CustomerFile.txt";
  *
  */
 
-bool OpenTargetFile(Operation OPERATION, const char *fileName, FILE **FPointer) {
+bool OpenTargetFile(OPERATION OPERATION, const char *fileName, FILE **FPointer) {
 
     if(OPERATION == WRITE_BINARY) {
         return (*FPointer = fopen(fileName, "wb")) != NULL;
@@ -42,7 +42,7 @@ bool OpenTargetFile(Operation OPERATION, const char *fileName, FILE **FPointer) 
 void GenerateBuildFile() {
     int xLength, yLength;
     int streetDirection, avenueDirection;
-    BUILDINGDATA building;
+    BuildingData building;
 
     printf("Enter #X and #Y Buildings: ");
     (void) fscanf(stdin, "%d %d", &xLength, &yLength);
@@ -117,17 +117,17 @@ void GenerateBuildFile() {
 
 void ReadBuildFile(int * streetDir, int * avenueDir) {
     OpenTargetFile(READ_BINARY, "GenerationFile.dat", &FileDescriptor);
-    int xLength, yLength;
+    int numBuildingsX, numBuildingsY;
     char streetDirection, avenueDirection;
-    BUILDINGDATA building;
+    BuildingData building;
 
-    fread(&xLength, sizeof(int), 1, FileDescriptor);
-    fread(&yLength, sizeof(int), 1, FileDescriptor);
-    MAX_COLS = xLength*4+1;
-    MAX_ROWS = yLength*4+1;
+    fread(&numBuildingsX, sizeof(int), 1, FileDescriptor);
+    fread(&numBuildingsY, sizeof(int), 1, FileDescriptor);
+    MAX_COLS = numBuildingsX * 4 + 1; //Building widths are 3, with a road to the left are 4, then add one road to the right
+    MAX_ROWS = numBuildingsY * 4 + 1; //Same justification, but for adding road below
     cellHeight = screenWidth/MAX_COLS;
     cellWidth = screenWidth/MAX_COLS;
-    printf("You entered %d x %d, which forms %d Cols and %d Rows\n", xLength, yLength, MAX_COLS, MAX_ROWS);
+    printf("You entered %d x %d, which forms %d Cols and %d Rows\n", numBuildingsX, numBuildingsY, MAX_COLS, MAX_ROWS);
 
     fread(streetDir, sizeof(int), 1, FileDescriptor);
     fread(avenueDir, sizeof(int), 1, FileDescriptor);
@@ -144,7 +144,6 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     else {
         avenueDirection = 'N';
     }
-
     printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
 
     fread(&building, sizeof(building), 1, FileDescriptor);
@@ -163,90 +162,37 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
 void ReadEventFile(char *fileName) {
     char line[MAXSTRLEN];
     char eventName;
-    int iteration = 0;
     int time, origin, destination, weight;
-    EVENT currentEvent;
+    EventData currentEvent;
     OpenTargetFile(READ_TEXT, fileName, &FileDescriptor);
 
-    //TODO add an fgets to eat the header
+    fgets(line, sizeof(line), FileDescriptor);
     while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
-        if(iteration == 0) {
-            printf("Header Values..\n");
-        }
-        else {
-            sscanf(line, "%d\t%c\t%d\t%d\t%d\t", &time, &eventName, &origin, &destination, &weight);
+        sscanf(line, "%d\t%c\t%d\t%d\t%d\t", &time, &eventName, &origin, &destination, &weight);
 
-            printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
-            currentEvent.time = time;
-            currentEvent.type = eventName;
-            currentEvent.originID = origin;
-            currentEvent.destinationID = destination;
-            currentEvent.weight = weight;
-            AddEvent(&EventList, currentEvent);
-        }
-        iteration++;
-    }
-
-    fclose(FileDescriptor);
-}
-void ReadCustomerFile(int originCode, int destinationCode) {
-    Customer customerInfo;
-    OpenTargetFile(READ_TEXT, "CustomerFile.txt", &FileDescriptor);
-    int originGoal = originCode - CUSTOMERBASE;
-    int destinationGoal = destinationCode - CUSTOMERBASE;
-    int iteration = 0;
-    char line[sizeof(Customer)];
-
-    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard a line
-    // Read and display each record sequentially
-    while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
-        if(iteration == originGoal) {
-            sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
-            printf(" CustNum: %d", customerInfo.custNum);
-            printf("  First Name: %s", customerInfo.firstName);
-            printf("  Last Name: %s", customerInfo.lastName);
-            printf("  Building: %s", customerInfo.building);
-            printf("  Entrance: %s", customerInfo.entrance);
-            printf("  Floor: %d\n", customerInfo.floor);
-        }
-        else if(iteration == destinationGoal) {
-            sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
-            printf(" CustNum: %d", customerInfo.custNum);
-            printf("  First Name: %s", customerInfo.firstName);
-            printf("  Last Name: %s", customerInfo.lastName);
-            printf("  Building: %s", customerInfo.building);
-            printf("  Entrance: %s", customerInfo.entrance);
-            printf("  Floor: %d\n", customerInfo.floor);
-        }
-        else {
-            //printf("Wrong Record..\n");
-        }
-        iteration++;
-        // Add other fields as needed
+        printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
+        currentEvent.time = time;
+        currentEvent.type = eventName;
+        currentEvent.originID = origin;
+        currentEvent.destinationID = destination;
+        currentEvent.weight = weight;
+        AddEvent(&EventList, currentEvent);
 
     }
-
-    // Close the file
     fclose(FileDescriptor);
-
 }
 
-void ReadTextCustomerFile() {
+void CreateRelativeCustomerFile() {
     Customer customerInfo;
     OpenTargetFile(READ_TEXT, customerFile, &FileDescriptor);
     OpenTargetFile(WRITE_BINARY, relativeCustomerFile, &RelCustomerFileDescriptor);
     char line[sizeof(Customer)];
 
-    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard a line
+    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard text header
     // Read and display each record sequentially
     while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
         sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
-//        printf("Customer Number: %d\n", customerInfo.custNum);
-//        printf("First Name: %s\n", customerInfo.firstName);
-//        printf("Last Name: %s\n", customerInfo.lastName);
-//        printf("  Building: %s", customerInfo.building);
-//        printf("  Entrance: %s", customerInfo.entrance);
-//        printf("  Floor: %d\n", customerInfo.floor);
+
         //write out customer info into a binary file for relative accessing
         fwrite(&customerInfo, sizeof(Customer), 1, RelCustomerFileDescriptor);
         // Add other fields as needed

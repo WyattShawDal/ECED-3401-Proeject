@@ -33,7 +33,10 @@ void DrawMap(Tile tile) {
     switch(currentType) {
         case BUILDING:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
-            DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + 12, CURR_ROW * cellHeight +12, DEFAULTFONTSIZE, WHITE);
+            DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellHeight + (cellWidth/4), (cellWidth/FONTSCALING)-4.2, WHITE);
+            if((CURR_COL-2)%4 == 0 &&(CURR_ROW-2)%4 == 0)  {
+                DrawText(TextFormat("%c%c", ('A' + (CURR_ROW-2)/4), ('A' + (CURR_COL-2)/4)), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellHeight + (cellWidth/4), (cellWidth/FONTSCALING)-4.2, WHITE);
+            }
             break;
         case JUNCTION:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, DARKGRAY);
@@ -41,25 +44,25 @@ void DrawMap(Tile tile) {
         case AVENUE_N:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_ROW == 1) {
-                DrawText(TextFormat("N"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("N"), CURR_COL * cellWidth + (cellWidth/4), (cellHeight/4), cellWidth/FONTSCALING, WHITE);
             }
             break;
         case AVENUE_S:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_ROW == 1) {
-                DrawText(TextFormat("S"), CURR_COL * cellWidth + 16, 15, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("S"), CURR_COL * cellWidth + (cellWidth/4), (cellHeight/4), cellWidth/FONTSCALING, WHITE);
             }
             break;
         case STREET_E:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_COL == 1) {
-                DrawText(TextFormat("E"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("E"), (cellWidth/4), CURR_ROW * cellHeight + (cellHeight/4), cellWidth/FONTSCALING, WHITE);
             }
             break;
         case STREET_W:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             if(CURR_COL == 1) {
-                DrawText(TextFormat("W"), 15, CURR_ROW * cellHeight + 16, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("W"), (cellWidth/4), CURR_ROW * cellHeight + (cellHeight/4), cellWidth/FONTSCALING, WHITE);
             }
             break;
         case AVENUE:
@@ -182,7 +185,6 @@ void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDir
         dynamicMap[i][j].Type =  BUILDING;
     }
 }
-
 void setPerimeterRoads(int i, int j) {
     dynamicMap[i][j] = (Tile) {.location.x = i, .location.y  = j};
     //Multi Directional Roads
@@ -197,7 +199,6 @@ void setPerimeterRoads(int i, int j) {
         //printf("SOUTH: %d NORTH: %d EAST: %d WEST: %d", dynamicMap[i][j].validDirection[SOUTH], dynamicMap[i][j].validDirection[NORTH], dynamicMap[i][j].validDirection[EAST], dynamicMap[i][j].validDirection[WEST]);
     }
 }
-
 void setDirection(int i, int j) {
     switch(dynamicMap[i][j].Type) {
         case STREET:
@@ -227,7 +228,6 @@ void setDirection(int i, int j) {
             break;
     };
 }
-
 void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenueDirection) {
     if((i == 0) || (i == MAX_COLS - 1)) { //Outside avenues, set NS movement
         if(j != 0) dynamicMap[i][j].validDirection[NORTH] = true;
@@ -250,7 +250,6 @@ void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenu
         else if(firstStreetDirection == STREET_W && (i != MAX_COLS - 1))
             dynamicMap[i][j].validDirection[EAST] = true;
     }
-
     //Set NS movement
     if((i % 8 != 0) && NOT_TWO_WAY_COL()) { //Odd numbered inside avenues
         if(firstAvenueDirection == AVENUE_S && (j != MAX_ROWS - 1))
@@ -265,34 +264,17 @@ void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenu
             dynamicMap[i][j].validDirection[SOUTH] = true;
     }
 }
-bool isValidDestination(int col, int row) {
-    bool isValid = true;
-    /* List of conditions you can't navigate to
-     * 0 < cols <= max
-     * 0 < rows <= max
-     * junctions
-     * buildings
-   */
-    if((col >= MAX_COLS) ||
-    (col < 0) ||
-    (row >= MAX_ROWS)||
-    (row < 0) ||
-    ((col % 4) == 0) && ((row % 4) == 0) ||
-    ((col % 4) != 0) && ((row % 4) != 0))
-        isValid = false;
-    //Last two could be XOR
-    return isValid;
-}
+
 void UpdateMap() {
     for (int CURR_COL = 0; CURR_COL < MAX_COLS; ++CURR_COL) {
         for(int CURR_ROW = 0; CURR_ROW < MAX_ROWS; ++CURR_ROW) {
             //Draws the Row Counter to the left of the map
             if(CURR_COL == 0) {
-                DrawText(TextFormat("%d", CURR_ROW), -30, CURR_ROW * cellHeight +12, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("%d", CURR_ROW), -cellWidth, CURR_ROW * cellHeight +(cellHeight/4), cellHeight/FONTSCALING, WHITE);
             }
             //Draws the Column Counter above the map
             if(CURR_ROW == 0) {
-                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +12, -30, DEFAULTFONTSIZE, WHITE);
+                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +(cellWidth/4), -cellHeight, cellHeight/FONTSCALING, WHITE);
             }
             //Fills in the given cell
             DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
@@ -301,11 +283,11 @@ void UpdateMap() {
 }
 
 void DrawVehicleMovements(AEDVNode* currentVehicle) {
-    if(currentVehicle->data.currStatus == LOADING) {
+    if(currentVehicle->data.currStatus == IDLE) {
         DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
                                .y = currentVehicle->data.position.y * cellHeight},
                        currentVehicle->data.drawSize,
-                       GREEN);
+                       PURPLE);
     }
     else if(currentVehicle->data.currStatus == UNLOADING) {
         DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,

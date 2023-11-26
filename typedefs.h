@@ -8,11 +8,13 @@
 #ifndef EXAMPLE_STRUCTS_H
 #define EXAMPLE_STRUCTS_H
 
+/* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
     int x;
     int y;
 } Cord;
 
+/* Enums */
 typedef enum Type {
     STREET = 0,
     STREET_E,
@@ -29,7 +31,7 @@ typedef enum Type {
     CONSTRUCTION,
     ACCIDENT
 #endif
-}Tile_Type;
+}TILE_TYPE;
 
 typedef enum Status {
     IDLE,
@@ -45,14 +47,15 @@ typedef enum Visit {
     NO,
     YES
 }VISITED;
-typedef enum OPERATION {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} Operation;
+typedef enum OP {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
 
+/* Structs */
 typedef struct Tile {
     Cord location;
     bool isOccupied;
-    Tile_Type Type;
+    TILE_TYPE Type;
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
@@ -69,7 +72,7 @@ typedef struct event {
     int originID;
     int destinationID;
     int weight;
-}EVENT;
+}EventData;
 /* Need to add +1 to listed length */
 #define FIRSTNAMELEN 11
 #define LASTNAMELEN 16
@@ -87,10 +90,10 @@ typedef struct bldg {
     Cord location;
     BUILDING_TYPE type;
     QUADRANT_TYPE quad;
-}BUILDINGDATA;
+}BuildingData;
 
 typedef struct EventNode {
-    EVENT eventData;
+    EventData eventData;
     struct EventNode *nextEvent;
 }EventNode;
 

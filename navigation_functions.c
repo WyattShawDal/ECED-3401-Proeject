@@ -7,51 +7,34 @@
 #include "dependencies.h"
 
 void OneWayNavigation() {
-    AEDVNode* curr = ActiveList;
-    AEDVNode* temp;
+    AEDVNode* currentVehicle = ActiveList;
+    AEDVNode* savedVal;
     //Loop through the list of AEDV's
-    while(curr != NULL) {
+    while(currentVehicle != NULL) {
         //If AEDV has to find a new path
-        if(curr->data.nextMove == NULL) {
-            switch(curr->data.currStatus) {
+        if(currentVehicle->data.nextMove == NULL) {
+            switch(currentVehicle->data.currStatus) {
                 case IDLE:
-                    curr->data.nextMove = pathCalculation(curr->data.position,curr->data.pickUp);
-                    curr->data.currStatus = PICKUP;
+                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.pickUp);
+                    currentVehicle->data.currStatus = PICKUP;
                     break;
                 case PICKUP:
-                    printf("AEDV %d made it to pickup location: %d %d\n", curr->data.EVIN, curr->data.position.x, curr->data.position.y);
-                    curr->data.nextMove = pathCalculation(curr->data.position,curr->data.dropOff);
-                    curr->data.currStatus = DROPOFF;
+                    printf("AEDV %d made it to pickup location: %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
+                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.dropOff);
+                    currentVehicle->data.currStatus = DROPOFF;
                     break;
                 case DROPOFF:
-                    printf("AEDV %d made it to destination %d %d\n", curr->data.EVIN, curr->data.position.x, curr->data.position.y);
-                    curr->data.currStatus = IDLE;
+                    printf("AEDV %d made it to destination %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
+                    currentVehicle->data.currStatus = IDLE;
                     break;
             }
         }
-        temp = curr->next; //Save next AEDV in active list
-        if(curr->data.currStatus != IDLE || curr->data.nextMove) {
-            curr->data.position = curr->data.nextMove->nextPosition; //Update location
-            curr->data.nextMove = curr->data.nextMove->child; //Move to next instruction
+        savedVal = currentVehicle->next; //Save next AEDV in active list
+        if(currentVehicle->data.currStatus != IDLE) {
+            currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
+            currentVehicle->data.nextMove = currentVehicle->data.nextMove->child; //Move to next instruction
         } else
-            SwapBetweenLists(&ActiveList, &InactiveList, curr->data.EVIN);
-        curr = temp; //Move to next AEDV in list
+            SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
+        currentVehicle = savedVal; //Move to next AEDV in list
     }
 }
-
-void StreetMovement(AEDV *vehicle, int direction) {
-    DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
-    if(direction == EAST) {
-        vehicle->position.x += 1;
-    }
-    else vehicle->position.x -= 1;
-}
-
-void AvenueMovement(AEDV *vehicle, int direction) {
-    DrawRectangleV((Vector2) {.x = vehicle->position.x * cellWidth,.y = vehicle->position.y * cellHeight}, vehicle->drawSize, vehicle->color);
-    if(direction == SOUTH) {
-        vehicle->position.y += 1;
-    }
-    else vehicle->position.y -= 1;
-}
-

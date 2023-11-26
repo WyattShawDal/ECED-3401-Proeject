@@ -6,7 +6,6 @@
 #include "dependencies.h"
 // Module Functions Definition
 void UpdateDrawFrame(void) {
-
     // begins drawing a new frame
     BeginDrawing();
     ClearBackground(BLACK);
@@ -17,30 +16,23 @@ void UpdateDrawFrame(void) {
     AEDVHandler();
     // Calculate Paths if necessary
     OneWayNavigation();
-
-
     // Draw the new movements
     AEDVNode* curr = ActiveList;
     AEDVNode* inactiveCurr = InactiveList;
     while(curr != NULL) {
-
         DrawVehicleMovements(curr);
         curr = curr->next;
     }
     while(inactiveCurr != NULL) {
-
         DrawVehicleMovements(inactiveCurr);
         inactiveCurr = inactiveCurr->next;
     }
-
-
     frameCount++; // Update Frame count to next tick
     EndDrawing();
 }
 
 
 /* Initialization and Assigment Functions */
-
 void CameraControl() {
     if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))  {
         Vector2 delta  = GetMouseDelta();

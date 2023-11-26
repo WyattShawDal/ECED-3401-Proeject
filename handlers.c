@@ -23,15 +23,19 @@ void AEDVHandler() {
         currentAEDV->data.currStatus = IDLE;
         return;
     }
+    //Both values updated in loop, so must be checked in condition
     while(InactiveList != NULL && OrderList != NULL){
         //currentAEDV->data.pickUpFloorDelay = (OrderList->data.pickupFloor) * 5;
         //currentAEDV->data.dropOffFloorDelay = (OrderList->data.dropFloor) * 7;
         currentAEDV->data.pickUp = OrderList->data.pickUp;
         currentAEDV->data.dropOff = OrderList->data.dropOff;
         currentAEDV->data.currStatus = IDLE;
+        //store next address in temp pointer since it will be lost in the swap
         AEDVNode * temp = currentAEDV->next;
         SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
+
         currentAEDV =  temp;
+        //update to next order
         OrderList = OrderList->nextOrder;
     }
 }
@@ -39,7 +43,7 @@ int EventHandler(int time, EventNode **root) {
 
     EventNode *current = *root;
     int temp = time;
-    //RemoveEvent(&EventList);
+    //notify user which event is being triggered
     printf("Calling Customer %d\n", current->eventData.originID);
 
     if(toupper(current->eventData.type) != 'D') {
@@ -49,13 +53,12 @@ int EventHandler(int time, EventNode **root) {
         return time;
     }
     //Get first set of order data
-    //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
     OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
      GetCustomerInfo(current->eventData.destinationID));
     //If there are no more events after this one
     if((current = current->nextEvent) == NULL) {
         printf("No more events total amount");
-
+        return time;
     }
     //There are more events, are they at the same time?
     else {
@@ -82,7 +85,7 @@ int EventHandler(int time, EventNode **root) {
 
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     OrderData newOrder;
-
+    //subtract 'A' to get integer code from the building code
     newOrder.pickUp.x = Order.building[0] - 'A';
     newOrder.pickUp.y = Order.building[1] - 'A';
     newOrder.pickupFloor = Order.floor;
@@ -95,37 +98,36 @@ OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     //adjust coordinates to match AEDV perspective
     newOrder.dropOff = AdjustOrder(newOrder.dropOff);
 
-
     /* Shift delivery according to entrance location
      * Cells are equal to 1, a building is comprised of a 3x3 grid of cells, and label located at the centre
      * Thus to shift for the entrance we need to move 2 tiles in the given direction
     */
     if(strcmp(Order.entrance, "N") == 0) {
-        newOrder.pickUp.y -=2; //navigate to the road above location
+        newOrder.pickUp.y -=TILESHIFT; //navigate to the road above location
     }
     else if(strcmp(Order.entrance, "S") == 0) {
-        newOrder.pickUp.y +=2; //navigate to the road below location
+        newOrder.pickUp.y +=TILESHIFT; //navigate to the road below location
     }
     else if(strcmp(Order.entrance, "E") == 0) {
-        newOrder.pickUp.x +=2; //navigate to the road east of location
+        newOrder.pickUp.x +=TILESHIFT; //navigate to the road east of location
     }
     else if(strcmp(Order.entrance, "W") == 0) {
-        newOrder.pickUp.x -=2; //navigate to the road west location
+        newOrder.pickUp.x -=TILESHIFT; //navigate to the road west location
     }
     else {
         printf("Unexpected Entrance Location, %s", Order.entrance);
     }
     if(strcmp(Delivery.entrance, "N") == 0) {
-        newOrder.dropOff.y -=2; //navigate to the road above location
+        newOrder.dropOff.y -=TILESHIFT; //navigate to the road above location
     }
     else if(strcmp(Delivery.entrance, "S") == 0) {
-        newOrder.dropOff.y +=2; //navigate to the road below location
+        newOrder.dropOff.y +=TILESHIFT; //navigate to the road below location
     }
     else if(strcmp(Delivery.entrance, "E") == 0) {
-        newOrder.dropOff.x +=2; //navigate to the road east of location
+        newOrder.dropOff.x +=TILESHIFT; //navigate to the road east of location
     }
     else if(strcmp(Delivery.entrance, "W") == 0) {
-        newOrder.dropOff.x -=2; //navigate to the road west location
+        newOrder.dropOff.x -=TILESHIFT; //navigate to the road west location
     }
     else {
         printf("Unexpected Entrance Location, %s", Order.entrance);
@@ -144,16 +146,16 @@ Cord AdjustOrder(Cord location) {
  * So B --> 1, pickUp = 1*4 +2 = 6 etc.
  */
     if(location.x == 0) {
-        location.x += 2;
+        location.x += TILESHIFT;
     }
     else {
-        location.x = (location.x*4) +2;
+        location.x = (location.x*4) +TILESHIFT;
     }
     if(location.y == 0) {
-        location.y += 2;
+        location.y += TILESHIFT;
     }
     else {
-        location.y = (location.y*4) +2;
+        location.y = (location.y*4) +TILESHIFT;
     }
     return location;
 }

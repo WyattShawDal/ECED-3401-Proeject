@@ -5,7 +5,7 @@
 */
 #include "dependencies.h"
 
-void AddToListBeginning(AEDVNode** listRoot, int locationX, int locationY, int identifierCode) {
+void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCode) {
     AEDVNode* new_vehicle = malloc(sizeof(AEDVNode));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
@@ -14,7 +14,8 @@ void AddToListBeginning(AEDVNode** listRoot, int locationX, int locationY, int i
     new_vehicle->data.EVIN = EVINBASE + identifierCode;
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
     new_vehicle->data.position =  (Cord){locationX, locationY};
-    new_vehicle->data.color = (Color) {GetRandomValue(0, 255), GetRandomValue(0, 127), GetRandomValue(0, 127), 255};
+    new_vehicle->data.color = RED;
+    new_vehicle->data.pickUpFloorDelay = 500; //temp val pls fix
     new_vehicle->data.currStatus = IDLE;
     new_vehicle->data.nextMove = NULL;
     new_vehicle->next = *listRoot;
@@ -53,29 +54,21 @@ void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
 
 }
 
-void MoveToListBeginning(AEDVNode** listRoot, AEDVNode* addNode) {
-
-}
 AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode) {
     AEDVNode* curr = listRoot;
     bool found = false;
 
-    while(curr->next != NULL) {
+    while(curr != NULL) {
         if(curr->data.EVIN == identifierCode) {
             found = true; //curr now points to the node with the given identifier code.
             break;
         }
         curr = curr->next;
     }
-    if((!found) && (curr->data.EVIN == identifierCode))
-        found = true; //checks if the value lies at either the last node, or the only node of a 1 list.
-
     if(found) return curr;
     else return NULL;
 }
-
-
-void AddEvent(EventNode** root, EVENT Event) {
+void AddEvent(EventNode** root, EventData Event) {
     EventNode *newEvent = malloc(sizeof(EventNode));
     if(newEvent == NULL) {
         exit(-1);
@@ -94,12 +87,12 @@ void AddEvent(EventNode** root, EVENT Event) {
     curr->nextEvent = newEvent;
 }
 //Adds order to end of the order list, so oldest is at head of list.
-void AddOrderToList(OrderNode** root, OrderData Event) {
+void AddOrderToList(OrderNode** root, OrderData Order) {
     OrderNode *newOrder = malloc(sizeof(EventNode));
     if(newOrder == NULL) {
         exit(-1);
     }
-    newOrder->data = Event;
+    newOrder->data = Order;
     newOrder->nextOrder = NULL;
     if(*root == NULL) {
         newOrder->nextOrder = NULL;
@@ -209,7 +202,6 @@ bool emptyList(queue** q, int visited) {
 
 TileNode* new_tile(Cord loc) {
     /*Creates new TileNode with given coordinates, returns the pointer to the tile*/
-
     TileNode* tile = malloc(sizeof(TileNode));
     tile->coordinate = loc;
     return tile;
