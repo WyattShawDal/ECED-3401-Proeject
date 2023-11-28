@@ -38,11 +38,11 @@ int main() {
 
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-    AddAEDV(&InactiveList, 0, 0, 0);
-    AddAEDV(&InactiveList, 5, 0, 1);
-    AddAEDV(&InactiveList, 10, 12, 2);
+    for(int i = 0;i < 5;i++) {
+        AddAEDV(&InactiveList,i,0,i);
+    }
 
-    //InstructionNode * t = pathCalculation((Cord) {.x = 0, .y = 2}, (Cord) {.x = 10, .y = 12});
+
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop
@@ -54,13 +54,12 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
+
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();
-    //free rows, then free cols
-    for (int i = 0; i < MAX_ROWS; ++i) {
-        free(dynamicMap[i]);
-    }
-    free(dynamicMap);
+
+    FreeRoutine();
     return 0;
 }
+

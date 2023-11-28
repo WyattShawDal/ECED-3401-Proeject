@@ -13,6 +13,8 @@ InstructionNode* pathCalculation(Cord start, Cord end);
 
 InstructionNode* reverseInstructions(TileNode* end);
 
+void searchAdjacentTiles(int direction, Cord position, TileNode * parent);
+
 
 
 

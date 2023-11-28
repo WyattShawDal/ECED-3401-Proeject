@@ -167,42 +167,51 @@ bool searchQueue(Cord loc, queue* q) {
     }
     return found;
 }
+void clearBFS(queue** NVQ, queue** VQ) {
 
-bool emptyList(queue** q, int visited) {
-    /*Empties a specified queue, returns true if the queue was empty*/
-    /*
-    TileNode* temp = (*q)->front;
-    TileNode* freeTemp;
-    bool wasEmpty = true;
+    TileNode * temp = (*VQ)->front;
+    TileNode * tempPrev;
+    while(temp != NULL) {
+        tempPrev = temp;
+        temp = temp->visitedPrev;
+        free(tempPrev);
 
-    if(temp != NULL) {
-        wasEmpty = false;
-        if(visited == NO) { //Use the queuePrev param (empty the notVisitedQueue)
-            //Loop through with two pointers, freeing the previous pointer (freeTemp)
-            while(temp->queuePrev != NULL) {
-                freeTemp = temp;
-                temp = temp->queuePrev;
-                free(freeTemp);
-            }
-        } else { //Use the visitedPrev parameter (empty the visitedQueue)
-            while(temp->visitedPrev != NULL) {
-                freeTemp = temp;
-                temp = temp->visitedPrev;
-                free(freeTemp);
-            }
-        }
-        //Free the last element
-        free(temp);
     }
-    //Mark the queue as empty*/
-    (*q)->front = NULL;
-    (*q)->rear = NULL;
-    return 0;
+
+    temp = (*NVQ)->front;
+    while(temp != NULL) {
+        tempPrev = temp;
+        temp = temp->queuePrev;
+        free(tempPrev);
+
+    }
+
+    (*NVQ)->front = NULL;
+    (*NVQ)->rear = NULL;
+
+    (*VQ)->front = NULL;
+    (*VQ)->rear = NULL;
 }
+
+
 
 TileNode* new_tile(Cord loc) {
     /*Creates new TileNode with given coordinates, returns the pointer to the tile*/
     TileNode* tile = malloc(sizeof(TileNode));
     tile->coordinate = loc;
     return tile;
+}
+
+void FreeRoutine(void) {
+    AEDVNode* temp = InactiveList;
+    AEDVNode* prevTemp;
+    while(temp != NULL) {
+        prevTemp = temp;
+        temp = temp->next;
+        free(prevTemp);
+    }
+    for (int i = 0; i < MAX_ROWS; ++i) {
+        free(dynamicMap[i]);
+    }
+    free(dynamicMap);
 }

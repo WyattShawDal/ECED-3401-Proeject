@@ -32,7 +32,9 @@ void OneWayNavigation() {
         savedVal = currentVehicle->next; //Save next AEDV in active list
         if(currentVehicle->data.currStatus != IDLE) {
             currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
-            currentVehicle->data.nextMove = currentVehicle->data.nextMove->child; //Move to next instruction
+            InstructionNode * tempMove = currentVehicle->data.nextMove;
+            currentVehicle->data.nextMove = tempMove->child; //Move to next instruction
+            free(tempMove);
         } else
             SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
         currentVehicle = savedVal; //Move to next AEDV in list
