@@ -92,6 +92,9 @@ void RemoveEvent(EventNode** root);
  */
 void AddOrderToList(OrderNode** root, OrderData Order);
 
+/**
+ * @brief frees lists of AEDV's and map tiles
+ */
 void FreeRoutine(void);
 
 #endif //EXAMPLE_LINKEDLIST_H

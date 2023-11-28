@@ -205,11 +205,20 @@ TileNode* new_tile(Cord loc) {
 void FreeRoutine(void) {
     AEDVNode* temp = InactiveList;
     AEDVNode* prevTemp;
+    //Free InactiveList
     while(temp != NULL) {
         prevTemp = temp;
         temp = temp->next;
         free(prevTemp);
     }
+    //Free ActiveList (if user exits program before all deliveries are made).
+    temp = ActiveList;
+    while(temp != NULL) {
+        prevTemp = temp;
+        temp = temp->next;
+        free(prevTemp);
+    }
+    //Free map
     for (int i = 0; i < MAX_ROWS; ++i) {
         free(dynamicMap[i]);
     }
