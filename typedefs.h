@@ -122,8 +122,8 @@ typedef struct queue {
 typedef struct AEDV {
     int EVIN;
     int distanceTravelled;
-    int pickUpFloorDelay;
-    int dropOffFloorDelay;
+    int loadingDelay;
+    int unloadingDelay;
     Cord position;
     Cord pickUp;
     Cord dropOff;

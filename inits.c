@@ -14,7 +14,7 @@ void InitRoutine() {
     camera.zoom = DEFAULTZOOM;
     camera.target = (Vector2) {.x = -DEFAULTOFFSET, .y = -DEFAULTOFFSET};
 
-    int frameTarget = 10; //Amount of ticks/second
+    int frameTarget = 20; //Amount of ticks/second
     frameCount = 0;
     //Initialization Functions
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm

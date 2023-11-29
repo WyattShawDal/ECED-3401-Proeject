@@ -15,7 +15,7 @@ void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCo
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
     new_vehicle->data.position =  (Cord){locationX, locationY};
     new_vehicle->data.color = RED;
-    new_vehicle->data.pickUpFloorDelay = 500; //temp val pls fix
+    new_vehicle->data.loadingDelay = 500; //temp val pls fix
     new_vehicle->data.currStatus = IDLE;
     new_vehicle->data.nextMove = NULL;
     new_vehicle->next = *listRoot;

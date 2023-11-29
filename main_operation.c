@@ -38,8 +38,8 @@ int main() {
 
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-    for(int i = 0;i < 5;i++) {
-        AddAEDV(&InactiveList,i,0,i);
+    for(int i = 0;i < 2;i++) {
+        AddAEDV(&InactiveList,i*3,0,i);
     }
 
 

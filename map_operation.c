@@ -289,11 +289,17 @@ void DrawVehicleMovements(AEDVNode* currentVehicle) {
                        currentVehicle->data.drawSize,
                        PURPLE);
     }
-    else if(currentVehicle->data.currStatus == UNLOADING) {
+    else if(currentVehicle->data.currStatus == LOADING) {
         DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
                                .y = currentVehicle->data.position.y * cellHeight},
                        currentVehicle->data.drawSize,
                        DARKGREEN);
+    }
+    else if(currentVehicle->data.currStatus == UNLOADING) {
+        DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
+                               .y = currentVehicle->data.position.y * cellHeight},
+                       currentVehicle->data.drawSize,
+                       VIOLET);
     }
     else {
         DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,

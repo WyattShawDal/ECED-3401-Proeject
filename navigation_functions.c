@@ -9,6 +9,7 @@
 void OneWayNavigation() {
     AEDVNode* currentVehicle = ActiveList;
     AEDVNode* savedVal;
+
     //Loop through the list of AEDV's
     while(currentVehicle != NULL) {
         //If AEDV has to find a new path
@@ -20,23 +21,53 @@ void OneWayNavigation() {
                     break;
                 case PICKUP:
                     printf("AEDV %d made it to pickup location: %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.dropOff);
-                    currentVehicle->data.currStatus = DROPOFF;
+                    currentVehicle->data.nextMove = NULL;
+                    currentVehicle->data.currStatus = LOADING;
                     break;
+
+                case LOADING:
+                    if(currentVehicle->data.loadingDelay == 0) {
+                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.dropOff);
+                        currentVehicle->data.currStatus = DROPOFF;
+                    }
+                    else {
+                        currentVehicle->data.currStatus = LOADING;
+                    }
+                    currentVehicle->data.loadingDelay--;
+                    break;
+
                 case DROPOFF:
                     printf("AEDV %d made it to destination %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.currStatus = IDLE;
+                    currentVehicle->data.nextMove = NULL;
+                    currentVehicle->data.currStatus = UNLOADING;
                     break;
+                case UNLOADING:
+                    if(currentVehicle->data.unloadingDelay == 0) {
+                        currentVehicle->data.currStatus = IDLE;
+                    }
+                    else {
+                        printf("DELAY REMAINING: %d\n", currentVehicle->data.unloadingDelay);
+                        currentVehicle->data.currStatus = UNLOADING;
+                    }
+                    currentVehicle->data.unloadingDelay--;
+                    break;
+
             }
         }
         savedVal = currentVehicle->next; //Save next AEDV in active list
-        if(currentVehicle->data.currStatus != IDLE) {
+        if(currentVehicle->data.currStatus == DROPOFF || currentVehicle->data.currStatus == PICKUP) {
             currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
             InstructionNode * tempMove = currentVehicle->data.nextMove;
             currentVehicle->data.nextMove = tempMove->child; //Move to next instruction
             free(tempMove);
-        } else
+        }
+        else if(currentVehicle->data.currStatus == IDLE)
             SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
         currentVehicle = savedVal; //Move to next AEDV in list
     }
 }
+
+/*
+ * JUST LET THE KIDDO SPEAK, HE LIKES HIS BALLOONS...
+ */
+

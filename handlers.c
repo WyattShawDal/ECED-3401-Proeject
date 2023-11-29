@@ -25,8 +25,8 @@ void AEDVHandler() {
     }
     //Both values updated in loop, so must be checked in condition
     while(InactiveList != NULL && OrderList != NULL){
-        //currentAEDV->data.pickUpFloorDelay = (OrderList->data.pickupFloor) * 5;
-        //currentAEDV->data.dropOffFloorDelay = (OrderList->data.dropFloor) * 7;
+        currentAEDV->data.loadingDelay = OrderList->data.pickupFloor*4;
+        currentAEDV->data.unloadingDelay = OrderList->data.dropFloor*3;
         currentAEDV->data.pickUp = OrderList->data.pickUp;
         currentAEDV->data.dropOff = OrderList->data.dropOff;
         currentAEDV->data.currStatus = IDLE;
@@ -44,7 +44,7 @@ int EventHandler(int time, EventNode **root) {
     EventNode *current = *root;
     int temp = time;
     //notify user which event is being triggered
-    printf("Calling Customer %d\n", current->eventData.originID);
+    //printf("Calling Customer %d\n", current->eventData.originID);
 
     if(toupper(current->eventData.type) != 'D') {
         current = current->nextEvent;
@@ -78,7 +78,7 @@ int EventHandler(int time, EventNode **root) {
             *root = current;
             time = current->eventData.time;
         }
-        printf("Time of next event = %d\n", time);
+        //printf("Time of next event = %d\n", time);
     }
     return time;
 }
