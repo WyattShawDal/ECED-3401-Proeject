@@ -48,6 +48,9 @@
     #define DEFAULTOFFSET 45
     #define DEFAULTFONTSIZE 20
 
+    #define frameRate 30 // Ticks/second
+    #define delaySecsPerFloor 1
+
     //others
     #define EVINBASE 10000
     #define CUSTOMERBASE 1000

@@ -14,12 +14,11 @@ void InitRoutine() {
     camera.zoom = DEFAULTZOOM;
     camera.target = (Vector2) {.x = -DEFAULTOFFSET, .y = -DEFAULTOFFSET};
 
-    int frameTarget = 20; //Amount of ticks/second
     frameCount = 0;
     //Initialization Functions
     InitTiles(); //sets the values for the tiles in the map according the map generation algorithm
     InitWindow(screenWidth, screenHeight, "AEDV Live Map"); //creates the window
-    SetTargetFPS(frameTarget);// Set our simulation to run at x frames-per-second
+    SetTargetFPS(frameRate);// Set our simulation to run at x frames-per-second
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
     CreateRelativeCustomerFile();
 

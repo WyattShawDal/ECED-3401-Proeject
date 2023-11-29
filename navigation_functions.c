@@ -46,7 +46,6 @@ void OneWayNavigation() {
                         currentVehicle->data.currStatus = IDLE;
                     }
                     else {
-                        printf("DELAY REMAINING: %d\n", currentVehicle->data.unloadingDelay);
                         currentVehicle->data.unloadingDelay--;
                         currentVehicle->data.currStatus = UNLOADING;
                     }
