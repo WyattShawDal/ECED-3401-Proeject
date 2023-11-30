@@ -57,7 +57,7 @@ void AEDVHandler_NEW() {
 }
 //PUT ORDER IN THE ARRAY
 void AddOrder(AEDVNode **currentVehicle) {
-    (*currentVehicle)->orderList[(*currentVehicle)->data.currentOrderNumber] = OrderList->data;
+    (*currentVehicle)->orderList[(*currentVehicle)->data.orderCount] = OrderList->data;
     (*currentVehicle)->data.orderCount++;
 }
 

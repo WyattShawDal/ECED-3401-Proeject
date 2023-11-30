@@ -114,6 +114,7 @@ void OneWayNavigation_NEW() {
                         currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.destination);
                         currentVehicle->data.currStatus = DROPOFF;
                     } else {
+                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, QuadrantToStreetAddress(StableList->data.quad, StableList->data.location));
                         currentVehicle->data.currStatus = ETGOHOME;
                         currentVehicle->data.currentOrderNumber = 0;
                     }
@@ -124,14 +125,15 @@ void OneWayNavigation_NEW() {
                     break;
                 case UNLOADING:
                     if(currentVehicle->data.delay == 0) {
+                        currentVehicle->data.currentOrderNumber++;
                         currentVehicle->data.currStatus = RESET_DROPOFF;
                     }
                     else {
                         currentVehicle->data.delay--;
                         currentVehicle->data.currStatus = UNLOADING;
                     }
+                    break;
                 case ETGOHOME:
-                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, QuadrantToStreetAddress(StableList->data.quad, StableList->data.location));
                     currentVehicle->data.currentOrderNumber = 0;
                     currentVehicle->data.currStatus = IDLE;
                     break;
