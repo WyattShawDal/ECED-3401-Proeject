@@ -11,7 +11,7 @@
  * @brief handles decision making for AEDV movement and pathing
  */
 void OneWayNavigation();
-
+void UpdateVehicleStats(AEDVNode ** currentVehicle);
 
 
 #endif //EXAMPLE_NAVIGATIONS_H

@@ -23,7 +23,6 @@ void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCo
 }
 
 void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
-
     AEDVNode* prev = NULL;
     AEDVNode* curr = *Origin;
     bool found = false;
@@ -47,11 +46,9 @@ void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
         prev->next = curr->next;
         //node is in the middle (curr)
     }
-
     AEDVNode* temp = curr;
     temp->next = *Destination;
     *Destination = temp;
-
 }
 
 AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode) {

@@ -67,6 +67,10 @@ void OneWayNavigation() {
     }
 }
 
+void UpdateVehicleStats(AEDVNode ** currentVehicle) {
+    (*currentVehicle)->data.distanceTravelled++;
+}
+
 /*
  * JUST LET THE KIDDO SPEAK, HE LIKES HIS BALLOONS...
  */

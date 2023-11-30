@@ -24,13 +24,11 @@ typedef enum Type {
     AVENUE_S,
     JUNCTION,
     BUILDING,
-#ifdef TASK6
-    STABLE,
     CHARGER,
+    STABLE,
     BOTH,
     CONSTRUCTION,
-    ACCIDENT
-#endif
+
 }TILE_TYPE;
 
 typedef enum Status {
@@ -48,14 +46,14 @@ typedef enum Visit {
     YES
 }VISITED;
 typedef enum OP {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
-typedef enum BLDG_TYPE { CHG = 0, STB, BOTH, INVALID_TYPE }BUILDING_TYPE;
+typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
 
 /* Structs */
 typedef struct Tile {
     Cord location;
-    bool isOccupied;
     TILE_TYPE Type;
+
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
@@ -122,6 +120,14 @@ typedef struct queue {
 typedef struct AEDV {
     int EVIN;
     int distanceTravelled;
+    int maxBattery;
+    int currentBattery;
+    int rechargeRate;
+    int drivingRate; //discharge
+    int idleRate; //stationary
+    int ticksMoving;
+    int ticksIdle;
+    int ticksCharging;
     int loadingDelay;
     int unloadingDelay;
     Cord position;

@@ -24,16 +24,17 @@ void AEDVHandler() {
         return;
     }
     //Both values updated in loop, so must be checked in condition
+
     while(InactiveList != NULL && OrderList != NULL){
         currentAEDV->data.loadingDelay = OrderList->data.pickupFloor*4;
         currentAEDV->data.unloadingDelay = OrderList->data.dropFloor*3;
         currentAEDV->data.pickUp = OrderList->data.pickUp;
         currentAEDV->data.dropOff = OrderList->data.dropOff;
         currentAEDV->data.currStatus = IDLE;
+        currentAEDV->data.distanceTravelled = 0;
         //store next address in temp pointer since it will be lost in the swap
         AEDVNode * temp = currentAEDV->next;
         SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
-
         currentAEDV =  temp;
         //update to next order
         OrderList = OrderList->nextOrder;
@@ -43,24 +44,76 @@ int EventHandler(int time, EventNode **root) {
 
     EventNode *current = *root;
     int temp = time;
-    //notify user which event is being triggered
-    //printf("Calling Customer %d\n", current->eventData.originID);
-
-    if(toupper(current->eventData.type) != 'D') {
+    if(toupper(current->eventData.type) == 'D') {
+        //Get first set of order data
+        OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+                     GetCustomerInfo(current->eventData.destinationID));
+        //If there are no more events after this one
+        if ((current = current->nextEvent) == NULL) {
+            printf("No more events total amount");
+            return time;
+        }
+            //There are more events, are they at the same time?
+        else {
+            //update our root node from main
+            *root = current;
+            //update time to check the next event's time
+            time = current->eventData.time;
+            //if the first event is the same as the last event
+            while (temp == time) {
+                temp = time;
+                printf("Two events with same time\n");
+                //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
+                //Call order handler to process the next order
+                OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+                             GetCustomerInfo(current->eventData.destinationID));
+                current = current->nextEvent;
+                *root = current;
+                time = current->eventData.time;
+            }
+            //printf("Time of next event = %d\n", time);
+        }
+    }
+    /* maybe combine these and pass the type to the handler... */
+    else if(toupper(current->eventData.type) == 'C') {
+        //start construction
+    }
+    else if(toupper(current->eventData.type) == 'E') {
+        // end construction
+    }
+    else {
         current = current->nextEvent;
         *root = current;
-        printf("Event Not a Delivery (Out of Scope for Task 6\n");
+        printf("Unknown Event occurred");
         return time;
     }
+    return time;
+}
+#ifdef TASK7
+int EventHandler(int time, EventNode **root) {
+
+    EventNode *current = *root;
+    int temp = time;
+
     //Get first set of order data
-    OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
-     GetCustomerInfo(current->eventData.destinationID));
+    switch(toupper(current->eventData.type)) {
+        case 'D':
+            OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+                         GetCustomerInfo(current->eventData.destinationID));
+            break;
+        case 'C':
+            //start event
+            break;
+        case 'E':
+            //end construction
+            break;
+    }
     //If there are no more events after this one
-    if((current = current->nextEvent) == NULL) {
+    if ((current = current->nextEvent) == NULL) {
         printf("No more events total amount");
         return time;
     }
-    //There are more events, are they at the same time?
+        //There are more events, are they at the same time?
     else {
         //update our root node from main
         *root = current;
@@ -70,19 +123,42 @@ int EventHandler(int time, EventNode **root) {
         while (temp == time) {
             temp = time;
             printf("Two events with same time\n");
-            //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
-            //Call order handler to process the next order
-            OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
-                         GetCustomerInfo(current->eventData.destinationID));
+
+            switch(toupper(current->eventData.type)) {
+                case 'D':
+                    OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+                                 GetCustomerInfo(current->eventData.destinationID));
+                    break;
+                case 'C':
+                    //start event
+                    break;
+                case 'E':
+                    //end construction
+                    break;
+            }
             current = current->nextEvent;
             *root = current;
             time = current->eventData.time;
         }
         //printf("Time of next event = %d\n", time);
+
+    }
+        /* maybe combine these and pass the type to the handler... */
+    else if(toupper(current->eventData.type) == 'C') {
+        //start construction
+    }
+    else if(toupper(current->eventData.type) == 'E') {
+        // end construction
+    }
+    else {
+        current = current->nextEvent;
+        *root = current;
+        printf("Unknown Event occurred");
+        return time;
     }
     return time;
 }
-
+#endif
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     OrderData newOrder;
     //subtract 'A' to get integer code from the building code

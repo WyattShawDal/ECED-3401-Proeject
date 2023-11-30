@@ -80,7 +80,8 @@ void GenerateBuildFile() {
         (void) getchar(); /* Eat last EOLN */
         do
         {
-            printf("Enter building type (Charge = 0; Stable = 1, Both = 2): ");
+            printf("Enter building type (Charger = 0; Stable = 1, Both = 2): ");
+
             (void) fscanf(stdin, "%d", &building.type);
             (void) getchar(); /* Eat last EOLN */
         }

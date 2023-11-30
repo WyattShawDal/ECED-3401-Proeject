@@ -40,6 +40,7 @@ void CameraControl() {
 
         camera.target = Vector2Add(camera.target, delta);
     }
+
     float wheel = GetMouseWheelMove();
     if(wheel != NOMOVEMENT) {
         Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), camera);

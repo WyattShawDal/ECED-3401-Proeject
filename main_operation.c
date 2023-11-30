@@ -35,14 +35,11 @@ queue * visitedQueue;
 
 // Main Entry Point
 int main() {
-
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
     for(int i = 0;i < 2;i++) {
         AddAEDV(&InactiveList,i*3,0,i);
     }
-
-
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop
@@ -54,11 +51,9 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
-
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();
-
     FreeRoutine();
     return 0;
 }
