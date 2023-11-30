@@ -25,6 +25,8 @@ int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 
 AEDVNode * ActiveList = NULL;
 AEDVNode * InactiveList = NULL;
+BuildingNode * StableList = NULL;
+BuildingNode * ChargerList = NULL;
 //Files Lists
 EventNode * EventList = NULL;
 OrderNode * OrderList = NULL;

@@ -41,4 +41,5 @@ Customer GetCustomerInfo(int CustomerID);
 
 bool CheckDirectionChar(char direction);
 bool CheckBuildingChar(char building);
+void ConvertBuildingCords(BuildingData *building);
 #endif //EXAMPLE_FILES_H

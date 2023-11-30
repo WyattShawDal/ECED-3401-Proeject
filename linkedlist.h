@@ -91,10 +91,11 @@ void RemoveEvent(EventNode** root);
  * @param Order order struct to add
  */
 void AddOrderToList(OrderNode** root, OrderData Order);
-
 /**
  * @brief frees lists of AEDV's and map tiles
  */
 void FreeRoutine(void);
+
+void AddBuilding(BuildingNode** stableList, BuildingNode** ChargerList, BuildingData building);
 
 #endif //EXAMPLE_LINKEDLIST_H

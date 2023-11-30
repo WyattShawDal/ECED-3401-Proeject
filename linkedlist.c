@@ -22,6 +22,45 @@ void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCo
     *listRoot = new_vehicle;
 }
 
+void AddBuilding(BuildingNode** stableList, BuildingNode** chargerList, BuildingData building) {
+    BuildingNode* newBuilding = malloc(sizeof(BuildingNode));
+    if(newBuilding == NULL) {
+        TraceLog(LOG_ERROR, "Heap exceeded in building allocation");
+        exit(-1);
+    }
+    if(building.type == INVALID_TYPE || building.quad == INVALID_QUAD) {
+        free(newBuilding);
+        return;
+    }
+    newBuilding->data = building;
+    //add to the stable list
+    if(newBuilding->data.type == STB) {
+        newBuilding->nextBuilding = *stableList;
+        *stableList = newBuilding;
+        *chargerList = NULL;
+    }
+    // add to the charger list
+    else if (newBuilding->data.type == CHG) {
+        newBuilding->nextBuilding = *chargerList;
+        *chargerList = newBuilding;
+        *stableList = NULL;
+    }
+    //add to both
+    else {
+        BuildingNode* newBuildingCopy = malloc(sizeof(BuildingNode));
+        if(newBuilding == NULL) {
+            TraceLog(LOG_ERROR, "Heap exceeded in building allocation");
+            exit(-1);
+        }
+        newBuildingCopy->data = building;
+        newBuilding->nextBuilding = *stableList;
+        *stableList = newBuilding;
+
+        newBuildingCopy->nextBuilding = *chargerList;
+        *chargerList = newBuildingCopy;
+    }
+}
+
 void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
     AEDVNode* prev = NULL;
     AEDVNode* curr = *Origin;

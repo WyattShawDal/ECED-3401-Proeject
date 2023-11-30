@@ -7,7 +7,9 @@
 
 #ifndef EXAMPLE_STRUCTS_H
 #define EXAMPLE_STRUCTS_H
-
+#define FIRSTNAMELEN 11
+#define LASTNAMELEN 16
+#define BUILDINGLEN 3
 /* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
     int x;
@@ -47,13 +49,12 @@ typedef enum Visit {
 }VISITED;
 typedef enum OP {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
-typedef enum QUAD { N, NE, NW, S, SE, SW, E, W, INVALID_QUAD }QUADRANT_TYPE;
+typedef enum QUAD {NE, NW, SE, SW, INVALID_QUAD }QUADRANT_TYPE;
 
 /* Structs */
 typedef struct Tile {
     Cord location;
     TILE_TYPE Type;
-
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
@@ -72,9 +73,7 @@ typedef struct event {
     int weight;
 }EventData;
 /* Need to add +1 to listed length */
-#define FIRSTNAMELEN 11
-#define LASTNAMELEN 16
-#define BUILDINGLEN 3
+
 typedef struct {
     int custNum;
     char firstName[FIRSTNAMELEN];
@@ -86,6 +85,7 @@ typedef struct {
 
 typedef struct bldg {
     Cord location;
+    char buildingLabel[BUILDINGLEN];
     BUILDING_TYPE type;
     QUADRANT_TYPE quad;
 }BuildingData;
@@ -106,6 +106,11 @@ typedef struct TileNode {
     struct TileNode *visitedPrev;
     Cord coordinate;
 }TileNode;
+
+typedef struct BuildingNode {
+    BuildingData data;
+    struct BuildingNode* nextBuilding;
+}BuildingNode;
 
 typedef struct InstructionNode {
     struct InstructionNode *child;

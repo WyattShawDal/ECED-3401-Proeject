@@ -78,6 +78,8 @@ extern AEDVNode * ActiveList;
 extern AEDVNode * InactiveList;
 extern EventNode * EventList;
 extern OrderNode * OrderList;
+extern BuildingNode * StableList;
+extern BuildingNode * ChargerList;
 
 extern FILE* RelCustomerFileDescriptor;
 extern FILE* FileDescriptor;

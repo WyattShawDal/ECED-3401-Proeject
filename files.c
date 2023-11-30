@@ -70,14 +70,13 @@ void GenerateBuildFile() {
 
     fwrite(&avenueDirection, sizeof(int), 1, FileDescriptor);
 
-    printf("Enter Building's Row (<1 to break, 1 is first row): ");
-    (void) fscanf(stdin, "%d", &building.location.x);
+    printf("Enter Building's Label (XX to exit): ");
+    (void) fscanf(stdin, "%s", building.buildingLabel);
     (void) getchar(); /* Eat last EOLN */
+    building.location.x = building.buildingLabel[0] - 'A';
+    building.location.y = building.buildingLabel[1] - 'A';
 
-    while(building.location.x > 0){
-        printf("Enter building's Column (<1 to break): ");
-        (void) fscanf(stdin, "%d", &building.location.y);
-        (void) getchar(); /* Eat last EOLN */
+    while(building.location.x >= 0){
         do
         {
             printf("Enter building type (Charger = 0; Stable = 1, Both = 2): ");
@@ -86,28 +85,36 @@ void GenerateBuildFile() {
             (void) getchar(); /* Eat last EOLN */
         }
         while (!(building.type >= CHG && building.type < INVALID_TYPE));
-
         do
         {
-            printf("Enter quad (N = 0, S = 1, E = 2, W = 3): ");
+            printf("Enter quad (NE = 0, NW = 1, SE = 2, SW = 3): ");
             (void) fscanf(stdin, "%d", &building.quad);
             (void) getchar(); /* Eat last EOLN */
 
         }
-        while (!(building.quad >= N && building.quad < INVALID_QUAD));
+        while (!(building.quad >= NE && building.quad < INVALID_QUAD));
 
         /* Write the bldg_data to the file */
         fwrite(&building, sizeof(building), 1, FileDescriptor);
 
-        printf("Enter building's X coordinate (<=0 to stop): ");
-        (void) fscanf(stdin, "%d", &building.location.x);
+        printf("Enter Building's Label (XX to exit): ");
+        (void) fscanf(stdin, "%s", building.buildingLabel);
         (void) getchar(); /* Eat last EOLN */
+        building.location.x = building.buildingLabel[0] - 'A';
+        building.location.y = building.buildingLabel[1] - 'A';
+        if(strcmp(building.buildingLabel, "XX") == 0) {
+            building.quad = INVALID_QUAD;
+            building.type = INVALID_TYPE;
+            printf("Exit Code Chosen\n");
+            fwrite(&building, sizeof(building), 1, FileDescriptor);
+
+            break;
+        }
 
     }
 
     /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
-
     fwrite(&xLength, sizeof(int), 1, FileDescriptor);
     fwrite(&xLength, sizeof(int), 1, FileDescriptor);
 
@@ -148,11 +155,13 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
 
     fread(&building, sizeof(building), 1, FileDescriptor);
-    while (building.location.x > 0)
+    while (strcmp(building.buildingLabel, "XX") != 0)
     {
+        ConvertBuildingCords(&building);
         printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
         /* Read next record */
         fread(&building, sizeof(building), 1, FileDescriptor);
+        AddBuilding(&StableList, &ChargerList, building);
     }
     (void) getchar();
     fclose(FileDescriptor);
@@ -221,4 +230,40 @@ Customer GetCustomerInfo(int CustomerID) {
     fread(&customer, sizeof(customer), 1, RelCustomerFileDescriptor);
     //return the customer struct
     return customer;
+}
+
+void ConvertBuildingCords(BuildingData *building) {
+    if(building->location.x > 0) {
+        building->location.x = building->location.x*4 + TILESHIFT;
+    }
+    else {
+        building->location.x += TILESHIFT;
+    }
+    if(building->location.y > 0) {
+        building->location.y = building->location.y*4 + TILESHIFT;
+    }
+    else {
+        building->location.y += TILESHIFT;
+    }
+    /* Converts stable location based on quadrant */
+    switch (building->quad) {
+        case NE:
+            building->location.x +=1;
+            building->location.y -=1;
+            break;
+        case NW:
+            building->location.x -=1;
+            building->location.y -=1;
+            break;
+        case SE:
+            building->location.x +=1;
+            building->location.y +=1;
+            break;
+        case SW:
+            building->location.x -=1;
+            building->location.y +=1;
+            break;
+        case INVALID_QUAD:
+            break;
+    }
 }
