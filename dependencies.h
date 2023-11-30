@@ -48,6 +48,10 @@
     #define DEFAULTOFFSET 45
     #define DEFAULTFONTSIZE 20
 
+    #define frameRate 10 // Ticks/second
+    #define delaySecsPerFloor 25 //15 seconds up, 10 seconds down
+    #define delayScale 200 // divide by this number to scale the delay
+
     //others
     #define EVINBASE 10000
     #define CUSTOMERBASE 1000
@@ -75,12 +79,9 @@ extern AEDVNode * InactiveList;
 extern EventNode * EventList;
 extern OrderNode * OrderList;
 
-
 extern FILE* RelCustomerFileDescriptor;
 extern FILE* FileDescriptor;
 
-extern TileNode * queueFront;
-extern TileNode * queueRear;
 extern queue * notVisitedQueue;
 extern queue * visitedQueue;
 

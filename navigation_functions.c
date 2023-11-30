@@ -31,9 +31,9 @@ void OneWayNavigation() {
                         currentVehicle->data.currStatus = DROPOFF;
                     }
                     else {
+                        currentVehicle->data.loadingDelay--;
                         currentVehicle->data.currStatus = LOADING;
                     }
-                    currentVehicle->data.loadingDelay--;
                     break;
 
                 case DROPOFF:
@@ -46,12 +46,10 @@ void OneWayNavigation() {
                         currentVehicle->data.currStatus = IDLE;
                     }
                     else {
-                        printf("DELAY REMAINING: %d\n", currentVehicle->data.unloadingDelay);
+                        currentVehicle->data.unloadingDelay--;
                         currentVehicle->data.currStatus = UNLOADING;
                     }
-                    currentVehicle->data.unloadingDelay--;
                     break;
-
             }
         }
         savedVal = currentVehicle->next; //Save next AEDV in active list

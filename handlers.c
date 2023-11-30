@@ -26,8 +26,8 @@ void AEDVHandler() {
     //Both values updated in loop, so must be checked in condition
 
     while(InactiveList != NULL && OrderList != NULL){
-        currentAEDV->data.loadingDelay = OrderList->data.pickupFloor*4;
-        currentAEDV->data.unloadingDelay = OrderList->data.dropFloor*3;
+        currentAEDV->data.loadingDelay = (OrderList->data.pickupFloor*delaySecsPerFloor*frameRate)/delayScale; //Ticks per floor, includes up and down
+        currentAEDV->data.unloadingDelay = (OrderList->data.dropFloor*delaySecsPerFloor*frameRate)/delayScale;
         currentAEDV->data.pickUp = OrderList->data.pickUp;
         currentAEDV->data.dropOff = OrderList->data.dropOff;
         currentAEDV->data.currStatus = IDLE;

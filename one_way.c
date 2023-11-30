@@ -71,7 +71,7 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
             for(int direction = SOUTH;direction <= WEST;direction++) {
                 searchAdjacentTiles(direction, current->coordinate, current);
             }
-#define OLDSEARCHADJACENTTILES
+//#define OLDSEARCHADJACENTTILES
 #ifdef OLDSEARCHADJACENTTILES
             Cord nextPosition;
             //If current position is NOT destination
