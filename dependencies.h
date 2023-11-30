@@ -1,3 +1,4 @@
+#pragma comment(linker, "/HEAP:20000000")
 /*
  * Created By: Wyatt Shaw and Cameron Archibald
  * Date: October 31st 2023

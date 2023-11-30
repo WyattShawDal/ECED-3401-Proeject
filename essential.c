@@ -13,9 +13,9 @@ void UpdateDrawFrame(void) {
     // Draw the map into the window using tile data generated in main
     UpdateMap();
     // Intelligent Order Assignment
-    AEDVHandler();
+    AEDVHandler_NEW();
     // Calculate Paths if necessary
-    OneWayNavigation();
+    OneWayNavigation_NEW();
     // Draw the new movements
     AEDVNode* curr = ActiveList;
     AEDVNode* inactiveCurr = InactiveList;

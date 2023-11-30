@@ -10,6 +10,8 @@
 #define FIRSTNAMELEN 11
 #define LASTNAMELEN 16
 #define BUILDINGLEN 3
+#define MAX_ORDER_COUNT 5
+
 /* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
     int x;
@@ -40,6 +42,7 @@ typedef enum Status {
     DROPOFF,
     LOADING,
     UNLOADING,
+    ETGOHOME,
     RECHARGING,
 }AEDV_STATUS;
 
@@ -58,12 +61,6 @@ typedef struct Tile {
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
 
-typedef struct order {
-    Cord pickUp;
-    Cord dropOff;
-    int pickupFloor;
-    int dropFloor;
-}OrderData;
 
 typedef struct event {
     char type;
@@ -82,6 +79,13 @@ typedef struct {
     char entrance[BUILDINGLEN];
     int floor;
 }Customer;
+typedef struct order {
+    Cord pickUp;
+    Cord dropOff;
+    int pickupFloor;
+    int dropFloor;
+    Customer activeCustomers[2];
+}OrderData;
 
 typedef struct bldg {
     Cord location;
@@ -125,6 +129,7 @@ typedef struct queue {
 typedef struct AEDV {
     int EVIN;
     int distanceTravelled;
+#ifdef TASK7
     int maxBattery;
     int currentBattery;
     int rechargeRate;
@@ -133,6 +138,9 @@ typedef struct AEDV {
     int ticksMoving;
     int ticksIdle;
     int ticksCharging;
+#endif
+    int currentOrderNumber;
+    int orderCount;
     int loadingDelay;
     int unloadingDelay;
     Cord position;

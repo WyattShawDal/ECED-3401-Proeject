@@ -20,18 +20,18 @@ void AEDVHandler() {
     AEDVNode *currentAEDV = InactiveList;
     if(OrderList == NULL) {
         //printf("No More Orders\n");
-        currentAEDV->data.currStatus = IDLE;
+        currentAEDV->data.currStatus = RESET_PICKUP;
         return;
     }
     //Both values updated in loop, so must be checked in condition
 
     while(InactiveList != NULL && OrderList != NULL){
+        //Set AEDV values for navigation
         currentAEDV->data.loadingDelay = (OrderList->data.pickupFloor*delaySecsPerFloor*frameRate)/delayScale; //Ticks per floor, includes up and down
         currentAEDV->data.unloadingDelay = (OrderList->data.dropFloor*delaySecsPerFloor*frameRate)/delayScale;
         currentAEDV->data.pickUp = OrderList->data.pickUp;
         currentAEDV->data.dropOff = OrderList->data.dropOff;
-        currentAEDV->data.currStatus = IDLE;
-        currentAEDV->data.distanceTravelled = 0;
+        currentAEDV->data.currStatus = RESET_PICKUP;
         //store next address in temp pointer since it will be lost in the swap
         AEDVNode * temp = currentAEDV->next;
         SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
@@ -40,6 +40,27 @@ void AEDVHandler() {
         OrderList = OrderList->nextOrder;
     }
 }
+//PUT ORDERS INTO ARRAYS OF AS MANY AS POSSIBLE THAT ARE INACTVIE SMILE LOVE YOU LOTS YOU CAN DO IT !! 힘내
+void AEDVHandler_NEW() {
+    AEDVNode *currentAEDV = InactiveList;
+    while(currentAEDV != NULL && OrderList != NULL) {
+        currentAEDV->data.orderCount = 0;
+        while(currentAEDV->data.orderCount < MAX_ORDER_COUNT && OrderList != NULL) {
+            AddOrder(&currentAEDV);
+            OrderList = OrderList->nextOrder;
+        }
+        currentAEDV->data.currStatus = RESET_PICKUP;
+        AEDVNode * temp = currentAEDV->next;
+        SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
+        currentAEDV =  temp;
+    }
+}
+//PUT ORDER IN THE ARRAY
+void AddOrder(AEDVNode **currentVehicle) {
+    (*currentVehicle)->orderList[(*currentVehicle)->data.currentOrderNumber] = OrderList->data;
+    (*currentVehicle)->data.orderCount++;
+}
+
 int EventHandler(int time, EventNode **root) {
 
     EventNode *current = *root;
@@ -161,6 +182,9 @@ int EventHandler(int time, EventNode **root) {
 #endif
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     OrderData newOrder;
+
+    newOrder.activeCustomers[0] = Order;
+    newOrder.activeCustomers[1] = Delivery;
     //subtract 'A' to get integer code from the building code
     newOrder.pickUp.x = Order.building[0] - 'A';
     newOrder.pickUp.y = Order.building[1] - 'A';

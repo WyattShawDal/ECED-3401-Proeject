@@ -31,7 +31,8 @@ Cord AdjustOrder(Cord location);
  * @brief calculates new paths if necessary and then updates the AEDV's location
  */
 void AEDVHandler();
-
+void AEDVHandler_NEW();
+void AddOrder(AEDVNode **currentVehicle);
 
 
 #endif //EXAMPLE_EVENTS_H

@@ -5,7 +5,7 @@
 */
 #include "dependencies.h"
 
-void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCode) {
+void AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode) {
     AEDVNode* new_vehicle = malloc(sizeof(AEDVNode));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
@@ -13,12 +13,14 @@ void AddAEDV(AEDVNode** listRoot, int locationX, int locationY, int identifierCo
     }
     new_vehicle->data.EVIN = EVINBASE + identifierCode;
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
-    new_vehicle->data.position =  (Cord){locationX, locationY};
+    new_vehicle->data.position =  spawnLocation;
     new_vehicle->data.color = RED;
     new_vehicle->data.loadingDelay = 500; //temp val pls fix
-    new_vehicle->data.currStatus = IDLE;
+    new_vehicle->data.currStatus = RESET_PICKUP;
     new_vehicle->data.nextMove = NULL;
+    new_vehicle->data.currentOrderNumber = 0;
     new_vehicle->next = *listRoot;
+
     *listRoot = new_vehicle;
 }
 

@@ -69,6 +69,20 @@ void DrawMap(Tile tile) {
         case STREET:
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, GRAY);
             break;
+        case STABLE:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, ORANGE);
+            DrawText(TextFormat("S"), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellWidth +(cellHeight/4), cellWidth/FONTSCALING, BLACK);
+            break;
+        case CHARGER:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, LIME);
+            DrawText(TextFormat("C"), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellWidth +(cellHeight/4), cellWidth/FONTSCALING, BLACK);
+
+            break;
+        case BOTH:
+            DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, YELLOW);
+            DrawText(TextFormat("B"), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellWidth +(cellHeight/4), cellWidth/FONTSCALING, BLACK);
+
+            break;
         default:
             break;
     }
@@ -283,7 +297,7 @@ void UpdateMap() {
 }
 
 void DrawVehicleMovements(AEDVNode* currentVehicle) {
-    if(currentVehicle->data.currStatus == IDLE) {
+    if(currentVehicle->data.currStatus == RESET_PICKUP) {
         DrawRectangleV((Vector2) {.x = currentVehicle->data.position.x * cellWidth,
                                .y = currentVehicle->data.position.y * cellHeight},
                        currentVehicle->data.drawSize,

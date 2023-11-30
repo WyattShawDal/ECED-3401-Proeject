@@ -13,7 +13,7 @@ const char* eventFile = "TestEventFile.txt";
 const char* relativeCustomerFile = "TestRelativeCustomerFile.dat";
 const char* customerFile = "TestCustomerFile.txt";
 #else
-const char* eventFile = "eventFile.txt";
+const char* eventFile = "EventFile.txt";
 const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 const char* customerFile = "CustomerFile.txt";
 #endif
