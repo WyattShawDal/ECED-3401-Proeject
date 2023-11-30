@@ -160,8 +160,8 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
         ConvertBuildingCords(&building);
         printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
         /* Read next record */
-        fread(&building, sizeof(building), 1, FileDescriptor);
         AddBuilding(&StableList, &ChargerList, building);
+        fread(&building, sizeof(building), 1, FileDescriptor);
     }
     (void) getchar();
     fclose(FileDescriptor);

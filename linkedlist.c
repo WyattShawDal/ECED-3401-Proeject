@@ -37,13 +37,11 @@ void AddBuilding(BuildingNode** stableList, BuildingNode** chargerList, Building
     if(newBuilding->data.type == STB) {
         newBuilding->nextBuilding = *stableList;
         *stableList = newBuilding;
-        *chargerList = NULL;
     }
     // add to the charger list
     else if (newBuilding->data.type == CHG) {
         newBuilding->nextBuilding = *chargerList;
         *chargerList = newBuilding;
-        *stableList = NULL;
     }
     //add to both
     else {
