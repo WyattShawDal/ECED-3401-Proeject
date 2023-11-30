@@ -124,7 +124,7 @@ void AddEvent(EventNode** root, EventData Event) {
 }
 //Adds order to end of the order list, so oldest is at head of list.
 void AddOrderToList(OrderNode** root, OrderData Order) {
-    OrderNode *newOrder = malloc(sizeof(EventNode));
+    OrderNode *newOrder = malloc(sizeof(OrderNode));
     if(newOrder == NULL) {
         exit(-1);
     }
@@ -234,7 +234,7 @@ void clearBFS(queue** NVQ, queue** VQ) {
 TileNode* new_tile(Cord loc) {
     /*Creates new TileNode with given coordinates, returns the pointer to the tile*/
 
-    TileNode* tile = malloc(sizeof(TileNode));
+    TileNode* tile = (TileNode*) malloc(sizeof(TileNode));
     if(tile == NULL) {
         printf("FUCKYOU");
         exit(-10);
