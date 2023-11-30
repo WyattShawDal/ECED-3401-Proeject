@@ -37,6 +37,8 @@ typedef enum Type {
 
 typedef enum Status {
     IDLE,
+    RESET_PICKUP,
+    RESET_DROPOFF,
     PICKUP,
     TRANSIT,
     DROPOFF,
@@ -71,7 +73,7 @@ typedef struct event {
 }EventData;
 /* Need to add +1 to listed length */
 
-typedef struct {
+typedef struct Customer{
     int custNum;
     char firstName[FIRSTNAMELEN];
     char lastName[LASTNAMELEN];
@@ -143,6 +145,8 @@ typedef struct AEDV {
     int orderCount;
     int loadingDelay;
     int unloadingDelay;
+    int delay;
+    Cord destination;
     Cord position;
     Cord pickUp;
     Cord dropOff;
@@ -154,6 +158,7 @@ typedef struct AEDV {
 
 typedef struct Node {
     AEDV data;
+    OrderData orderList[MAX_ORDER_COUNT];
     struct Node *next;
 }AEDVNode;
 

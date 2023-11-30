@@ -39,9 +39,7 @@ queue * visitedQueue;
 int main() {
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-    for(int i = 0;i < 2;i++) {
-        AddAEDV(&InactiveList,i*3,0,i);
-    }
+    SpawnAEDVs(1);
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop

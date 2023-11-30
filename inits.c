@@ -38,3 +38,17 @@ void GenerationCheck() {
     }
     else printf("Resuming operation with old map..");
 }
+
+Cord QuadrantToStreetAddress(int quad, Cord location) {
+    quad < SE ? (location.y--) : (location.y++);
+    return location;
+}
+
+void SpawnAEDVs(int num) {
+    BuildingNode * temp = StableList;
+    for(int i = 0;i < num;i++) {
+        AddAEDV(&InactiveList, QuadrantToStreetAddress(temp->data.quad, temp->data.location),i);
+        temp = temp->nextBuilding;
+        if(temp == NULL) temp = StableList;
+    }
+}

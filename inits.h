@@ -44,7 +44,8 @@ void AEDVInput();
 /**
  * @brief populates AEDV struct with inital values
  */
-
+Cord QuadrantToStreetAddress(int quad, Cord location);
+void SpawnAEDVs(int num);
 void InitRoutine();
 void GenerationCheck();
 #endif //EXAMPLE_INITS_H

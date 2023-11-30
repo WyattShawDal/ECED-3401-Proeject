@@ -233,7 +233,12 @@ void clearBFS(queue** NVQ, queue** VQ) {
 
 TileNode* new_tile(Cord loc) {
     /*Creates new TileNode with given coordinates, returns the pointer to the tile*/
+
     TileNode* tile = malloc(sizeof(TileNode));
+    if(tile == NULL) {
+        printf("FUCKYOU");
+        exit(-10);
+    }
     tile->coordinate = loc;
     return tile;
 }

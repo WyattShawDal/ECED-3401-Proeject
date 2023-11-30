@@ -13,5 +13,6 @@
 void OneWayNavigation();
 void UpdateVehicleStats(AEDVNode ** currentVehicle);
 
+void OneWayNavigation_NEW();
 
 #endif //EXAMPLE_NAVIGATIONS_H

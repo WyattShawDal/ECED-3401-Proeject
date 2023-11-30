@@ -162,6 +162,22 @@ void InitTiles() {
             setJunctionDirection(i,j,firstStreetDirection,firstAvenueDirection);
         }
     }
+
+    BuildingNode * temp = ChargerList;
+    while(temp != NULL) {
+        if(temp->data.type == B)
+            dynamicMap[temp->data.location.x][temp->data.location.y].Type = BOTH;
+        else
+            dynamicMap[temp->data.location.x][temp->data.location.y].Type = CHARGER;
+
+        temp = temp->nextBuilding;
+    }
+    temp = StableList;
+    while(temp != NULL) {
+        if(temp->data.type != B)
+            dynamicMap[temp->data.location.x][temp->data.location.y].Type = STABLE;
+        temp = temp->nextBuilding;
+    }
 //#define directionTest1 //Prints every tile's direction
 #ifdef directionTest1
     for(int i = 0;i < MAX_COLS;i++) {
