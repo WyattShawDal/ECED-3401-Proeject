@@ -21,17 +21,23 @@ int EventHandler(int time,EventNode **current);
  * @return packaged order
  */
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery);
+
 /**
  * @brief adjusts coordinates to fit with grid parameters
  * @param location
  * @return coordinate pair of adjusted location
  */
 Cord AdjustOrder(Cord location);
+
 /**
- * @brief calculates new paths if necessary and then updates the AEDV's location
+ * @brief assigns deliveries to vehicles in the inactive list
  */
-void AEDVHandler();
 void AEDVHandler_NEW();
+
+/**
+ * @brief adds an order to the vehicle's array of orders
+ * @param currentVehicle pointer to the current AEDV, passed by reference
+ */
 void AddOrder(AEDVNode **currentVehicle);
 
 

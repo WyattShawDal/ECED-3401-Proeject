@@ -81,68 +81,12 @@ void OneWayNavigation_NEW() {
 
     //Loop through the list of AEDV's
     while(currentVehicle != NULL) {
-        //If AEDV has to find a new path
-        if(currentVehicle->data.nextMove == NULL) {
-            switch(currentVehicle->data.currStatus) {
-                case RESET_PICKUP:
-                    if(currentVehicle->data.currentOrderNumber < currentVehicle->data.orderCount) {
-                        UpdateNextInfo(currentVehicle, currentVehicle->data.currentOrderNumber, PICKUP);
-                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.destination);
-                        currentVehicle->data.currStatus = PICKUP;
-                    } else {
-                        currentVehicle->data.currStatus = RESET_DROPOFF;
-                        currentVehicle->data.currentOrderNumber = 0;
-                    }
-                    break;
-                case PICKUP:
-                    currentVehicle->data.nextMove = NULL; // No next move because you're going to be loading
-                    currentVehicle->data.currStatus = LOADING;
-                    break;
-                case LOADING:
-                    if(currentVehicle->data.delay == 0) {
-                        currentVehicle->data.currentOrderNumber ++;
-                        currentVehicle->data.currStatus = RESET_PICKUP;
-                    }
-                    else {
-                        currentVehicle->data.delay--;
-                        currentVehicle->data.currStatus = LOADING;
-                    }
-                    break;
-                case RESET_DROPOFF:
-                    if(currentVehicle->data.currentOrderNumber < currentVehicle->data.orderCount) {
-                        UpdateNextInfo(currentVehicle, currentVehicle->data.currentOrderNumber, DROPOFF);
-                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.destination);
-                        currentVehicle->data.currStatus = DROPOFF;
-                    } else {
-                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, QuadrantToStreetAddress(StableList->data.quad, StableList->data.location));
-                        currentVehicle->data.currStatus = ETGOHOME;
-                        currentVehicle->data.currentOrderNumber = 0;
-                    }
-                    break;
-                case DROPOFF:
-                    currentVehicle->data.nextMove = NULL;
-                    currentVehicle->data.currStatus = UNLOADING;
-                    break;
-                case UNLOADING:
-                    if(currentVehicle->data.delay == 0) {
-                        currentVehicle->data.currentOrderNumber++;
-                        currentVehicle->data.currStatus = RESET_DROPOFF;
-                    }
-                    else {
-                        currentVehicle->data.delay--;
-                        currentVehicle->data.currStatus = UNLOADING;
-                    }
-                    break;
-                case ETGOHOME:
-                    currentVehicle->data.currentOrderNumber = 0;
-                    currentVehicle->data.currStatus = IDLE;
-                    break;
-                case IDLE:
-                    SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
-                    break;
-            }
-        }
         savedVal = currentVehicle->next; //Save next AEDV in active list
+        //If AEDV has no further instructions
+        if(currentVehicle->data.nextMove == NULL) {
+            NoMoveCalculated(currentVehicle);
+        }
+
         if(currentVehicle->data.currStatus == DROPOFF || currentVehicle->data.currStatus == PICKUP || currentVehicle->data.currStatus == ETGOHOME) {
             currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
             InstructionNode * tempMove = currentVehicle->data.nextMove;
@@ -151,6 +95,108 @@ void OneWayNavigation_NEW() {
         }
         currentVehicle = savedVal; //Move to next AEDV in list
     }
+}
+
+void NoMoveCalculated(AEDVNode * currentVehicle) {
+    switch(currentVehicle->data.currStatus) {
+        case RESET_PICKUP:
+            //If orders left to pickup
+            if(currentVehicle->data.currentOrderNumber < currentVehicle->data.orderCount) {
+                UpdateNextInfo(currentVehicle, currentVehicle->data.currentOrderNumber, PICKUP); //Load destination and floor delay info for pickup customer
+                currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.destination); //Calculate movements to pickup customer
+                currentVehicle->data.currStatus = PICKUP;
+            } else {
+                //No more orders left to pickup, begin dropping off starting at order 0
+                currentVehicle->data.currentOrderNumber = 0;
+                currentVehicle->data.currStatus = RESET_DROPOFF;
+            }
+            break;
+        case PICKUP:
+            //Once AEDV has no more moves in PICKUP state, begin LOADING
+            currentVehicle->data.currStatus = LOADING;
+            break;
+        case LOADING:
+            if(currentVehicle->data.delay == 0) {
+                //Delay over, move to next order in RESET_PICKUP
+                currentVehicle->data.currentOrderNumber ++;
+                currentVehicle->data.currStatus = RESET_PICKUP;
+            }
+            else {
+                //Decrement delay, stay in LOADING
+                currentVehicle->data.delay--;
+            }
+            break;
+        case RESET_DROPOFF:
+            //If orders left to deliver
+            if(currentVehicle->data.currentOrderNumber < currentVehicle->data.orderCount) {
+                UpdateNextInfo(currentVehicle, currentVehicle->data.currentOrderNumber, DROPOFF); //Load destination and floor delay based on dropoff customer
+                currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.destination); //Calculate path from position to dropoff customer
+                currentVehicle->data.currStatus = DROPOFF;
+            } else {
+                //No more orders, calculate path from position back to closest stable
+                BuildingNode * returnStable = FindClosestBuilding(currentVehicle->data.position, STABLE);
+                currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, QuadrantToStreetAddress(returnStable->data.quad, returnStable->data.location));
+                currentVehicle->data.currentOrderNumber = 0; //Current order to perform reset to 0 (for next time AEDV is assigned orders)
+                currentVehicle->data.currStatus = ETGOHOME;
+            }
+            break;
+        case DROPOFF:
+            //Finished dropping off, begin unloading
+            currentVehicle->data.currStatus = UNLOADING;
+            break;
+        case UNLOADING:
+            if(currentVehicle->data.delay == 0) {
+                //Delay over, move to next order
+                currentVehicle->data.currentOrderNumber++;
+                currentVehicle->data.currStatus = RESET_DROPOFF;
+            }
+            else {
+                //Decrement delay, stay unloading
+                currentVehicle->data.delay--;
+            }
+            break;
+        case ETGOHOME:
+            //Arrived at stable, move to IDLE
+            currentVehicle->data.currStatus = IDLE;
+            break;
+        case IDLE:
+            //Move to inactive list
+            SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
+            break;
+    }
+}
+
+BuildingNode* FindClosestBuilding(Cord position, int mode) {
+    BuildingNode * currentNode;
+    if(mode == STABLE)
+        currentNode = StableList;
+    else
+        currentNode = ChargerList;
+
+    double currentDistance;
+    double minDistance;
+
+    //Minimum distance is the first node
+    BuildingNode * minNode = currentNode;
+    minDistance = FindDiagonalDistance(position, minNode->data.location);
+    currentNode = currentNode->nextBuilding;
+
+    //While more nodes exists, compare their distance to the min distance
+    while(currentNode != NULL) {
+        currentDistance = FindDiagonalDistance(position,currentNode->data.location);
+        if(currentDistance < minDistance) {
+            //New minDistance and minNode are the current distance and node being analyzed
+            minDistance = currentDistance;
+            minNode = currentNode;
+        }
+        currentNode = currentNode->nextBuilding;
+    }
+    //Return the closest node to the current
+    return minNode;
+}
+
+double FindDiagonalDistance(Cord pos1, Cord pos2) {
+    return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
 }
 
 void UpdateVehicleStats(AEDVNode ** currentVehicle) {

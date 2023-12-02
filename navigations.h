@@ -13,6 +13,14 @@
 void OneWayNavigation();
 void UpdateVehicleStats(AEDVNode ** currentVehicle);
 
+/**
+ * @brief handles movement of active AEDV's
+ */
 void OneWayNavigation_NEW();
 
+void NoMoveCalculated(AEDVNode * currentVehicle);
+
+BuildingNode* FindClosestBuilding(Cord position, int mode);
+
+double FindDiagonalDistance(Cord pos1, Cord pos2);
 #endif //EXAMPLE_NAVIGATIONS_H
