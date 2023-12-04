@@ -332,9 +332,9 @@ void PrintDeliveries(int mode, int ID) {
             fread(&deliveryRec,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
             if(deliveryRec.data.packageNumber != ID)
                 //If delivery record does not match passed in ID, record doesn't exist
-                printf("Package %d does not exist\n\n", ID);
+                printf("Package %d does not exist\n", ID);
             else
-                printf("Orign customer: %d Destination customer: %d Time: %d\n\n",
+                printf("Orign customer: %d Destination customer: %d Time: %d\n",
                        deliveryRec.data.activeCustomers[0].custNum,
                        deliveryRec.data.activeCustomers[1].custNum,
                        deliveryRec.data.dropTime - deliveryRec.data.pickupTime
