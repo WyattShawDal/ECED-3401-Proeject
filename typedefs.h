@@ -18,6 +18,11 @@ typedef struct Coordinate {
     int y;
 } Cord;
 
+typedef enum EntryType {
+    HEADER = 0,
+    ENTRY,
+}EntryType;
+
 /* Enums */
 typedef enum Type {
     STREET = 0,
@@ -35,6 +40,10 @@ typedef enum Type {
 
 }TILE_TYPE;
 
+typedef enum PrintMode{
+    ALL,
+    CUSTOMER,
+}PrintMode;
 typedef enum Status {
     IDLE,
     RESET_PICKUP,
@@ -52,7 +61,7 @@ typedef enum Visit {
     NO,
     YES
 }VISITED;
-typedef enum OP {READ_BINARY, WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
+typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD {NE, NW, SE, SW, INVALID_QUAD }QUADRANT_TYPE;
 
@@ -86,6 +95,10 @@ typedef struct order {
     Cord dropOff;
     int pickupFloor;
     int dropFloor;
+    int pickupTime;
+    int dropTime;
+    int nextDelivery;
+    int packageNumber;
     Customer activeCustomers[2];
 }OrderData;
 
@@ -161,5 +174,19 @@ typedef struct Node {
     OrderData orderList[MAX_ORDER_COUNT];
     struct Node *next;
 }AEDVNode;
+
+typedef struct DeliveryHeader{
+    int firstEmptyDelivery;
+}DeliveryHeader;
+
+typedef union DeliveryEntry {
+    DeliveryHeader header;
+    OrderData data;
+}DeliveryEntry;
+
+typedef struct LastDeliveryEntry{
+    int custNum;
+    int lastDelivery;
+}LastDeliveryEntry;
 
 #endif //EXAMPLE_STRUCTS_H

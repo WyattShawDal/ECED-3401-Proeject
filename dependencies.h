@@ -82,11 +82,13 @@ extern OrderNode * OrderList;
 extern BuildingNode * StableList;
 extern BuildingNode * ChargerList;
 
-extern FILE* RelCustomerFileDescriptor;
-extern FILE* FileDescriptor;
-
 extern queue * notVisitedQueue;
 extern queue * visitedQueue;
+
+extern FILE* RelCustomerFileDescriptor;
+extern FILE* FileDescriptor;
+extern FILE* DeliveryFileDescriptor;
+extern FILE* LastDeliveryDescriptor;
 
 
 

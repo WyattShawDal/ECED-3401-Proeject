@@ -14,8 +14,11 @@ const char* relativeCustomerFile = "TestRelativeCustomerFile.dat";
 const char* customerFile = "TestCustomerFile.txt";
 #else
 const char* eventFile = "EventFile.txt";
+const char* lastDeliveries = "lastDeliveries";
 const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 const char* customerFile = "CustomerFile.txt";
+const char* deliveryFile = "DeliveryFile.dat";
+
 #endif
 /**
  * @brief create a binary file for writing for generation
@@ -194,6 +197,11 @@ void ReadEventFile(char *fileName) {
 
 void CreateRelativeCustomerFile() {
     Customer customerInfo;
+
+    LastDeliveryEntry last; //Holds structs to place in lastDeliveries file
+    last.lastDelivery = -1; //No deliveries occured yet
+    OpenTargetFile(READ_WRITE_BINARY,lastDeliveries,&LastDeliveryDescriptor);
+
     OpenTargetFile(READ_TEXT, customerFile, &FileDescriptor);
     OpenTargetFile(WRITE_BINARY, relativeCustomerFile, &RelCustomerFileDescriptor);
     char line[sizeof(Customer)];
@@ -202,23 +210,114 @@ void CreateRelativeCustomerFile() {
     // Read and display each record sequentially
     while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
         sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
-
         //write out customer info into a binary file for relative accessing
         fwrite(&customerInfo, sizeof(Customer), 1, RelCustomerFileDescriptor);
-        // Add other fields as needed
 
+        //Create an entry in the lastDelivery file with ID corresponding to the txt cust file, and last delivery -1
+        last.custNum = customerInfo.custNum;
+        fwrite(&last,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
     }
     // Close the file
     fclose(FileDescriptor);
     fclose(RelCustomerFileDescriptor);
+}
+
+void CreateDeliveryFile() {
+    OpenTargetFile(READ_WRITE_BINARY,deliveryFile,&DeliveryFileDescriptor);
+    //Write header
+    DeliveryEntry h = {.header.firstEmptyDelivery = 500};
+    fwrite(&h,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
 
 }
 
-/**
- *
- * @param CustomerID
- * @return Returns customer struct for orderHandler to process
- */
+LastDeliveryEntry GetLastDelivery(int ID) {
+    //Return entry from the file containing ID's and last deliveries
+    LastDeliveryEntry last;
+    fseek(LastDeliveryDescriptor,(ID - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);
+    fread(&last,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
+    return last;
+}
+
+void AddToDeliveryFile(OrderData order) {
+    LastDeliveryEntry recentDelivery = GetLastDelivery(order.activeCustomers[0].custNum); //Get origin customer's last delivery
+    //Create new record with data passed in by order
+    DeliveryEntry newEntry;
+    newEntry.data = order;
+
+    newEntry.data.nextDelivery = recentDelivery.lastDelivery; //New record points to current last delivery
+    DeliveryEntry oldHeader = ReadDeliveryFile(HEADER,0); //Get the header from the delivery file
+    newEntry.data.packageNumber = oldHeader.header.firstEmptyDelivery; //New entry gets the first available package number
+    recentDelivery.lastDelivery = oldHeader.header.firstEmptyDelivery; //Record on the last delivery file points to the new entry
+
+
+    //Overwrite the last delivery file to point to the new entry
+    fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(Customer),SEEK_SET);
+    fwrite(&recentDelivery,sizeof(Customer),1,LastDeliveryDescriptor);
+
+    //Add new delivery to delivery file in the first available package number, place at index (package num - 500 + 1)*sizeof record, 1 skips the header
+    fseek(DeliveryFileDescriptor,(oldHeader.header.firstEmptyDelivery + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
+    fwrite(&newEntry,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
+
+    //First available package number is incremented, placed in the header
+    oldHeader.header.firstEmptyDelivery++;
+    fseek(DeliveryFileDescriptor,0,SEEK_SET);
+    fwrite(&oldHeader,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
+}
+
+DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
+    DeliveryEntry returnEntry;
+
+    if(mode == HEADER) {
+        //Seek to start
+        fseek(DeliveryFileDescriptor,0,SEEK_SET);
+        fread(&returnEntry,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
+    } else {
+        //Seek to position (Package number - 500 + 1)* sizeof entry 1 skips past the header
+        fseek(DeliveryFileDescriptor,(packageNum + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
+        fread(&returnEntry,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
+    }
+    return returnEntry;
+}
+
+void PrintDeliveries(int mode, int custID) {
+    DeliveryEntry del;
+    if (mode == ALL) {
+        fseek(DeliveryFileDescriptor, sizeof(DeliveryEntry), SEEK_SET);
+        printf("All packages:\n");
+        //Until all deliveries have been read
+        while (fread(&del, sizeof(DeliveryEntry), 1, DeliveryFileDescriptor) != 0) {
+            printf("Package number: %d Origin customer: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
+                   del.data.packageNumber,
+                   del.data.activeCustomers[0].custNum,
+                   del.data.activeCustomers[1].custNum,
+                   del.data.pickupTime,
+                   del.data.dropTime);
+        }
+    }
+    else {
+        int delivery = (GetLastDelivery(custID)).lastDelivery; //From last delivery file, get customer's last delivery
+        DeliveryEntry deliveryRec;
+        printf("Customer %d has:\n", custID);
+        if(delivery == -1) printf("No deliveries\n");
+        //Until no more deliveries left (earlier delivery should point to -1)
+        while(delivery != -1) {
+            //Find delivery in relative delivery file, print info
+            fseek(DeliveryFileDescriptor,(delivery + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
+            fread(&deliveryRec,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
+            printf("Package number: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
+                   deliveryRec.data.packageNumber,
+                   deliveryRec.data.activeCustomers[1].custNum,
+                   deliveryRec.data.pickupTime,
+                   deliveryRec.data.dropTime);
+            //Move to next delivery
+            delivery = deliveryRec.data.nextDelivery;
+        }
+    }
+    printf("\n");
+}
+
+
+
 Customer GetCustomerInfo(int CustomerID) {
     Customer customer;
     OpenTargetFile(READ_BINARY, relativeCustomerFile, &RelCustomerFileDescriptor);

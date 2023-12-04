@@ -15,6 +15,8 @@
 //File Pointers
 FILE* FileDescriptor;
 FILE* RelCustomerFileDescriptor;
+FILE* DeliveryFileDescriptor;
+FILE* LastDeliveryDescriptor;
 
 //Screen definitions
 const int screenWidth = 1050;
@@ -51,6 +53,10 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
+    PrintDeliveries(ALL,0);
+    PrintDeliveries(CUSTOMER,1000);
+
+    getchar();
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();

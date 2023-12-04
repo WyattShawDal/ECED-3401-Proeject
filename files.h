@@ -8,7 +8,6 @@
 #define EXAMPLE_FILES_H
 #include "dependencies.h"
 
-#define TRUNCATE(name)	name[strlen(name)-1] = '\0'
 
 bool OpenTargetFile(OPERATION Operation, const char *fileName, FILE **FPointer);
 
@@ -16,21 +15,25 @@ bool OpenTargetFile(OPERATION Operation, const char *fileName, FILE **FPointer);
  * @brief generates a binary c file for building generation according to user input
  */
 void GenerateBuildFile();
+
 /**
  * @brief reads a binary file to generate information for the mapping functions
  * @param streetDir
  * @param avenueDir
  */
 void ReadBuildFile(int * streetDir, int * avenueDir);
+
 /**
  * @brief reads the tab-seperated event file sequentially and adds to an event list
  * @param fileName
  */
 void ReadEventFile(char *fileName);
+
 /**
  * @brief creates a relative customer file from the tab-seperated customer file
  */
 void CreateRelativeCustomerFile();
+
 /**
  * @brief navigates relative file to access specific customer record
  * @param CustomerID id of customer to be returned
@@ -39,7 +42,38 @@ void CreateRelativeCustomerFile();
  */
 Customer GetCustomerInfo(int CustomerID);
 
-bool CheckDirectionChar(char direction);
-bool CheckBuildingChar(char building);
+/**
+ * @brief creates the delivery file with a header containing the first available package num (500)
+ */
+void CreateDeliveryFile(void);
+
+/**
+ * @brief adds to the delivery file, updating the linked list of deliveries via the customer file
+ * @param order delivery struct passed in
+ */
+void AddToDeliveryFile(OrderData order);
+
+/**
+ * @brief returns delivery entries from a given position in the delivery file
+ * @param mode HEADER returns the first entry, ENTRY returns entry at provided packageNum
+ * @param packageNum used to specify which record to return. Value ignored for HEADER
+ * @return returns the DeliveryEntry (union between header and order struct)
+ */
+DeliveryEntry ReadDeliveryFile(int mode, int packageNum);
+
+/**
+ * @brief navigates (relative) LastDeliveryFile for given ID to determine that customer's most recent delivery
+ * @param ID
+ * @return returns LastDeliveryEntry (struct containing customer ID and last package number)
+ */
+LastDeliveryEntry GetLastDelivery(int ID);
+
+/**
+ * @brief prints records from delivery file
+ * @param mode ALL prints all records in ascending package order, CUSTOMER prints a given origin customer's packages from latest to earliest
+ * @param custID Used to specify which customer, ignored for ALL
+ */
+void PrintDeliveries(int mode, int custID);
+
 void ConvertBuildingCords(BuildingData *building);
 #endif //EXAMPLE_FILES_H

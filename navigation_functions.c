@@ -66,11 +66,12 @@ void OneWayNavigation() {
 }
 void UpdateNextInfo(AEDVNode * aedv, int currentOrderNumber , int mode) {
     if(mode == PICKUP) {
-        aedv->data.destination = aedv->orderList[currentOrderNumber].pickUp;
-        aedv->data.delay = aedv->orderList[currentOrderNumber].pickupFloor;
+        aedv->data.destination = aedv->orderList[currentOrderNumber].pickUp; //Get destination from order in current index
+        //Delay in ticks = (floors * ticks / second * seconds / floor) / delayScale = ticks
+        aedv->data.delay = aedv->orderList[currentOrderNumber].pickupFloor*frameRate*delaySecsPerFloor/delayScale;
     } else {
         aedv->data.destination = aedv->orderList[currentOrderNumber].dropOff;
-        aedv->data.delay = aedv->orderList[currentOrderNumber].dropFloor;
+        aedv->data.delay = aedv->orderList[currentOrderNumber].dropFloor*frameRate*delaySecsPerFloor/delayScale;
     }
 }
 
@@ -113,6 +114,7 @@ void NoMoveCalculated(AEDVNode * currentVehicle) {
             break;
         case PICKUP:
             //Once AEDV has no more moves in PICKUP state, begin LOADING
+            UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,PICKUP);
             currentVehicle->data.currStatus = LOADING;
             break;
         case LOADING:
@@ -147,6 +149,8 @@ void NoMoveCalculated(AEDVNode * currentVehicle) {
         case UNLOADING:
             if(currentVehicle->data.delay == 0) {
                 //Delay over, move to next order
+                UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,DROPOFF);
+                AddToDeliveryFile(currentVehicle->orderList[currentVehicle->data.currentOrderNumber]);
                 currentVehicle->data.currentOrderNumber++;
                 currentVehicle->data.currStatus = RESET_DROPOFF;
             }
@@ -197,6 +201,14 @@ BuildingNode* FindClosestBuilding(Cord position, int mode) {
 
 double FindDiagonalDistance(Cord pos1, Cord pos2) {
     return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
+}
+
+void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode) {
+    if(mode == PICKUP) {
+        (*currentVehicle)->orderList[orderNum].pickupTime = frameCount;
+    } else {
+        (*currentVehicle)->orderList[orderNum].dropTime = frameCount;
+    }
 }
 
 void UpdateVehicleStats(AEDVNode ** currentVehicle) {

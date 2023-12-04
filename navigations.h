@@ -20,6 +20,7 @@ void OneWayNavigation_NEW();
 
 void NoMoveCalculated(AEDVNode * currentVehicle);
 
+void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode);
 BuildingNode* FindClosestBuilding(Cord position, int mode);
 
 double FindDiagonalDistance(Cord pos1, Cord pos2);

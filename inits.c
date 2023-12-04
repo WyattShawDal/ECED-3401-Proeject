@@ -21,7 +21,7 @@ void InitRoutine() {
     SetTargetFPS(frameRate);// Set our simulation to run at x frames-per-second
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
     CreateRelativeCustomerFile();
-
+    CreateDeliveryFile();
 
     queueSetup(&notVisitedQueue);
     queueSetup(&visitedQueue);
