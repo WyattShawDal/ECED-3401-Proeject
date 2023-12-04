@@ -78,7 +78,7 @@ int EventHandler(int time, EventNode **root) {
                      GetCustomerInfo(current->eventData.destinationID));
         //If there are no more events after this one
         if ((current = current->nextEvent) == NULL) {
-            printf("No more events\n");
+            //printf("No more events\n");
             return time;
         }
             //There are more events, are they at the same time?
@@ -90,8 +90,8 @@ int EventHandler(int time, EventNode **root) {
             //if the first event is the same as the last event
             while (temp == time) {
                 temp = time;
-                printf("Two events with same time\n");
-                //ReadCustomerFile(current->eventData.originID, current->eventData.destinationID);
+                //printf("Two events with same time\n");
+
                 //Call order handler to process the next order
                 OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
                              GetCustomerInfo(current->eventData.destinationID));

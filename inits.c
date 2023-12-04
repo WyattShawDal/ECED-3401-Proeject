@@ -22,7 +22,7 @@ void InitRoutine() {
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
     CreateRelativeCustomerFile();
     CreateDeliveryFile();
-    SpawnAEDVs(2);
+    SpawnAEDVs(maxAEDV);
 
 
     queueSetup(&notVisitedQueue);
@@ -41,6 +41,13 @@ void GenerationCheck() {
         GenerateBuildFile();
     }
     else printf("Resuming operation with old map\n");
+
+    //Check until a nonzero amount of AEDV's are spawned
+    do {
+        printf("How many AEDV's to spawn: ");
+        scanf("%d",&maxAEDV);
+    } while(maxAEDV < 1);
+    printf("Spawned %d AEDV's\n", maxAEDV);
 }
 
 Cord QuadrantToStreetAddress(int quad, Cord location) {

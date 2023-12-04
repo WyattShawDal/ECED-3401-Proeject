@@ -114,7 +114,7 @@ void NoMoveCalculated(AEDVNode * currentVehicle) {
             break;
         case PICKUP:
             //Once AEDV has no more moves in PICKUP state, begin LOADING
-            UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,PICKUP);
+            UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,PICKUP); //Record pickup time
             currentVehicle->data.currStatus = LOADING;
             break;
         case LOADING:
@@ -149,8 +149,8 @@ void NoMoveCalculated(AEDVNode * currentVehicle) {
         case UNLOADING:
             if(currentVehicle->data.delay == 0) {
                 //Delay over, move to next order
-                UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,DROPOFF);
-                AddToDeliveryFile(currentVehicle->orderList[currentVehicle->data.currentOrderNumber]);
+                UpdateDeliveryStats(&currentVehicle,currentVehicle->data.currentOrderNumber,DROPOFF); //Record time of dropoff
+                AddToDeliveryFile(currentVehicle->orderList[currentVehicle->data.currentOrderNumber]); //Once delivery finished, record it in the file
                 currentVehicle->data.currentOrderNumber++;
                 currentVehicle->data.currStatus = RESET_DROPOFF;
             }
