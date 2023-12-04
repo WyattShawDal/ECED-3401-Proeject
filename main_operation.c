@@ -52,10 +52,7 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
-    PrintDeliveries(ALL,0);
-    PrintDeliveries(CUSTOMER,1000);
 
-    getchar();
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();
