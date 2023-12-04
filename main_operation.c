@@ -41,14 +41,13 @@ queue * visitedQueue;
 int main() {
     GenerationCheck(); //check whether user wants to create a new map file or not
     InitRoutine(); // Run all initialization functions
-    SpawnAEDVs(2);
+
     EventNode *current = EventList; //create a pointer to linked list root
     int eventTime = current->eventData.time; //get time of first event
     // Main simulation loop
     while (!WindowShouldClose())   // Detect window close button or ESC key
     {
         if(frameCount == eventTime) eventTime = EventHandler(eventTime, &current);
-        if(frameCount % 10 == 0) printf("Time: %d\n", frameCount); //print the time every 10 ticks
 
         CameraControl();
         UpdateDrawFrame();

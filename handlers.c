@@ -78,7 +78,7 @@ int EventHandler(int time, EventNode **root) {
                      GetCustomerInfo(current->eventData.destinationID));
         //If there are no more events after this one
         if ((current = current->nextEvent) == NULL) {
-            printf("No more events total amount");
+            printf("No more events\n");
             return time;
         }
             //There are more events, are they at the same time?
@@ -266,3 +266,4 @@ Cord AdjustOrder(Cord location) {
     }
     return location;
 }
+

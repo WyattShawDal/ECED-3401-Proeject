@@ -1,15 +1,19 @@
 /*
  *Author: Wyatt Shaw 
  *Created on: 2023-11-12
- *Module Info: Contains Frame and Camera update functions, which make the core "loop" functions declared in main
+ *Module Info: Contains Frame and Camera update functions as well as querying functions, which make the core "loop" functions declared in main
 */
 #include "dependencies.h"
 // Module Functions Definition
 void UpdateDrawFrame(void) {
+
+    CommandHandler();
+
     // begins drawing a new frame
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
+    DrawText(TextFormat("Current Time: %d", frameCount), 0, -50, 20, RAYWHITE); //print the time every 10 ticks
     // Draw the map into the window using tile data generated in main
     UpdateMap();
     // Intelligent Order Assignment
@@ -18,14 +22,18 @@ void UpdateDrawFrame(void) {
     OneWayNavigation_NEW();
     // Draw the new movements
     AEDVNode* curr = ActiveList;
-    AEDVNode* inactiveCurr = InactiveList;
+
     while(curr != NULL) {
         DrawVehicleMovements(curr);
+        UpdateVehicleStats(&curr);
+
         curr = curr->next;
     }
-    while(inactiveCurr != NULL) {
-        DrawVehicleMovements(inactiveCurr);
-        inactiveCurr = inactiveCurr->next;
+    curr = InactiveList;
+    while(curr != NULL) {
+        DrawVehicleMovements(curr);
+        UpdateVehicleStats(&curr);
+        curr = curr->next;
     }
     frameCount++; // Update Frame count to next tick
     EndDrawing();
@@ -52,3 +60,100 @@ void CameraControl() {
         if(camera.zoom < zoomIncrement) camera.zoom = zoomIncrement;
     }
 }
+
+void QueryVehicleInfo() {
+    int vehicleIndex;
+    int searchStatus = SEARCHING_ACTIVE;
+    AEDVNode *queried = ActiveList;
+    printf("Enter Vehicle EVIN : ");
+    scanf("%d", &vehicleIndex);
+
+    while(queried != NULL && searchStatus != FOUND) {
+        if(queried->data.EVIN == vehicleIndex) {
+            searchStatus = FOUND;
+            PrintVehicleStats(queried->data, IN_DEPTH);
+        }
+        else queried = queried->next;
+        if(queried == NULL && searchStatus == SEARCHING_ACTIVE) {
+            searchStatus = SEARCHING_INACTIVE;
+            queried = InactiveList;
+        }
+        if (queried == NULL && searchStatus == SEARCHING_INACTIVE) {
+            searchStatus = MISSING;
+            printf("No AEDV in either list with EVIN = %d\n", vehicleIndex);
+        }
+    }
+}
+
+void QueryDeliveryInfo(int command, int custID) {
+    PrintDeliveries(command, custID);
+}
+
+void PrintVehicleStats(AEDV vehicle, int level) {
+    if(level == QUICK) {
+        printf("Quick stats:\n"
+               "Status = %d\n"
+               "Order Number = %d\n"
+               "Total Orders = %d\n",
+               vehicle.currStatus,  vehicle.currentOrderNumber,  vehicle.orderCount);
+    }
+    else if (level == IN_DEPTH) {
+        printf("In depth stats:\n"
+               "Status = %d\n"
+               "Order Number = %d\n"
+               "Total Orders = %d\n"
+               "Battery Level = %lf\n"
+               "Ticks Moving = %d\n"
+               "Ticks Idle = %d\n",
+               vehicle.currStatus,  vehicle.currentOrderNumber,  vehicle.orderCount,
+               vehicle.stats.currentBattery, vehicle.stats.ticksMoving, vehicle.stats.ticksIdle);
+    }
+}
+
+void GetCommands(int startup) {
+    if(startup == SETUP) {
+        printf("Welcome to the AEDV delivery system. This system employs various commands for I/O\n"
+               "Here is a list of useful commands, you may call this list again by pressing 'H'\n"
+               "Query vehicle information: F\n"
+               "List all deliveries: D\n"
+               "List a customers deliveries: S\n"
+               "Zoom: Mouse Wheel up/down\n"
+               "Pan: Hold Right Click.\n"
+               "This program was written by: Wyatt Shaw & Cameron Archibald for ECED 3401\n");
+    }
+    else {
+        printf("Here is a list of useful commands, you may call this list again by pressing 'H'\n"
+               "Query vehicle information: F\n"
+               "List all deliveries: D\n"
+               "List a customers deliveries: S\n"
+               "Zoom: Mouse Wheel up/down\n"
+               "Pan: Hold Right Click.\n");
+    }
+}
+void CommandHandler() {
+    if(IsKeyPressed(KEY_H)) {
+        GetCommands(CALLED);
+    }
+    if(IsKeyPressed(KEY_D))
+        QueryDeliveryInfo(ALL, 0);
+
+    if(IsKeyPressed(KEY_F)) {
+        QueryVehicleInfo();
+    }
+    if(IsKeyPressed(KEY_S)) {
+        int custID;
+        printf("Which Customer would you like to search?\n");
+        scanf("%d", &custID);
+        QueryDeliveryInfo(CUSTOMER, custID);
+
+    }
+}
+
+/*    double maxBattery;
+    double currentBattery;
+    double rechargeRate;
+    double drivingRate; //discharge
+    double idleRate; //stationary
+    int ticksMoving;
+    int ticksIdle;
+    int ticksCharging;*/

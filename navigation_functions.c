@@ -202,6 +202,15 @@ BuildingNode* FindClosestBuilding(Cord position, int mode) {
 double FindDiagonalDistance(Cord pos1, Cord pos2) {
     return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
 }
+void UpdateVehicleStats(AEDVNode ** vehicle) {
+    if ((*vehicle)->data.currStatus == IDLE || (*vehicle)->data.currStatus == LOADING ||
+        (*vehicle)->data.currStatus == UNLOADING) {
+        (*vehicle)->data.stats.ticksIdle++;
+    } else if ((*vehicle)->data.currStatus == PICKUP || (*vehicle)->data.currStatus == DROPOFF) {
+        (*vehicle)->data.stats.ticksMoving++;
+        (*vehicle)->data.stats.currentBattery -= (*vehicle)->data.stats.drivingRate;
+    }
+}
 
 void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode) {
     if(mode == PICKUP) {
@@ -210,12 +219,3 @@ void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode) {
         (*currentVehicle)->orderList[orderNum].dropTime = frameCount;
     }
 }
-
-void UpdateVehicleStats(AEDVNode ** currentVehicle) {
-    (*currentVehicle)->data.distanceTravelled++;
-}
-
-/*
- * JUST LET THE KIDDO SPEAK, HE LIKES HIS BALLOONS...
- */
-

@@ -22,9 +22,13 @@ void InitRoutine() {
     ReadEventFile("EventFile.txt"); //read event file to populate list at program beginning
     CreateRelativeCustomerFile();
     CreateDeliveryFile();
+    SpawnAEDVs(2);
+
 
     queueSetup(&notVisitedQueue);
     queueSetup(&visitedQueue);
+    GetCommands(SETUP);
+
 }
 
 void GenerationCheck() {
@@ -36,7 +40,7 @@ void GenerationCheck() {
 
         GenerateBuildFile();
     }
-    else printf("Resuming operation with old map..");
+    else printf("Resuming operation with old map\n");
 }
 
 Cord QuadrantToStreetAddress(int quad, Cord location) {
@@ -51,4 +55,20 @@ void SpawnAEDVs(int num) {
         temp = temp->nextBuilding;
         if(temp == NULL) temp = StableList;
     }
+    AEDVNode* currentVehicle = InactiveList;
+    while(currentVehicle !=  NULL) {
+        InitAEDVStats(&currentVehicle);
+        currentVehicle = currentVehicle->next;
+    }
+}
+
+void InitAEDVStats(AEDVNode **vehicle) {
+    (*vehicle)->data.stats.maxBattery = 100; //100 kw.t
+    (*vehicle)->data.stats.currentBattery = (*vehicle)->data.stats.maxBattery; // # kw.t
+    (*vehicle)->data.stats.drivingRate = 0.1; //kw.t/tick
+    (*vehicle)->data.stats.idleRate = 0.01; //kw.t/tick
+    (*vehicle)->data.stats.rechargeRate = 0.05; //kw.t/tick
+    (*vehicle)->data.stats.ticksCharging = 0;
+    (*vehicle)->data.stats.ticksIdle = 0;
+    (*vehicle)->data.stats.ticksMoving = 0;
 }

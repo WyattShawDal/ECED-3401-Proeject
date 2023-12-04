@@ -48,4 +48,5 @@ Cord QuadrantToStreetAddress(int quad, Cord location);
 void SpawnAEDVs(int num);
 void InitRoutine();
 void GenerationCheck();
+void InitAEDVStats(AEDVNode **vehicle);
 #endif //EXAMPLE_INITS_H

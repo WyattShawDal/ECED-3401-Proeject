@@ -39,6 +39,13 @@ bool OpenTargetFile(OPERATION OPERATION, const char *fileName, FILE **FPointer) 
     else if(OPERATION == READ_TEXT) {
         return (*FPointer = fopen(fileName, "r")) != NULL;
     }
+    else if(OPERATION == READ_WRITE_BINARY) {
+        return (*FPointer = fopen(fileName, "wb+")) != NULL;
+    }
+    else {
+        printf("Invalid File Opening Command.. Exiting");
+        exit(-1);
+    }
 }
 
 /* Building File Functions */
@@ -138,7 +145,7 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     MAX_ROWS = numBuildingsY * 4 + 1; //Same justification, but for adding road below
     cellHeight = screenWidth/MAX_COLS;
     cellWidth = screenWidth/MAX_COLS;
-    printf("You entered %d x %d, which forms %d Cols and %d Rows\n", numBuildingsX, numBuildingsY, MAX_COLS, MAX_ROWS);
+    //printf("You entered %d x %d, which forms %d Cols and %d Rows\n", numBuildingsX, numBuildingsY, MAX_COLS, MAX_ROWS);
 
     fread(streetDir, sizeof(int), 1, FileDescriptor);
     fread(avenueDir, sizeof(int), 1, FileDescriptor);
@@ -155,13 +162,13 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     else {
         avenueDirection = 'N';
     }
-    printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
+    //printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
 
     fread(&building, sizeof(building), 1, FileDescriptor);
     while (strcmp(building.buildingLabel, "XX") != 0)
     {
         ConvertBuildingCords(&building);
-        printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
+        //printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
         /* Read next record */
         AddBuilding(&StableList, &ChargerList, building);
         fread(&building, sizeof(building), 1, FileDescriptor);
@@ -183,7 +190,7 @@ void ReadEventFile(char *fileName) {
     while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
         sscanf(line, "%d\t%c\t%d\t%d\t%d\t", &time, &eventName, &origin, &destination, &weight);
 
-        printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
+        //printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
         currentEvent.time = time;
         currentEvent.type = eventName;
         currentEvent.originID = origin;

@@ -12,6 +12,7 @@
 #define BUILDINGLEN 3
 #define MAX_ORDER_COUNT 5
 
+
 /* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
     int x;
@@ -24,6 +25,20 @@ typedef enum EntryType {
 }EntryType;
 
 /* Enums */
+
+typedef enum Level {
+    QUICK,
+    IN_DEPTH,
+    FULL
+}SEARCH_LEVEL;
+typedef enum QuerySearching {
+    SEARCHING_ACTIVE,
+    SEARCHING_INACTIVE,
+    MISSING,
+    FOUND,
+    SETUP,
+    CALLED
+}QueryCommands;
 typedef enum Type {
     STREET = 0,
     STREET_E,
@@ -61,7 +76,7 @@ typedef enum Visit {
     NO,
     YES
 }VISITED;
-typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY, READ_TEXT, WRITE_TEXT} OPERATION;
+typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY, READ_TEXT, WRITE_TEXT, INVALID_OP} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD {NE, NW, SE, SW, INVALID_QUAD }QUADRANT_TYPE;
 
@@ -141,24 +156,26 @@ typedef struct queue {
     TileNode * rear;
 }queue;
 
-typedef struct AEDV {
-    int EVIN;
-    int distanceTravelled;
-#ifdef TASK7
-    int maxBattery;
-    int currentBattery;
-    int rechargeRate;
-    int drivingRate; //discharge
-    int idleRate; //stationary
+typedef struct VehicleStats {
+    double maxBattery;
+    double currentBattery;
+    double rechargeRate;
+    double drivingRate; //discharge
+    double idleRate; //stationary
     int ticksMoving;
     int ticksIdle;
     int ticksCharging;
-#endif
+}VehicleStats;
+
+typedef struct AEDV {
+    int EVIN;
+    int distanceTravelled;
     int currentOrderNumber;
     int orderCount;
     int loadingDelay;
     int unloadingDelay;
     int delay;
+    VehicleStats stats;
     Cord destination;
     Cord position;
     Cord pickUp;

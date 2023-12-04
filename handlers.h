@@ -39,6 +39,13 @@ void AEDVHandler_NEW();
  * @param currentVehicle pointer to the current AEDV, passed by reference
  */
 void AddOrder(AEDVNode **currentVehicle);
+void QueryVehicleInfo();
+void QueryDeliveryInfo(int command, int custID);
+void PrintVehicleStats(AEDV vehicle, int level);
+void CommandHandler();
+void GetCommands(int startup);
+
+
 
 
 #endif //EXAMPLE_EVENTS_H
