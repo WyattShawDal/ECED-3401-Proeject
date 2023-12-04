@@ -258,8 +258,8 @@ void AddToDeliveryFile(OrderData order) {
 
 
     //Overwrite the last delivery file to point to the new entry
-    fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(Customer),SEEK_SET);
-    fwrite(&recentDelivery,sizeof(Customer),1,LastDeliveryDescriptor);
+    fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);
+    fwrite(&recentDelivery,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
 
     //Add new delivery to delivery file in the first available package number, place at index (package num - 500 + 1)*sizeof record, 1 skips the header
     fseek(DeliveryFileDescriptor,(oldHeader.header.firstEmptyDelivery + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
