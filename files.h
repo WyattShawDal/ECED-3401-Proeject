@@ -71,6 +71,7 @@ LastDeliveryEntry GetLastDelivery(int ID);
 /**
  * @brief prints records from delivery file
  * @param mode ALL prints all records in ascending package order, CUSTOMER prints a given origin customer's packages from latest to earliest
+ * SINGLE prints record with given package number
  * @param custID Used to specify which customer, ignored for ALL
  */
 void QueryDeliveryInfo(int mode, int custID);

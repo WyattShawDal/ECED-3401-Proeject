@@ -58,6 +58,7 @@ typedef enum Type {
 typedef enum PrintMode{
     ALL,
     CUSTOMER,
+    PACKAGE,
 }PrintMode;
 typedef enum Status {
     IDLE,

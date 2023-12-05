@@ -60,33 +60,29 @@ void CameraControl() {
 
 void QueryVehicleInfo() {
     int vehicleIndex;
-    int searchStatus = SEARCHING_ACTIVE;
-    AEDVNode *queried = ActiveList;
     printf("Enter Vehicle EVIN : ");
     scanf("%d", &vehicleIndex);
 
-    while(queried != NULL && searchStatus != FOUND) {
-        if(queried->data.EVIN == vehicleIndex) {
-            searchStatus = FOUND;
-            PrintVehicleStats(queried->data, IN_DEPTH);
-        }
-        else queried = queried->next;
-        if(queried == NULL && searchStatus == SEARCHING_ACTIVE) {
-            searchStatus = SEARCHING_INACTIVE;
-            queried = InactiveList;
-        }
-        if (queried == NULL && searchStatus == SEARCHING_INACTIVE) {
-            searchStatus = MISSING;
-            printf("No AEDV in either list with EVIN = %d\n", vehicleIndex);
-        }
-    }
+    //Search active list
+    AEDVNode * vehicle = FindInList(ActiveList,vehicleIndex);
+
+    if(vehicle == NULL)
+        //If not in active list, search inactive list
+        vehicle = FindInList(InactiveList,vehicleIndex);
+
+    if(vehicle == NULL)
+        //Not in either list
+        printf("No AEDV in either list with EVIN = %d\n\n", vehicleIndex);
+    else
+        //Vehicle found, print stats
+        PrintVehicleStats(vehicle->data,IN_DEPTH);
 }
 void PrintVehicleStats(AEDV vehicle, int level) {
     if(level == QUICK) {
         printf("Quick stats:\n"
                "Status = %d\n"
                "Order Number = %d\n"
-               "Total Orders = %d\n",
+               "Total Orders = %d\n\n",
                vehicle.currStatus,  vehicle.currentOrderNumber,  vehicle.orderCount);
     }
     else if (level == IN_DEPTH) {
@@ -96,7 +92,7 @@ void PrintVehicleStats(AEDV vehicle, int level) {
                "Total Orders = %d\n"
                "Battery Level = %lf\n"
                "Ticks Moving = %d\n"
-               "Ticks Idle = %d\n",
+               "Ticks Idle = %d\n\n",
                vehicle.currStatus,  vehicle.currentOrderNumber,  vehicle.orderCount,
                vehicle.stats.currentBattery, vehicle.stats.ticksMoving, vehicle.stats.ticksIdle);
     }
@@ -109,17 +105,19 @@ void GetCommands(int startup) {
                "Query vehicle information: F\n"
                "List all deliveries: D\n"
                "List a customers deliveries: S\n"
+               "Print a specific delivery: P\n"
                "Zoom: Mouse Wheel up/down\n"
                "Pan: Hold Right Click.\n"
-               "This program was written by: Wyatt Shaw & Cameron Archibald for ECED 3401\n");
+               "This program was written by: Wyatt Shaw & Cameron Archibald for ECED 3401\n\n");
     }
     else {
         printf("Here is a list of useful commands, you may call this list again by pressing 'H'\n"
                "Query vehicle information: F\n"
                "List all deliveries: D\n"
                "List a customers deliveries: S\n"
+               "Print a specific delivery: P\n"
                "Zoom: Mouse Wheel up/down\n"
-               "Pan: Hold Right Click.\n");
+               "Pan: Hold Right Click.\n\n");
     }
 }
 void CommandHandler() {
@@ -134,10 +132,15 @@ void CommandHandler() {
     }
     if(IsKeyPressed(KEY_S)) {
         int custID;
-        printf("Which Customer would you like to search?\n");
+        printf("Enter the customer ID to search: ");
         scanf("%d", &custID);
         QueryDeliveryInfo(CUSTOMER, custID);
-
+    }
+    if(IsKeyPressed(KEY_P)) {
+        int packageID;
+        printf("Enter the package ID to search: ");
+        scanf("%d",&packageID);
+        QueryDeliveryInfo(PACKAGE,packageID);
     }
 }
 

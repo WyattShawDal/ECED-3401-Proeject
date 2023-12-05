@@ -258,8 +258,8 @@ void AddToDeliveryFile(OrderData order) {
 
 
     //Overwrite the last delivery file to point to the new entry
-    fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(Customer),SEEK_SET);
-    fwrite(&recentDelivery,sizeof(Customer),1,LastDeliveryDescriptor);
+    fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);
+    fwrite(&recentDelivery,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
 
     //Add new delivery to delivery file in the first available package number, place at index (package num - 500 + 1)*sizeof record, 1 skips the header
     fseek(DeliveryFileDescriptor,(oldHeader.header.firstEmptyDelivery + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
@@ -288,37 +288,58 @@ DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
 
 void QueryDeliveryInfo(int mode, int custID) {
     DeliveryEntry del;
-    if (mode == ALL) {
-        fseek(DeliveryFileDescriptor, sizeof(DeliveryEntry), SEEK_SET);
-        printf("All packages:\n");
-        //Until all deliveries have been read
-        while (fread(&del, sizeof(DeliveryEntry), 1, DeliveryFileDescriptor) != 0) {
-            printf("Package number: %d Origin customer: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
-                   del.data.packageNumber,
-                   del.data.activeCustomers[0].custNum,
-                   del.data.activeCustomers[1].custNum,
-                   del.data.pickupTime,
-                   del.data.dropTime);
-        }
-    }
-    else {
-        int delivery = (GetLastDelivery(custID)).lastDelivery; //From last delivery file, get customer's last delivery
-        DeliveryEntry deliveryRec;
-        printf("Customer %d has:\n", custID);
-        if(delivery == -1) printf("No deliveries\n");
-        //Until no more deliveries left (earlier delivery should point to -1)
-        while(delivery != -1) {
-            //Find delivery in relative delivery file, print info
-            fseek(DeliveryFileDescriptor,(delivery + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
+    LastDeliveryEntry last;
+    switch (mode) {
+        case ALL: //Print all packages
+            fseek(DeliveryFileDescriptor, sizeof(DeliveryEntry), SEEK_SET);
+            printf("All packages:\n");
+            //Until all deliveries have been read
+            while (fread(&del, sizeof(DeliveryEntry), 1, DeliveryFileDescriptor) != 0) {
+                printf("Package number: %d Origin customer: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
+                       del.data.packageNumber,
+                       del.data.activeCustomers[0].custNum,
+                       del.data.activeCustomers[1].custNum,
+                       del.data.pickupTime,
+                       del.data.dropTime);
+            }
+            break;
+        case CUSTOMER: //Print all packages from one customer (ID)
+            last = GetLastDelivery(ID);
+            if (last.custNum != ID) { //if GetLastDelivery doesn't return a record equal to the desired custID, that ID doesn't exist
+                printf("%d is not a valid customer ID\n\n", ID);
+                return;
+            }
+            int delivery = last.lastDelivery; //From last delivery file, get customer's last delivery
+            DeliveryEntry deliveryRec;
+            printf("Customer %d has:\n", ID);
+            if (delivery == -1) printf("No deliveries\n");
+            //Until no more deliveries left (earlier delivery should point to -1)
+            while (delivery != -1) {
+                //Find delivery in relative delivery file, print info
+                fseek(DeliveryFileDescriptor, (delivery + 1 - DELIVERYBASE) * sizeof(DeliveryEntry), SEEK_SET);
+                fread(&deliveryRec, sizeof(DeliveryEntry), 1, DeliveryFileDescriptor);
+                printf("Package number: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
+                       deliveryRec.data.packageNumber,
+                       deliveryRec.data.activeCustomers[1].custNum,
+                       deliveryRec.data.pickupTime,
+                       deliveryRec.data.dropTime);
+                //Move to next delivery
+                delivery = deliveryRec.data.nextDelivery;
+            }
+            break;
+        case PACKAGE: //Print a specific package number (ID)
+            fseek(DeliveryFileDescriptor,(ID + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
             fread(&deliveryRec,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
-            printf("Package number: %d Destination customer: %d Pickup time: %d Dropoff time: %d\n",
-                   deliveryRec.data.packageNumber,
-                   deliveryRec.data.activeCustomers[1].custNum,
-                   deliveryRec.data.pickupTime,
-                   deliveryRec.data.dropTime);
-            //Move to next delivery
-            delivery = deliveryRec.data.nextDelivery;
-        }
+            if(deliveryRec.data.packageNumber != ID)
+                //If delivery record does not match passed in ID, record doesn't exist
+                printf("Package %d does not exist\n", ID);
+            else
+                printf("Orign customer: %d Destination customer: %d Time: %d\n",
+                       deliveryRec.data.activeCustomers[0].custNum,
+                       deliveryRec.data.activeCustomers[1].custNum,
+                       deliveryRec.data.dropTime - deliveryRec.data.pickupTime
+                       );
+            break;
     }
     printf("\n");
 }
