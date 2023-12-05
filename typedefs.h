@@ -32,10 +32,6 @@ typedef enum Level {
     FULL
 }SEARCH_LEVEL;
 typedef enum QuerySearching {
-    SEARCHING_ACTIVE,
-    SEARCHING_INACTIVE,
-    MISSING,
-    FOUND,
     SETUP,
     CALLED
 }QueryCommands;
@@ -51,8 +47,6 @@ typedef enum Type {
     CHARGER,
     STABLE,
     BOTH,
-    CONSTRUCTION,
-
 }TILE_TYPE;
 
 typedef enum PrintMode{
@@ -65,12 +59,10 @@ typedef enum Status {
     RESET_PICKUP,
     RESET_DROPOFF,
     PICKUP,
-    TRANSIT,
     DROPOFF,
     LOADING,
     UNLOADING,
     ETGOHOME,
-    RECHARGING,
 }AEDV_STATUS;
 
 typedef enum Visit {
