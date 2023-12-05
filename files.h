@@ -73,7 +73,7 @@ LastDeliveryEntry GetLastDelivery(int ID);
  * @param mode ALL prints all records in ascending package order, CUSTOMER prints a given origin customer's packages from latest to earliest
  * @param custID Used to specify which customer, ignored for ALL
  */
-void PrintDeliveries(int mode, int custID);
+void QueryDeliveryInfo(int mode, int custID);
 
 void ConvertBuildingCords(BuildingData *building);
 #endif //EXAMPLE_FILES_H

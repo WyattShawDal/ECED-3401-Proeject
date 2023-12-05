@@ -52,8 +52,8 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
-    PrintDeliveries(ALL,0);
-    PrintDeliveries(CUSTOMER,1000);
+    QueryDeliveryInfo(ALL, 0);
+    QueryDeliveryInfo(CUSTOMER, 1000);
 
     getchar();
     // De-Initialization

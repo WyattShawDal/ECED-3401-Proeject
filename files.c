@@ -286,7 +286,7 @@ DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
     return returnEntry;
 }
 
-void PrintDeliveries(int mode, int custID) {
+void QueryDeliveryInfo(int mode, int custID) {
     DeliveryEntry del;
     if (mode == ALL) {
         fseek(DeliveryFileDescriptor, sizeof(DeliveryEntry), SEEK_SET);

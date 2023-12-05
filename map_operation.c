@@ -35,7 +35,7 @@ void DrawMap(Tile tile) {
             DrawRectangle(CURR_COL * cellWidth, CURR_ROW * cellHeight, cellWidth, cellHeight, BLUE);
             DrawText(TextFormat("%s", NESWArray[(CURR_COL % 4)-1][(CURR_ROW % 4)-1]), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellHeight + (cellWidth/4), (cellWidth/FONTSCALING)-4.2, WHITE);
             if((CURR_COL-2)%4 == 0 &&(CURR_ROW-2)%4 == 0)  {
-                DrawText(TextFormat("%c%c", ('A' + (CURR_ROW-2)/4), ('A' + (CURR_COL-2)/4)), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellHeight + (cellWidth/4), (cellWidth/FONTSCALING)-4.2, WHITE);
+                DrawText(TextFormat("%c%c", ('A' + (CURR_COL-2)/4), ('A' + (CURR_ROW-2)/4)), CURR_COL * cellWidth + (cellWidth/4), CURR_ROW * cellHeight + (cellWidth/4), (cellWidth/FONTSCALING)-4.2, WHITE);
             }
             break;
         case JUNCTION:
@@ -304,7 +304,7 @@ void UpdateMap() {
             }
             //Draws the Column Counter above the map
             if(CURR_ROW == 0) {
-                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +(cellWidth/4), -cellHeight, cellHeight/FONTSCALING, WHITE);
+                DrawText(TextFormat("%d", CURR_COL), CURR_COL * cellWidth +(cellWidth/4), -cellHeight*0.66, cellHeight/FONTSCALING, WHITE);
             }
             //Fills in the given cell
             DrawMap(dynamicMap[CURR_COL][CURR_ROW]);
