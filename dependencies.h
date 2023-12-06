@@ -49,7 +49,7 @@
     #define DEFAULTOFFSET 45
     #define DEFAULTFONTSIZE 20
 
-    #define frameRate 100 // Ticks/second
+    #define frameRate 10 // Ticks/second
     #define delaySecsPerFloor 25 //15 seconds up, 10 seconds down
     #define delayScale 200 // divide by this number to scale the delay
 

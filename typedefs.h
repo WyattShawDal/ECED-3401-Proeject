@@ -73,7 +73,6 @@ typedef enum Status {
     LOADING,
     UNLOADING,
     ETGOHOME,
-    RECHARGING,
 }AEDV_STATUS;
 
 typedef struct STATUS_PRINT{

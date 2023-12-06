@@ -40,7 +40,6 @@ void AEDVHandler_NEW();
  */
 void AddOrder(AEDVNode **currentVehicle);
 void QueryVehicleInfo();
-void QueryDeliveryInfo(int command, int custID);
 void PrintVehicleStats(AEDV vehicle, int level);
 void CommandHandler();
 void GetCommands(int startup);

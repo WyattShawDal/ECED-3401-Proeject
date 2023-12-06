@@ -291,7 +291,7 @@ DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
     return returnEntry;
 }
 
-void PrintDeliveries(int mode, int ID) {
+void QueryDeliveryInfo(int mode, int ID) {
     DeliveryEntry del;
     LastDeliveryEntry last;
     switch (mode) {

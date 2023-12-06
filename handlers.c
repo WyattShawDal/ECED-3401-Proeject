@@ -12,35 +12,6 @@
  *
  */
 
-void AEDVHandler() {
-    if(InactiveList == NULL) {
-        //printf("No Free AEDV's\n");
-        return;
-    }
-    AEDVNode *currentAEDV = InactiveList;
-    if(OrderList == NULL) {
-        //printf("No More Orders\n");
-        currentAEDV->data.currStatus = RESET_PICKUP;
-        return;
-    }
-    //Both values updated in loop, so must be checked in condition
-
-    while(InactiveList != NULL && OrderList != NULL){
-        //Set AEDV values for navigation
-        currentAEDV->data.loadingDelay = (OrderList->data.pickupFloor*delaySecsPerFloor*frameRate)/delayScale; //Ticks per floor, includes up and down
-        currentAEDV->data.unloadingDelay = (OrderList->data.dropFloor*delaySecsPerFloor*frameRate)/delayScale;
-        currentAEDV->data.pickUp = OrderList->data.pickUp;
-        currentAEDV->data.dropOff = OrderList->data.dropOff;
-        currentAEDV->data.currStatus = RESET_PICKUP;
-        //store next address in temp pointer since it will be lost in the swap
-        AEDVNode * temp = currentAEDV->next;
-        SwapBetweenLists(&InactiveList,&ActiveList,currentAEDV->data.EVIN);
-        currentAEDV =  temp;
-        //update to next order
-        OrderList = OrderList->nextOrder;
-    }
-}
-
 //PUT ORDERS INTO ARRAYS OF AS MANY AS POSSIBLE THAT ARE INACTIVE
 void AEDVHandler_NEW() {
     AEDVNode *currentAEDV = InactiveList; //Get first AEDV in the inactive list

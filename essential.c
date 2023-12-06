@@ -19,12 +19,11 @@ struct STATUS_PRINT stprint[] = {
 void UpdateDrawFrame(void) {
 
     CommandHandler();
-
     // begins drawing a new frame
     BeginDrawing();
     ClearBackground(BLACK);
     BeginMode2D(camera);
-    DrawText(TextFormat("Current Time: %d", frameCount), 0, -50, 20, RAYWHITE); //print the time every 10 ticks
+    DrawText(TextFormat("Current Time: %d", frameCount), 0, -40, 20, RAYWHITE); //print the time every 10 ticks
     // Draw the map into the window using tile data generated in main
     UpdateMap();
     // Intelligent Order Assignment
@@ -49,9 +48,7 @@ void UpdateDrawFrame(void) {
     frameCount++; // Update Frame count to next tick
     EndDrawing();
 }
-
-
-/* Initialization and Assigment Functions */
+/* Initialization and Assignment Functions */
 void CameraControl() {
     if(IsMouseButtonDown(MOUSE_BUTTON_RIGHT))  {
         Vector2 delta  = GetMouseDelta();
@@ -91,11 +88,6 @@ void QueryVehicleInfo() {
         //Vehicle found, print stats
         PrintVehicleStats(vehicle->data,IN_DEPTH);
 }
-
-void QueryDeliveryInfo(int command, int custID) {
-    PrintDeliveries(command, custID);
-}
-
 void PrintVehicleStats(AEDV vehicle, int level) {
     if(level == QUICK) {
         printf("Quick stats:\n"
