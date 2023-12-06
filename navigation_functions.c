@@ -6,64 +6,6 @@
 
 #include "dependencies.h"
 
-void OneWayNavigation() {
-    AEDVNode* currentVehicle = ActiveList;
-    AEDVNode* savedVal;
-
-    //Loop through the list of AEDV's
-    while(currentVehicle != NULL) {
-        //If AEDV has to find a new path
-        if(currentVehicle->data.nextMove == NULL) {
-            switch(currentVehicle->data.currStatus) {
-                case RESET_PICKUP:
-                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.pickUp);
-                    currentVehicle->data.currStatus = PICKUP;
-                    break;
-                case PICKUP:
-                    printf("AEDV %d made it to pickup location: %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.nextMove = NULL;
-                    currentVehicle->data.currStatus = LOADING;
-                    break;
-
-                case LOADING:
-                    if(currentVehicle->data.loadingDelay == 0) {
-                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.dropOff);
-                        currentVehicle->data.currStatus = DROPOFF;
-                    }
-                    else {
-                        currentVehicle->data.loadingDelay--;
-                        currentVehicle->data.currStatus = LOADING;
-                    }
-                    break;
-
-                case DROPOFF:
-                    printf("AEDV %d made it to destination %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.nextMove = NULL;
-                    currentVehicle->data.currStatus = UNLOADING;
-                    break;
-                case UNLOADING:
-                    if(currentVehicle->data.unloadingDelay == 0) {
-                        currentVehicle->data.currStatus = RESET_PICKUP;
-                    }
-                    else {
-                        currentVehicle->data.unloadingDelay--;
-                        currentVehicle->data.currStatus = UNLOADING;
-                    }
-                    break;
-            }
-        }
-        savedVal = currentVehicle->next; //Save next AEDV in active list
-        if(currentVehicle->data.currStatus == DROPOFF || currentVehicle->data.currStatus == PICKUP) {
-            currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
-            InstructionNode * tempMove = currentVehicle->data.nextMove;
-            currentVehicle->data.nextMove = tempMove->child; //Move to next instruction
-            free(tempMove);
-        }
-        else if(currentVehicle->data.currStatus == RESET_PICKUP)
-            SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
-        currentVehicle = savedVal; //Move to next AEDV in list
-    }
-}
 void UpdateNextInfo(AEDVNode * aedv, int currentOrderNumber , int mode) {
     if(mode == PICKUP) {
         aedv->data.destination = aedv->orderList[currentOrderNumber].pickUp; //Get destination from order in current index
@@ -78,7 +20,6 @@ void UpdateNextInfo(AEDVNode * aedv, int currentOrderNumber , int mode) {
 void OneWayNavigation_NEW() {
     AEDVNode* currentVehicle = ActiveList;
     AEDVNode* savedVal;
-
 
     //Loop through the list of AEDV's
     while(currentVehicle != NULL) {
