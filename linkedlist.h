@@ -56,7 +56,7 @@ TileNode* new_tile(Cord loc);
  * @param locationY y location to create AEDV at (stable location)
  * @param identifierCode unique EVIN for AEDV
  */
-void AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode );
+AEDVNode* AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode );
 
 /**
  * @brief moves AEDVNode between the active list and inactive list

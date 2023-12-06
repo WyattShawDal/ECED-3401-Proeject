@@ -6,64 +6,7 @@
 
 #include "dependencies.h"
 
-void OneWayNavigation() {
-    AEDVNode* currentVehicle = ActiveList;
-    AEDVNode* savedVal;
 
-    //Loop through the list of AEDV's
-    while(currentVehicle != NULL) {
-        //If AEDV has to find a new path
-        if(currentVehicle->data.nextMove == NULL) {
-            switch(currentVehicle->data.currStatus) {
-                case RESET_PICKUP:
-                    currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.pickUp);
-                    currentVehicle->data.currStatus = PICKUP;
-                    break;
-                case PICKUP:
-                    printf("AEDV %d made it to pickup location: %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.nextMove = NULL;
-                    currentVehicle->data.currStatus = LOADING;
-                    break;
-
-                case LOADING:
-                    if(currentVehicle->data.loadingDelay == 0) {
-                        currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, currentVehicle->data.dropOff);
-                        currentVehicle->data.currStatus = DROPOFF;
-                    }
-                    else {
-                        currentVehicle->data.loadingDelay--;
-                        currentVehicle->data.currStatus = LOADING;
-                    }
-                    break;
-
-                case DROPOFF:
-                    printf("AEDV %d made it to destination %d %d\n", currentVehicle->data.EVIN, currentVehicle->data.position.x, currentVehicle->data.position.y);
-                    currentVehicle->data.nextMove = NULL;
-                    currentVehicle->data.currStatus = UNLOADING;
-                    break;
-                case UNLOADING:
-                    if(currentVehicle->data.unloadingDelay == 0) {
-                        currentVehicle->data.currStatus = RESET_PICKUP;
-                    }
-                    else {
-                        currentVehicle->data.unloadingDelay--;
-                        currentVehicle->data.currStatus = UNLOADING;
-                    }
-                    break;
-            }
-        }
-        savedVal = currentVehicle->next; //Save next AEDV in active list
-        if(currentVehicle->data.currStatus == DROPOFF || currentVehicle->data.currStatus == PICKUP) {
-            currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
-            InstructionNode * tempMove = currentVehicle->data.nextMove;
-            currentVehicle->data.nextMove = tempMove->child; //Move to next instruction
-            free(tempMove);
-        }
-        else if(currentVehicle->data.currStatus == RESET_PICKUP)
-            SwapBetweenLists(&ActiveList, &InactiveList, currentVehicle->data.EVIN);
-        currentVehicle = savedVal; //Move to next AEDV in list
-    }
-}
 void UpdateNextInfo(AEDVNode * aedv, int currentOrderNumber , int mode) {
     if(mode == PICKUP) {
         aedv->data.destination = aedv->orderList[currentOrderNumber].pickUp; //Get destination from order in current index
@@ -138,6 +81,7 @@ void NoMoveCalculated(AEDVNode * currentVehicle) {
                 //No more orders, calculate path from position back to closest stable
                 BuildingNode * returnStable = FindClosestBuilding(currentVehicle->data.position, STABLE);
                 currentVehicle->data.nextMove = pathCalculation(currentVehicle->data.position, QuadrantToStreetAddress(returnStable->data.quad, returnStable->data.location));
+                currentVehicle->data.stats.lastStable = returnStable->data; //Store stable info to place in vehicleFile
                 currentVehicle->data.currentOrderNumber = 0; //Current order to perform reset to 0 (for next time AEDV is assigned orders)
                 currentVehicle->data.currStatus = ETGOHOME;
             }
@@ -203,12 +147,17 @@ double FindDiagonalDistance(Cord pos1, Cord pos2) {
     return sqrt(pow(pos1.x - pos2.x, 2) + pow(pos1.y - pos2.y, 2));
 }
 void UpdateVehicleStats(AEDVNode ** vehicle) {
-    if ((*vehicle)->data.currStatus == IDLE || (*vehicle)->data.currStatus == LOADING ||
-        (*vehicle)->data.currStatus == UNLOADING) {
-        (*vehicle)->data.stats.ticksIdle++;
-    } else if ((*vehicle)->data.currStatus == PICKUP || (*vehicle)->data.currStatus == DROPOFF) {
-        (*vehicle)->data.stats.ticksMoving++;
-        (*vehicle)->data.stats.currentBattery -= (*vehicle)->data.stats.drivingRate;
+    switch((*vehicle)->data.currStatus) {
+        case IDLE:
+        case LOADING:
+        case UNLOADING:
+            (*vehicle)->data.stats.ticksIdle++;
+            break;
+        case PICKUP:
+        case DROPOFF:
+            (*vehicle)->data.stats.ticksMoving++;
+            (*vehicle)->data.stats.currentBattery -= (*vehicle)->data.stats.drivingRate;
+            break;
     }
 }
 

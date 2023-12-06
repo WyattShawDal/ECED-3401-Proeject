@@ -45,8 +45,9 @@ void AEDVInput();
  * @brief populates AEDV struct with inital values
  */
 Cord QuadrantToStreetAddress(int quad, Cord location);
-void SpawnAEDVs(int num);
+void SpawnAEDVs(void);
 void InitRoutine();
 void GenerationCheck();
-void InitAEDVStats(AEDVNode **vehicle);
+void InitAEDVStats(AEDVNode **vehicle, int MODE, VehicleStats existingStats);
+void ModifyAEDVStats(AEDVNode **vehicle);
 #endif //EXAMPLE_INITS_H

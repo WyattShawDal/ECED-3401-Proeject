@@ -18,6 +18,7 @@ const char* lastDeliveries = "lastDeliveries";
 const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 const char* customerFile = "CustomerFile.txt";
 const char* deliveryFile = "DeliveryFile.dat";
+const char* vehicleFile = "VehicleFile.dat";
 
 #endif
 /**
@@ -39,8 +40,11 @@ bool OpenTargetFile(OPERATION OPERATION, const char *fileName, FILE **FPointer) 
     else if(OPERATION == READ_TEXT) {
         return (*FPointer = fopen(fileName, "r")) != NULL;
     }
-    else if(OPERATION == READ_WRITE_BINARY) {
+    else if(OPERATION == READ_WRITE_BINARY_NEW) {
         return (*FPointer = fopen(fileName, "wb+")) != NULL;
+    }
+    else if(OPERATION == READ_WRITE_BINARY_EXISTING) {
+        return (*FPointer = fopen(fileName,"rb+")) != NULL;
     }
     else {
         printf("Invalid File Opening Command.. Exiting");
@@ -59,8 +63,8 @@ void GenerateBuildFile() {
     (void) getchar(); /* Eat last EOLN */
 
     printf("You inputted %d x %d buildings\n", xLength, yLength);
-    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
-    fwrite(&yLength, sizeof(int), 1, FileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
+    fwrite(&yLength, sizeof(int), 1, BuildFileDescriptor);
 
     do {
         printf("Enter Direction of first street (1 for E, 2 for W): ");
@@ -69,7 +73,7 @@ void GenerateBuildFile() {
 
     }while(!(streetDirection >= STREET_E && streetDirection <= STREET_W));
 
-    fwrite(&streetDirection, sizeof(int), 1, FileDescriptor);
+    fwrite(&streetDirection, sizeof(int), 1, BuildFileDescriptor);
 
     do {
         printf("Enter Direction of first street (4 for N, 5 for S): ");
@@ -78,7 +82,7 @@ void GenerateBuildFile() {
 
     }while(!(avenueDirection >= AVENUE_N && avenueDirection <= AVENUE_S));
 
-    fwrite(&avenueDirection, sizeof(int), 1, FileDescriptor);
+    fwrite(&avenueDirection, sizeof(int), 1, BuildFileDescriptor);
 
     printf("Enter Building's Label (XX to exit): ");
     (void) fscanf(stdin, "%s", building.buildingLabel);
@@ -105,7 +109,7 @@ void GenerateBuildFile() {
         while (!(building.quad >= NE && building.quad < INVALID_QUAD));
 
         /* Write the bldg_data to the file */
-        fwrite(&building, sizeof(building), 1, FileDescriptor);
+        fwrite(&building, sizeof(building), 1, BuildFileDescriptor);
 
         printf("Enter Building's Label (XX to exit): ");
         (void) fscanf(stdin, "%s", building.buildingLabel);
@@ -116,7 +120,7 @@ void GenerateBuildFile() {
             building.quad = INVALID_QUAD;
             building.type = INVALID_TYPE;
             printf("Exit Code Chosen\n");
-            fwrite(&building, sizeof(building), 1, FileDescriptor);
+            fwrite(&building, sizeof(building), 1, BuildFileDescriptor);
 
             break;
         }
@@ -125,30 +129,30 @@ void GenerateBuildFile() {
 
     /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
-    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
-    fwrite(&xLength, sizeof(int), 1, FileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
+    fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
 
-    fclose(FileDescriptor);
+    fclose(BuildFileDescriptor);
 
     (void) getchar(); /* Eat last EOLN */
 }
 
 void ReadBuildFile(int * streetDir, int * avenueDir) {
-    OpenTargetFile(READ_BINARY, "GenerationFile.dat", &FileDescriptor);
+    OpenTargetFile(READ_BINARY, "GenerationFile.dat", &BuildFileDescriptor);
     int numBuildingsX, numBuildingsY;
     char streetDirection, avenueDirection;
     BuildingData building;
 
-    fread(&numBuildingsX, sizeof(int), 1, FileDescriptor);
-    fread(&numBuildingsY, sizeof(int), 1, FileDescriptor);
+    fread(&numBuildingsX, sizeof(int), 1, BuildFileDescriptor);
+    fread(&numBuildingsY, sizeof(int), 1, BuildFileDescriptor);
     MAX_COLS = numBuildingsX * 4 + 1; //Building widths are 3, with a road to the left are 4, then add one road to the right
     MAX_ROWS = numBuildingsY * 4 + 1; //Same justification, but for adding road below
     cellHeight = screenWidth/MAX_COLS;
     cellWidth = screenWidth/MAX_COLS;
     //printf("You entered %d x %d, which forms %d Cols and %d Rows\n", numBuildingsX, numBuildingsY, MAX_COLS, MAX_ROWS);
 
-    fread(streetDir, sizeof(int), 1, FileDescriptor);
-    fread(avenueDir, sizeof(int), 1, FileDescriptor);
+    fread(streetDir, sizeof(int), 1, BuildFileDescriptor);
+    fread(avenueDir, sizeof(int), 1, BuildFileDescriptor);
 
     if(*streetDir == STREET_E) {
         streetDirection = 'E';
@@ -164,17 +168,17 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     }
     //printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
 
-    fread(&building, sizeof(building), 1, FileDescriptor);
+    fread(&building, sizeof(building), 1, BuildFileDescriptor);
     while (strcmp(building.buildingLabel, "XX") != 0)
     {
         ConvertBuildingCords(&building);
         //printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
         /* Read next record */
         AddBuilding(&StableList, &ChargerList, building);
-        fread(&building, sizeof(building), 1, FileDescriptor);
+        fread(&building, sizeof(building), 1, BuildFileDescriptor);
     }
     (void) getchar();
-    fclose(FileDescriptor);
+    fclose(BuildFileDescriptor);
 }
 /*
  * Event File is a sequential, tab seperated file. So, to read it we can just do normal reading procedures while parsing out data
@@ -184,10 +188,10 @@ void ReadEventFile(char *fileName) {
     char eventName;
     int time, origin, destination, weight;
     EventData currentEvent;
-    OpenTargetFile(READ_TEXT, fileName, &FileDescriptor);
+    OpenTargetFile(READ_TEXT, fileName, &BuildFileDescriptor);
 
-    fgets(line, sizeof(line), FileDescriptor);
-    while(fgets(line, sizeof(line), FileDescriptor) != NULL) {
+    fgets(line, sizeof(line), BuildFileDescriptor);
+    while(fgets(line, sizeof(line), BuildFileDescriptor) != NULL) {
         sscanf(line, "%d\t%c\t%d\t%d\t%d\t", &time, &eventName, &origin, &destination, &weight);
 
         //printf("Time = %d, Event = %c, Origin = %d, Destination = %d, Weight = %d\n", time,eventName, origin, destination, weight);
@@ -199,7 +203,7 @@ void ReadEventFile(char *fileName) {
         AddEvent(&EventList, currentEvent);
 
     }
-    fclose(FileDescriptor);
+    fclose(BuildFileDescriptor);
 }
 
 void CreateRelativeCustomerFile() {
@@ -207,15 +211,15 @@ void CreateRelativeCustomerFile() {
 
     LastDeliveryEntry last; //Holds structs to place in lastDeliveries file
     last.lastDelivery = -1; //No deliveries occured yet
-    OpenTargetFile(READ_WRITE_BINARY,lastDeliveries,&LastDeliveryDescriptor);
+    OpenTargetFile(READ_WRITE_BINARY_NEW,lastDeliveries,&LastDeliveryDescriptor);
 
-    OpenTargetFile(READ_TEXT, customerFile, &FileDescriptor);
+    OpenTargetFile(READ_TEXT, customerFile, &BuildFileDescriptor);
     OpenTargetFile(WRITE_BINARY, relativeCustomerFile, &RelCustomerFileDescriptor);
     char line[sizeof(Customer)];
 
-    fgets(line, MAXSTRLEN, FileDescriptor); // Read and discard text header
+    fgets(line, MAXSTRLEN, BuildFileDescriptor); // Read and discard text header
     // Read and display each record sequentially
-    while (fgets(line, sizeof(line), FileDescriptor) != NULL) {
+    while (fgets(line, sizeof(line), BuildFileDescriptor) != NULL) {
         sscanf(line, "%d\t%s\t%s\t%s\t%s\t%d", &customerInfo.custNum, customerInfo.firstName, customerInfo.lastName, customerInfo.building, customerInfo.entrance, &customerInfo.floor);
         //write out customer info into a binary file for relative accessing
         fwrite(&customerInfo, sizeof(Customer), 1, RelCustomerFileDescriptor);
@@ -225,25 +229,18 @@ void CreateRelativeCustomerFile() {
         fwrite(&last,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
     }
     // Close the file
-    fclose(FileDescriptor);
+    fclose(BuildFileDescriptor);
     fclose(RelCustomerFileDescriptor);
 }
 
 void CreateDeliveryFile() {
-    OpenTargetFile(READ_WRITE_BINARY,deliveryFile,&DeliveryFileDescriptor);
+    OpenTargetFile(READ_WRITE_BINARY_NEW,deliveryFile,&DeliveryFileDescriptor);
     //Write header
     DeliveryEntry h = {.header.firstEmptyDelivery = 500};
     fwrite(&h,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
 
 }
 
-LastDeliveryEntry GetLastDelivery(int ID) {
-    //Return entry from the file containing ID's and last deliveries
-    LastDeliveryEntry last;
-    fseek(LastDeliveryDescriptor,(ID - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);
-    fread(&last,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
-    return last;
-}
 
 void AddToDeliveryFile(OrderData order) {
     LastDeliveryEntry recentDelivery = GetLastDelivery(order.activeCustomers[0].custNum); //Get origin customer's last delivery
@@ -271,6 +268,14 @@ void AddToDeliveryFile(OrderData order) {
     fwrite(&oldHeader,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
 }
 
+LastDeliveryEntry GetLastDelivery(int ID) {
+    //Return entry from the file containing ID's and last deliveries
+    LastDeliveryEntry last;
+    fseek(LastDeliveryDescriptor,(ID - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);
+    fread(&last,sizeof(LastDeliveryEntry),1,LastDeliveryDescriptor);
+    return last;
+}
+
 DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
     DeliveryEntry returnEntry;
 
@@ -279,7 +284,7 @@ DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
         fseek(DeliveryFileDescriptor,0,SEEK_SET);
         fread(&returnEntry,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
     } else {
-        //Seek to position (Package number - 500 + 1)* sizeof entry 1 skips past the header
+        //Seek to position (Package number - 500 + 1)* sizeof entry, + 1 skips past the header
         fseek(DeliveryFileDescriptor,(packageNum + 1 - DELIVERYBASE)*sizeof(DeliveryEntry),SEEK_SET);
         fread(&returnEntry,sizeof(DeliveryEntry),1,DeliveryFileDescriptor);
     }
@@ -394,3 +399,136 @@ void ConvertBuildingCords(BuildingData *building) {
             break;
     }
 }
+
+void CreateVehicleFile(int MODE) {
+    int choice;
+    if(MODE == KEEP_FILE) {
+        //User chooses whether to overwrite or create new file
+        printf("Overwrite vehicle file? 1 for YES, 0 for NO: ");
+        scanf("%d", &choice);
+    } else
+        choice = NEW_FILE; //Overwrite file
+
+    if(choice) {
+        //Open to overwrite or make new file
+        OpenTargetFile(READ_WRITE_BINARY_NEW,vehicleFile,&VehicleFileDescriptor);
+
+        VehicleEntry entry;
+        //No entries in the file yet, intialize the header to point to -1 for every EVIN
+        for(int i = 0;i < MAX_VEHICLES_FILE;i++)
+            entry.header.recentEntry[i] = -1;
+        entry.header.nextOpenEntry = 0;
+        fwrite(&entry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+        fclose(VehicleFileDescriptor);
+        //Open to read/write new file
+
+    }
+    OpenTargetFile(READ_WRITE_BINARY_EXISTING,vehicleFile,&VehicleFileDescriptor);
+    if(!choice)
+        PrintVehicleFile(-1); //Print contents of file if it isn't overwritten
+}
+
+void AddToVehicleFile(VehicleEntry newEntry) {
+    VehicleEntry oldHeader = GetVehicleEntry(HEADER,0);
+
+    int oldNext = oldHeader.header.recentEntry[newEntry.data.EVIN - EVINBASE]; //Given EVIN's old most recent entry
+    newEntry.data.nextEntry = oldNext; //New entry points to former most recent entry
+
+    int writeIndex = oldHeader.header.nextOpenEntry; //Index to write to is fetched from the header
+    oldHeader.header.recentEntry[newEntry.data.EVIN - EVINBASE] = writeIndex; //Update header to say EVIN's most recent delivery is the position being written to
+    oldHeader.header.nextOpenEntry++; //Header now indicates that position is filled
+
+    fseek(VehicleFileDescriptor,0,SEEK_SET); //Overwrite the header with new info
+    fwrite(&oldHeader,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+
+    //Seek to index being written to + 1 to skip over the header.
+    fseek(VehicleFileDescriptor,(writeIndex + 1)*sizeof(VehicleEntry),SEEK_SET);
+    fwrite(&newEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+
+    printf("\n");
+
+
+}
+
+VehicleEntry GetVehicleEntry (int MODE, int recordNum) {
+    VehicleEntry returnEntry;
+    int index;
+    switch(MODE) {
+        case HEADER: //Get the header entry
+            fseek(VehicleFileDescriptor,0,SEEK_SET);
+            fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+            break;
+        case ENTRY:
+            fseek(VehicleFileDescriptor,(recordNum + 1)*sizeof(VehicleEntry),SEEK_SET);
+            fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+            break;
+        case VEHICLE_NUMBER:
+            fseek(VehicleFileDescriptor,0,SEEK_SET);
+            fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor); //Get header
+            index = returnEntry.header.recentEntry[recordNum - EVINBASE];
+            if(index != -1) {
+                //Entry exists for given EVIN
+                fseek(VehicleFileDescriptor,(index + 1)*sizeof(VehicleEntry),SEEK_SET);
+                fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+            }
+            else
+                returnEntry.data.EVIN = -1; //No entry for given EVIN
+            break;
+    }
+
+    return returnEntry;
+};
+
+void PrintVehicleFile(int EVIN) {
+    int index = 0;
+    VehicleEntry current;
+    if(EVIN == -1) { //Passed in EVIN -1, print all vehicle records
+        printf("Vehicle file contains:\n");
+        fseek(VehicleFileDescriptor,sizeof(VehicleEntry),SEEK_SET);
+        while(fread(&current,sizeof(VehicleEntry),1,VehicleFileDescriptor) != 0) {
+            PrintVehicleEntry(current);
+        }
+    }
+    else if(EVIN > (MAX_VEHICLES_FILE + EVINBASE - 1) || EVIN < EVINBASE) { //EVIN out of range
+        printf("EVIN %d out of range\n",EVIN);
+    }
+    else if((current = GetVehicleEntry(VEHICLE_NUMBER,EVIN)).data.EVIN != -1) {//Get first record, if it exists print all records for that EVIN
+        PrintVehicleEntry(current);
+        index = current.data.nextEntry;
+        while(index != -1) {
+            fseek(VehicleFileDescriptor,(index + 1)*sizeof(VehicleEntry),SEEK_SET);
+            fread(&current,sizeof(VehicleEntry),1,VehicleFileDescriptor);
+            PrintVehicleEntry(current);
+            index = current.data.nextEntry;
+        }
+    } else {//GetVehicleEntry returned -1, meaning no entry for that EVIN exists
+        printf("No records exist for EVIN %d\n",EVIN);
+    }
+    printf("\n");
+}
+
+void PrintVehicleEntry(VehicleEntry entry) {
+    printf("EVIN: %d Next Entry: %d Stable: %s Ticks moving: %d\n",
+           entry.data.EVIN,
+           entry.data.nextEntry,
+           entry.data.stats.lastStable.buildingLabel,
+           entry.data.stats.ticksMoving);
+}
+
+void RecordFinalVehicleStates(void) {
+    VehicleEntry newEntry;
+    AEDVNode * currentVehicle = InactiveList;
+    while(currentVehicle != NULL) {
+        newEntry.data.EVIN = currentVehicle->data.EVIN;
+        newEntry.data.stats = currentVehicle->data.stats;
+        AddToVehicleFile(newEntry);
+
+        currentVehicle = currentVehicle->next;
+    }
+};
+
+void CloseFiles(void) {
+    fclose(VehicleFileDescriptor);
+    fclose(DeliveryFileDescriptor);
+}
+

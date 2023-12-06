@@ -13,10 +13,11 @@
 //#pragma comment(linker, "/HEAP:20000000")
 /* Global Variables Definition */
 //File Pointers
-FILE* FileDescriptor;
+FILE* BuildFileDescriptor;
 FILE* RelCustomerFileDescriptor;
 FILE* DeliveryFileDescriptor;
 FILE* LastDeliveryDescriptor;
+FILE* VehicleFileDescriptor;
 
 //Screen definitions
 const int screenWidth = 1050;
@@ -52,11 +53,16 @@ int main() {
         CameraControl();
         UpdateDrawFrame();
     }
+    RecordFinalVehicleStates();
+    PrintVehicleFile(-1);
 
+    (void)getchar();
+    (void)getchar();
     // De-Initialization
     // Close window and OpenGL context
     CloseWindow();
     FreeRoutine();
+    CloseFiles();
     return 0;
 }
 

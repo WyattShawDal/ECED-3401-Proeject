@@ -5,13 +5,13 @@
 */
 #include "dependencies.h"
 
-void AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode) {
+AEDVNode* AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode) {
     AEDVNode* new_vehicle = malloc(sizeof(AEDVNode));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
         exit(-1);
     }
-    new_vehicle->data.EVIN = EVINBASE + identifierCode;
+    new_vehicle->data.EVIN = identifierCode;
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
     new_vehicle->data.position =  spawnLocation;
     new_vehicle->data.color = RED;
@@ -21,6 +21,8 @@ void AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode) {
     new_vehicle->next = *listRoot;
 
     *listRoot = new_vehicle;
+
+    return new_vehicle;
 }
 
 void AddBuilding(BuildingNode** stableList, BuildingNode** chargerList, BuildingData building) {

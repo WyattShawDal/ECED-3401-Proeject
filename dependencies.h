@@ -86,10 +86,12 @@ extern queue * notVisitedQueue;
 extern queue * visitedQueue;
 
 extern FILE* RelCustomerFileDescriptor;
-extern FILE* FileDescriptor;
+extern FILE* BuildFileDescriptor;
 extern FILE* DeliveryFileDescriptor;
 extern FILE* LastDeliveryDescriptor;
+extern FILE* VehicleFileDescriptor;
 
+//extern STATUS_PRINT stprint[];
 
 
 

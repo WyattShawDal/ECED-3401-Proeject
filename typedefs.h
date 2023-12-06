@@ -11,7 +11,7 @@
 #define LASTNAMELEN 16
 #define BUILDINGLEN 3
 #define MAX_ORDER_COUNT 5
-
+#define MAX_VEHICLES_FILE 50
 
 /* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
@@ -22,20 +22,25 @@ typedef struct Coordinate {
 typedef enum EntryType {
     HEADER = 0,
     ENTRY,
+    VEHICLE_NUMBER
 }EntryType;
 
+typedef enum AEDVSpawn{
+    NEW_AEDV,
+    EXISTING_AEDV,
+}AEDVSpawn;
 /* Enums */
 
+typedef enum VehicleFileGen{
+    KEEP_FILE,
+    NEW_FILE
+}VehicleFileGen;
 typedef enum Level {
     QUICK,
     IN_DEPTH,
     FULL
 }SEARCH_LEVEL;
 typedef enum QuerySearching {
-    SEARCHING_ACTIVE,
-    SEARCHING_INACTIVE,
-    MISSING,
-    FOUND,
     SETUP,
     CALLED
 }QueryCommands;
@@ -51,7 +56,6 @@ typedef enum Type {
     CHARGER,
     STABLE,
     BOTH,
-    CONSTRUCTION,
 
 }TILE_TYPE;
 
@@ -65,7 +69,6 @@ typedef enum Status {
     RESET_PICKUP,
     RESET_DROPOFF,
     PICKUP,
-    TRANSIT,
     DROPOFF,
     LOADING,
     UNLOADING,
@@ -73,11 +76,16 @@ typedef enum Status {
     RECHARGING,
 }AEDV_STATUS;
 
+typedef struct STATUS_PRINT{
+    int status;
+    char* statusString;
+}STATUS_PRINT;
+
 typedef enum Visit {
     NO,
     YES
 }VISITED;
-typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY, READ_TEXT, WRITE_TEXT, INVALID_OP} OPERATION;
+typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY_NEW, READ_TEXT, WRITE_TEXT, READ_WRITE_BINARY_EXISTING, INVALID_OP} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD {NE, NW, SE, SW, INVALID_QUAD }QUADRANT_TYPE;
 
@@ -166,6 +174,7 @@ typedef struct VehicleStats {
     int ticksMoving;
     int ticksIdle;
     int ticksCharging;
+    BuildingData lastStable;
 }VehicleStats;
 
 typedef struct AEDV {
@@ -206,5 +215,22 @@ typedef struct LastDeliveryEntry{
     int custNum;
     int lastDelivery;
 }LastDeliveryEntry;
+
+typedef struct VehicleHeader {
+    int recentEntry[MAX_VEHICLES_FILE];
+    int nextOpenEntry;
+}VehicleHeader;
+
+typedef struct VehicleData {
+    int EVIN;
+    VehicleStats stats;
+    int nextEntry;
+}VehicleData;
+
+//Vehicle entries contain either a VehicleHeader struct or VehicleData struct
+typedef union VehicleEntry {
+    VehicleHeader header;
+    VehicleData data;
+}VehicleEntry;
 
 #endif //EXAMPLE_STRUCTS_H

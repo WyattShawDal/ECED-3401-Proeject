@@ -77,4 +77,19 @@ LastDeliveryEntry GetLastDelivery(int ID);
 void PrintDeliveries(int mode, int custID);
 
 void ConvertBuildingCords(BuildingData *building);
+
+void CreateVehicleFile(int MODE);
+
+void AddToVehicleFile(VehicleEntry newEntry);
+
+VehicleEntry GetVehicleEntry (int MODE, int recordNum);
+
+void RecordFinalVehicleStates(void);
+
+void PrintVehicleFile(int EVIN);
+
+void PrintVehicleEntry(VehicleEntry entry);
+
+void CloseFiles(void);
+
 #endif //EXAMPLE_FILES_H
