@@ -55,6 +55,7 @@ int main() {
     RecordFinalVehicleStates();
     PrintVehicleFile(-1);
 
+    printf("Simulation complete, press enter to exit: ");
     (void)getchar();
     (void)getchar();
     // De-Initialization

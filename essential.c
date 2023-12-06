@@ -131,7 +131,8 @@ void GetCommands(int startup) {
            "List vehicle file entries for a specific vehicle: E\n"
            "Modify a vehicle's stats: M\n"
            "Zoom: Mouse Wheel up/down\n"
-           "Pan: Hold Right Click.\n\n");
+           "Pan: Hold Right Click\n"
+           "Exit: ESC\n\n");
 
 }
 void CommandHandler() {

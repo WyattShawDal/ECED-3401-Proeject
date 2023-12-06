@@ -533,6 +533,6 @@ void CloseFiles(void) {
 }
 
 bool IsValidEVIN(int EVIN) {
-    return ((EVIN > EVINBASE) && (EVIN < EVINBASE + MAX_VEHICLES_FILE));
+    return ((EVIN >= EVINBASE) && (EVIN < EVINBASE + MAX_VEHICLES_FILE));
 }
 
