@@ -92,4 +92,5 @@ void PrintVehicleEntry(VehicleEntry entry);
 
 void CloseFiles(void);
 
+bool IsValidEVIN(int EVIN);
 #endif //EXAMPLE_FILES_H

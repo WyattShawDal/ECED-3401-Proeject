@@ -51,5 +51,5 @@ void GenerationCheck();
 void InitAEDVStats(AEDVNode **vehicle, int MODE, VehicleStats existingStats);
 void ModifyAEDVStats(AEDVNode **vehicle);
 
-bool IsValidEVIN(int EVIN);
+
 #endif //EXAMPLE_INITS_H
