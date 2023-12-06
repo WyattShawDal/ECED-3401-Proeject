@@ -9,8 +9,7 @@
 ********************************************************************************************/
 #include "dependencies.h"
 #include "typedefs.h"
-#include "one_way.h"
-//#pragma comment(linker, "/HEAP:20000000")
+
 /* Global Variables Definition */
 //File Pointers
 FILE* BuildFileDescriptor;

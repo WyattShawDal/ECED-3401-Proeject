@@ -489,7 +489,7 @@ void PrintVehicleFile(int EVIN) {
             PrintVehicleEntry(current);
         }
     }
-    else if(EVIN > (MAX_VEHICLES_FILE + EVINBASE - 1) || EVIN < EVINBASE) { //EVIN out of range
+    else if(!IsValidEVIN(EVIN)) { //EVIN out of range
         printf("EVIN %d out of range\n",EVIN);
     }
     else if((current = GetVehicleEntry(VEHICLE_NUMBER,EVIN)).data.EVIN != -1) {//Get first record, if it exists print all records for that EVIN
