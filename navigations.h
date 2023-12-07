@@ -19,10 +19,9 @@ void OneWayNavigation();
 void UpdateVehicleStats(AEDVNode ** currentVehicle);
 
 /**
- * @brief handles movement of active AEDV's
+ * @brief handles assigning new paths and loading/unload for a vehicle
+ * @param currentVehicle
  */
-void OneWayNavigation_NEW();
-
 void NoMoveCalculated(AEDVNode * currentVehicle);
 
 /**
@@ -42,5 +41,11 @@ void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode);
  */
 BuildingNode* FindClosestBuilding(Cord position, int mode);
 
+/**
+ * @brief uses Pythagorean theorem find distance between two points
+ * @param pos1
+ * @param pos2
+ * @return returns distance
+ */
 double FindDiagonalDistance(Cord pos1, Cord pos2);
 #endif //EXAMPLE_NAVIGATIONS_H

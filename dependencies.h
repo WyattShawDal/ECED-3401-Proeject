@@ -69,7 +69,7 @@
 
 
 /* Global Externs */
-extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
+extern int MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 extern const int screenWidth;
 extern const int screenHeight;
 

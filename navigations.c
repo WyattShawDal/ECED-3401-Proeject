@@ -18,7 +18,7 @@ void UpdateNextInfo(AEDVNode * aedv, int currentOrderNumber , int mode) {
     }
 }
 
-void OneWayNavigation_NEW() {
+void OneWayNavigation() {
     AEDVNode* currentVehicle = ActiveList;
     AEDVNode* savedVal;
 

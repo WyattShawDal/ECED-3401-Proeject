@@ -23,7 +23,7 @@ const int screenWidth = 1050;
 const int screenHeight = 1050;
 Camera2D camera = { 0 };
 //Int Vars
-int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
+int MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 
 AEDVNode * ActiveList = NULL;
 AEDVNode * InactiveList = NULL;

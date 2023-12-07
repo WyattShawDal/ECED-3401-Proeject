@@ -15,15 +15,17 @@
 //PUT ORDERS INTO ARRAYS OF AS MANY AS POSSIBLE THAT ARE INACTIVE
 void AEDVHandler() {
     AEDVNode *currentAEDV = InactiveList; //Get first AEDV in the inactive list
-
+    OrderNode* lastOrder;
     //While inactive vehicles exist and the orderlist isn't empty
     while(currentAEDV != NULL && OrderList != NULL) {
         currentAEDV->data.orderCount = 0; //current inactive AEDV has 0 orders assigned
 
         //While current vehicle has less than 5 orders assigned and orderlist isn't empty
-        while(currentAEDV->data.orderCount < MAX_ORDER_COUNT && OrderList != NULL) {
+        while((currentAEDV->data.orderCount < MAX_ORDER_COUNT) && OrderList != NULL) {
+            lastOrder = OrderList;
             AddOrder(&currentAEDV); //Assign order to AEDV
             OrderList = OrderList->nextOrder; //Move to next order in order list
+            free(lastOrder);
         }
 
         currentAEDV->data.currStatus = RESET_PICKUP; //Change the vehicle to the next active state

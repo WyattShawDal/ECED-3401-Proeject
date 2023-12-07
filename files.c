@@ -235,6 +235,10 @@ void CreateRelativeCustomerFile() {
 }
 
 void CreateDeliveryFile() {
+    printf("Please enter name of delivery file: ");
+    scanf("%s", deliveryFile);
+    strcat(deliveryFile, ".dat");
+
     OpenTargetFile(READ_WRITE_BINARY_NEW,deliveryFile,&DeliveryFileDescriptor);
     //Write header
     DeliveryEntry h = {.header.firstEmptyDelivery = 500};
@@ -291,10 +295,10 @@ DeliveryEntry ReadDeliveryFile(int mode, int packageNum) {
     return returnEntry;
 }
 
-void QueryDeliveryInfo(int mode, int ID) {
+void QueryDeliveryInfo(int MODE, int ID) {
     DeliveryEntry del;
     LastDeliveryEntry last;
-    switch (mode) {
+    switch (MODE) {
         case ALL: //Print all packages
             fseek(DeliveryFileDescriptor, sizeof(DeliveryEntry), SEEK_SET);
             printf("All packages:\n");
@@ -339,9 +343,13 @@ void QueryDeliveryInfo(int mode, int ID) {
                 //If delivery record does not match passed in ID, record doesn't exist
                 printf("Package %d does not exist\n", ID);
             else
-                printf("Orign customer: %d Destination customer: %d Time: %d\n",
+                printf("Orign customer: %d %s %s Destination customer: %d %s %s Time: %d\n",
                        deliveryRec.data.activeCustomers[0].custNum,
+                       deliveryRec.data.activeCustomers[0].firstName,
+                       deliveryRec.data.activeCustomers[0].lastName,
                        deliveryRec.data.activeCustomers[1].custNum,
+                       deliveryRec.data.activeCustomers[1].firstName,
+                       deliveryRec.data.activeCustomers[1].lastName,
                        deliveryRec.data.dropTime - deliveryRec.data.pickupTime
                        );
             break;
@@ -530,6 +538,7 @@ void RecordFinalVehicleStates(void) {
 void CloseFiles(void) {
     fclose(VehicleFileDescriptor);
     fclose(DeliveryFileDescriptor);
+    fclose(LastDeliveryDescriptor);
 }
 
 bool IsValidEVIN(int EVIN) {

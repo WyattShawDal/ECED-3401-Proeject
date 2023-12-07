@@ -24,6 +24,13 @@ void GenerateBuildFile();
 void ReadBuildFile(int * streetDir, int * avenueDir);
 
 /**
+ * @brief convert building coordinates from build file (in terms of building number)
+ * to map coordinates (XY position), and adjusting based on quadrant
+ * @param building
+ */
+void ConvertBuildingCords(BuildingData *building);
+
+/**
  * @brief reads the tab-seperated event file sequentially and adds to an event list
  * @param fileName
  */
@@ -70,27 +77,61 @@ LastDeliveryEntry GetLastDelivery(int ID);
 
 /**
  * @brief prints records from delivery file
- * @param mode ALL prints all records in ascending package order, CUSTOMER prints a given origin customer's packages from latest to earliest
+ * @param MODE ALL prints all records in ascending package order, CUSTOMER prints a given origin customer's packages from latest to earliest
  * SINGLE prints record with given package number
  * @param ID Used to specify which customer, ignored for ALL
  */
-void QueryDeliveryInfo(int mode, int ID);
+void QueryDeliveryInfo(int MODE, int ID);
 
-void ConvertBuildingCords(BuildingData *building);
-
+/**
+ * @brief if specified, initializes new (relative) vehicle file with a header, to store final vehicle states
+ * @param MODE KEEP_FILE gives the user a choice to overwrite file, NEW_FILE forces to overwrite
+ */
 void CreateVehicleFile(int MODE);
 
+/**
+ * @brief adds entry to end of vehicle file
+ * @param newEntry new entry containing EVIN, stats, and final quadrant
+ */
 void AddToVehicleFile(VehicleEntry newEntry);
 
+/**
+ * @brief fetches entries from the vehicle file
+ * @param MODE HEADER returns the header entry,
+ * ENTRY gets entry at index recordNum,
+ * VEHICLE_NUMBER gets most recent entry of EVIN recordNum
+ * @param recordNum Ignored by mode HEADER
+ * @return
+ */
 VehicleEntry GetVehicleEntry (int MODE, int recordNum);
 
+/**
+ * @brief traverses the inactiveList and records their states in the vehicle file
+ */
 void RecordFinalVehicleStates(void);
 
+/**
+ * @brief prints all entries in vehicle file if EVIN = -1,
+ * prints all entries for given EVIN otherwise
+ * @param EVIN
+ */
 void PrintVehicleFile(int EVIN);
 
+/**
+ * @brief handles printf statements for printing vehicle file entries
+ * @param entry
+ */
 void PrintVehicleEntry(VehicleEntry entry);
 
+/**
+ * closes delivery file, vehicle file, and last delivery file
+ */
 void CloseFiles(void);
 
+/**
+ * @brief checks if EVIN is within the bounds (10000 to 10000 + (MAX_VEHICLES_FILE))
+ * @param EVIN
+ * @return TRUE if EVIN is allowable, FALSE if not
+ */
 bool IsValidEVIN(int EVIN);
 #endif //EXAMPLE_FILES_H
