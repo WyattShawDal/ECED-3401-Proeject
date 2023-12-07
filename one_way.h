@@ -1,7 +1,7 @@
 /*
  *Author: Cameron Archibald
  *Created on: 23 Nov 2023
- *Module Info:
+ *Module Info: Contains function definitions for one way algorithm
 */
 
 #ifndef EXAMPLE_ONE_WAY_H

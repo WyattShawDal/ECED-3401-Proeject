@@ -1,7 +1,7 @@
 /*
- *Author: Wyatt Shaw 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-22
- *Module Info:
+ *Module Info: Contains function declarations for file operations
 */
 
 #ifndef EXAMPLE_FILES_H

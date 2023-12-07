@@ -1,5 +1,5 @@
 /*
- *Author: Wyatt Shaw 
+ *Author: Wyatt Shaw  & Cameron Archibald
  *Created on: 2023-11-12
  *Module Info: Contains functions definitions to allow for linked list operation
 */

@@ -1,6 +1,8 @@
-//
-// Created by wyatt on 2023-12-06.
-//
+/*
+ *Author: Wyatt Shaw & Cameron Archibald
+ *Created on: 2023-11-12
+ *Module Info: Contains functions definitions for essentials.h
+*/
 #include "dependencies.h"
 
 #ifndef EXAMPLE_ESSENTIALS_H

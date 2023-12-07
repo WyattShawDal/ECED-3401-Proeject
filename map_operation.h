@@ -1,6 +1,7 @@
 /*
- *Author: Wyatt on 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
+ *Module Info: Contains functions declarations for operation of the map
 */
 
 #ifndef EXAMPLE_MAP_OPERATION_H

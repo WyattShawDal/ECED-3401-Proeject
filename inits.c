@@ -1,5 +1,5 @@
 /*
- *Author: Wyatt Shaw 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
  *Module Info: Contains functions that handle the initialization/assignments of AEDVs and their Orders
 */

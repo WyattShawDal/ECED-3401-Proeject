@@ -1,5 +1,5 @@
 /*
- * Author: Wyatt Shaw
+ * Author: Wyatt Shaw & Cameron Archibald
  * Created on: 2023-11-22
  * Module Info: The following module declares all the functions related to the reading/writing of information
  * to/from a file

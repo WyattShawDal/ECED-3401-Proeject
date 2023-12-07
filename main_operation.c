@@ -1,7 +1,7 @@
 /*******************************************************************************************
 *  Author: Wyatt Shaw & Cameron Archibald
 *  Date: October 31 2023
-*  Module Info: The following module implements 'dumb' AEDV movement, allowing up to four AEDVs to navigate to given destination points
+*  Module Info: The following 'main' module for the AEDV simulation program
 *  Dependency Info: In order to handle graphical output, the program utilizes the open source library Raylib.h
 *  https://github.com/raysan5/raylib
 *  Copyright (c) 2015 Ramon Santamaria (@raysan5)

@@ -1,6 +1,7 @@
 /*
- *Author: Wyatt on 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
+ *Module Info: Contains function definitions for initialization
 */
 
 #ifndef EXAMPLE_INITS_H
@@ -39,8 +40,6 @@ void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenu
 
 void allocDynamicMap();
 
-void SetupInitialConditions();
-void AEDVInput();
 /**
  * @brief populates AEDV struct with inital values
  */

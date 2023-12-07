@@ -1,6 +1,7 @@
 /*
- *Author: Wyatt on 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
+ *Module Info: Contains function definitions for general navigation functions
 */
 
 #ifndef EXAMPLE_NAVIGATIONS_H

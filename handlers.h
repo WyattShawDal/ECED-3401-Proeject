@@ -1,6 +1,8 @@
-//
-// Created by wyatt on 2023-11-22.
-//
+/*
+ *Author: Wyatt Shaw & Cameron Archibald
+ *Created on: 2023-11-12
+ *Module Info: Contains function definitions for handler.c
+*/
 #include "dependencies.h"
 
 #ifndef EXAMPLE_EVENTS_H

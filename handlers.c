@@ -1,7 +1,9 @@
-//
-// Created by wyatt on 2023-11-22.
-//
-
+/*
+ *Author: Wyatt Shaw & Cameron Archibald
+ *Created on: 2023-11-12
+ *Module Info: Contains functions that handle the assignment of orders and operations to AEDV's, as well
+ * As the processing of the Event file
+*/
 #include "dependencies.h"
 
 /*
