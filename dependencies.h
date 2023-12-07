@@ -30,12 +30,13 @@
 
 /* Project Headers */
 #include "typedefs.h" // included for function prototypes
-#include "drawing.h" // included for functions that change the window
+#include "map_operation.h" // included for functions that change the window
 #include "navigations.h" // inlcuded for functions that relate to the movement and navigation of AEDVs
 #include "inits.h" // included for functions that run at startup
 #include "linkedlist.h"
 #include "files.h"
 #include "handlers.h"
+#include "essentials.h"
 #include "one_way.h"
 
 /* Magic Number Defines */
@@ -61,6 +62,7 @@
     #define MAXSTRLEN 100
     #define TILESHIFT 2
     #define FONTSCALING 1.426
+#define DELIVERYNAMELEN 15
 
 /* Macros */
 #define TRUNCATE(name)	name[strlen(name)-1] = '\0'

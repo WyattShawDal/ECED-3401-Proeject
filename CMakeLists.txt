@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.26)
 set(CMAKE_C_STANDARD 11)
 
-cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
 project(example)
 
 # Generate compile_commands.json
@@ -31,11 +30,11 @@ endif()
 add_executable(${PROJECT_NAME} main_operation.c
         typedefs.h
         dependencies.h
-        navigation_functions.c
+        navigations.c
         map_operation.c
         navigations.h
         inits.h
-        drawing.h
+        map_operation.h
         inits.c
         essential.c
         linkedlist.c
@@ -45,6 +44,7 @@ add_executable(${PROJECT_NAME} main_operation.c
         handlers.c
         handlers.h
         one_way.c
+        essentials.h
 )
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)

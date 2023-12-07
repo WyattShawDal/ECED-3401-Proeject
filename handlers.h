@@ -32,17 +32,14 @@ Cord AdjustOrder(Cord location);
 /**
  * @brief assigns deliveries to vehicles in the inactive list
  */
-void AEDVHandler_NEW();
+void AEDVHandler();
 
 /**
  * @brief adds an order to the vehicle's array of orders
  * @param currentVehicle pointer to the current AEDV, passed by reference
  */
 void AddOrder(AEDVNode **currentVehicle);
-void QueryVehicleInfo();
-void PrintVehicleStats(AEDV vehicle, int level);
-void CommandHandler();
-void GetCommands(int startup);
+
 
 
 

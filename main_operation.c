@@ -8,7 +8,7 @@
 *
 ********************************************************************************************/
 #include "dependencies.h"
-#include "typedefs.h"
+//#include "typedefs.h"
 
 /* Global Variables Definition */
 //File Pointers

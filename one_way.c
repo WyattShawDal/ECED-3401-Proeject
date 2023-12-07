@@ -45,9 +45,6 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
      * Returns the first node in the linked list, which contains the first move the AEDV will need to perform.
      * */
 
-    Cord position = start;
-
-
     if(start.x == end.x && start.y == end.y) {
         InstructionNode* instruction = malloc(sizeof(InstructionNode));
         instruction->child = NULL;

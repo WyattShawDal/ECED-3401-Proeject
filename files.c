@@ -17,7 +17,7 @@ const char* eventFile = "EventFile.txt";
 const char* lastDeliveries = "lastDeliveries";
 const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 const char* customerFile = "CustomerFile.txt";
-const char* deliveryFile = "DeliveryFile.dat";
+char deliveryFile[DELIVERYNAMELEN];
 const char* vehicleFile = "VehicleFile.dat";
 
 #endif
@@ -76,7 +76,7 @@ void GenerateBuildFile() {
     fwrite(&streetDirection, sizeof(int), 1, BuildFileDescriptor);
 
     do {
-        printf("Enter Direction of first street (4 for N, 5 for S): ");
+        printf("Enter Direction of first avenue (4 for N, 5 for S): ");
         fscanf(stdin, "%d", &avenueDirection);
         (void) getchar(); /* Eat last EOLN */
 
@@ -89,6 +89,14 @@ void GenerateBuildFile() {
     (void) getchar(); /* Eat last EOLN */
     building.location.x = building.buildingLabel[0] - 'A';
     building.location.y = building.buildingLabel[1] - 'A';
+    if(strcmp(building.buildingLabel, "XX") == 0) {
+        building.quad = INVALID_QUAD;
+        building.type = INVALID_TYPE;
+        printf("Exit Code Chosen\n");
+        fwrite(&building, sizeof(building), 1, BuildFileDescriptor);
+        building.location.x = -1;
+        building.location.y = -1;
+    }
 
     while(building.location.x >= 0){
         do
@@ -124,9 +132,12 @@ void GenerateBuildFile() {
 
             break;
         }
-
     }
-
+    if(StableList == NULL) {
+        printf("No Stable locations, exiting generation.");
+        (void) getchar();
+        exit(1);
+    }
     /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
     fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
@@ -140,8 +151,14 @@ void GenerateBuildFile() {
 void ReadBuildFile(int * streetDir, int * avenueDir) {
     OpenTargetFile(READ_BINARY, "GenerationFile.dat", &BuildFileDescriptor);
     int numBuildingsX, numBuildingsY;
-    char streetDirection, avenueDirection;
     BuildingData building;
+    if(StableList == NULL) {
+        printf("No Stable locations, exiting generation.");
+        (void) getchar();
+        (void) getchar();
+
+        exit(1);
+    }
 
     fread(&numBuildingsX, sizeof(int), 1, BuildFileDescriptor);
     fread(&numBuildingsY, sizeof(int), 1, BuildFileDescriptor);
@@ -149,30 +166,14 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     MAX_ROWS = numBuildingsY * 4 + 1; //Same justification, but for adding road below
     cellHeight = screenWidth/MAX_COLS;
     cellWidth = screenWidth/MAX_COLS;
-    //printf("You entered %d x %d, which forms %d Cols and %d Rows\n", numBuildingsX, numBuildingsY, MAX_COLS, MAX_ROWS);
 
     fread(streetDir, sizeof(int), 1, BuildFileDescriptor);
     fread(avenueDir, sizeof(int), 1, BuildFileDescriptor);
-
-    if(*streetDir == STREET_E) {
-        streetDirection = 'E';
-    }
-    else {
-        streetDirection = 'W';
-    }
-    if(*avenueDir == AVENUE_S) {
-        avenueDirection = 'S';
-    }
-    else {
-        avenueDirection = 'N';
-    }
-    //printf("You entered directions Street : %c, Avenue : %c\n", toupper(streetDirection), toupper(avenueDirection));
 
     fread(&building, sizeof(building), 1, BuildFileDescriptor);
     while (strcmp(building.buildingLabel, "XX") != 0)
     {
         ConvertBuildingCords(&building);
-        //printf("Building XY: %d %d\nBuilding Quadrant: %d\nBuilding Type: %d\n", building.location.x, building.location.y, building.quad, building.type);
         /* Read next record */
         AddBuilding(&StableList, &ChargerList, building);
         fread(&building, sizeof(building), 1, BuildFileDescriptor);
@@ -252,7 +253,6 @@ void AddToDeliveryFile(OrderData order) {
     DeliveryEntry oldHeader = ReadDeliveryFile(HEADER,0); //Get the header from the delivery file
     newEntry.data.packageNumber = oldHeader.header.firstEmptyDelivery; //New entry gets the first available package number
     recentDelivery.lastDelivery = oldHeader.header.firstEmptyDelivery; //Record on the last delivery file points to the new entry
-
 
     //Overwrite the last delivery file to point to the new entry
     fseek(LastDeliveryDescriptor,(recentDelivery.custNum - CUSTOMERBASE)*sizeof(LastDeliveryEntry),SEEK_SET);

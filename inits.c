@@ -32,29 +32,32 @@ void InitRoutine() {
 }
 
 void GenerationCheck() {
-    printf("Do you want to generate a new map file? Y/N :");
     char check;
-    fscanf(stdin, "%c", &check);
-    if(toupper(check) == 'Y') {
-        OpenTargetFile(WRITE_BINARY, "GenerationFile.dat", &BuildFileDescriptor);
 
-        GenerateBuildFile();
-        //If a new build file is made, cannot keep vehicle file in case stables are not kept in place
-        CreateVehicleFile(NEW_FILE);
+    do {
+        printf("Do you want to generate a new map file? Y/N :");
+        scanf("%c", &check);
+        getchar();
+        if(toupper(check) == 'Y') {
+            OpenTargetFile(WRITE_BINARY, "GenerationFile.dat", &BuildFileDescriptor);
 
-    }
-    else  {
-        printf("Resuming operation with old map\n");
-        CreateVehicleFile(KEEP_FILE);
-    }
+            GenerateBuildFile();
+            //If a new build file is made, cannot keep vehicle file in case stables are not kept in place
+            CreateVehicleFile(NEW_FILE);
 
+        }
+        else if(check == 'N')  {
+            printf("Resuming operation with old map\n");
+            CreateVehicleFile(KEEP_FILE);
+        }
+
+    }while(check != 'Y' && check != 'N');
 }
 
 Cord QuadrantToStreetAddress(int quad, Cord location) {
     quad < SE ? (location.y--) : (location.y++);
     return location;
 }
-
 void SpawnAEDVs(void) {
     int EVIN;
     VehicleEntry previousEntry;

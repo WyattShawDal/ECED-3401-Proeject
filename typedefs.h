@@ -178,17 +178,12 @@ typedef struct VehicleStats {
 
 typedef struct AEDV {
     int EVIN;
-    int distanceTravelled;
     int currentOrderNumber;
     int orderCount;
-    int loadingDelay;
-    int unloadingDelay;
     int delay;
     VehicleStats stats;
     Cord destination;
     Cord position;
-    Cord pickUp;
-    Cord dropOff;
     Vector2 drawSize;
     Color color;
     AEDV_STATUS currStatus;

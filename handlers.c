@@ -13,7 +13,7 @@
  */
 
 //PUT ORDERS INTO ARRAYS OF AS MANY AS POSSIBLE THAT ARE INACTIVE
-void AEDVHandler_NEW() {
+void AEDVHandler() {
     AEDVNode *currentAEDV = InactiveList; //Get first AEDV in the inactive list
 
     //While inactive vehicles exist and the orderlist isn't empty
@@ -88,76 +88,7 @@ int EventHandler(int time, EventNode **root) {
     }
     return time;
 }
-#ifdef TASK7
-int EventHandler(int time, EventNode **root) {
 
-    EventNode *current = *root;
-    int temp = time;
-
-    //Get first set of order data
-    switch(toupper(current->eventData.type)) {
-        case 'D':
-            OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
-                         GetCustomerInfo(current->eventData.destinationID));
-            break;
-        case 'C':
-            //start event
-            break;
-        case 'E':
-            //end construction
-            break;
-    }
-    //If there are no more events after this one
-    if ((current = current->nextEvent) == NULL) {
-        printf("No more events total amount");
-        return time;
-    }
-        //There are more events, are they at the same time?
-    else {
-        //update our root node from main
-        *root = current;
-        //update time to check the next event's time
-        time = current->eventData.time;
-        //if the first event is the same as the last event
-        while (temp == time) {
-            temp = time;
-            printf("Two events with same time\n");
-
-            switch(toupper(current->eventData.type)) {
-                case 'D':
-                    OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
-                                 GetCustomerInfo(current->eventData.destinationID));
-                    break;
-                case 'C':
-                    //start event
-                    break;
-                case 'E':
-                    //end construction
-                    break;
-            }
-            current = current->nextEvent;
-            *root = current;
-            time = current->eventData.time;
-        }
-        //printf("Time of next event = %d\n", time);
-
-    }
-        /* maybe combine these and pass the type to the handler... */
-    else if(toupper(current->eventData.type) == 'C') {
-        //start construction
-    }
-    else if(toupper(current->eventData.type) == 'E') {
-        // end construction
-    }
-    else {
-        current = current->nextEvent;
-        *root = current;
-        printf("Unknown Event occurred");
-        return time;
-    }
-    return time;
-}
-#endif
 OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
     OrderData newOrder;
 
