@@ -62,6 +62,7 @@ void GenerateBuildFile() {
     (void) fscanf(stdin, "%d %d", &xLength, &yLength);
     (void) getchar(); /* Eat last EOLN */
 
+
     printf("You inputted %d x %d buildings\n", xLength, yLength);
     fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
     fwrite(&yLength, sizeof(int), 1, BuildFileDescriptor);
@@ -98,7 +99,18 @@ void GenerateBuildFile() {
         building.location.y = -1;
     }
 
+
     while(building.location.x >= 0){
+        do
+        {
+            if(building.location.x > xLength ||building.location.y > yLength ) {
+                printf("Enter a new location within the bounds %d %d: \n", xLength, yLength);
+                (void) fscanf(stdin, "%s", building.buildingLabel);
+                (void) getchar(); /* Eat last EOLN */
+                building.location.x = building.buildingLabel[0] - 'A';
+                building.location.y = building.buildingLabel[1] - 'A';
+            }
+        }while(building.location.x > xLength || building.location.y > yLength );
         do
         {
             printf("Enter building type (Charger = 0; Stable = 1, Both = 2): ");
@@ -133,11 +145,6 @@ void GenerateBuildFile() {
             break;
         }
     }
-    if(StableList == NULL) {
-        printf("No Stable locations, exiting generation.");
-        (void) getchar();
-        exit(1);
-    }
     /* End with 0 0 for read function to know it's made it to the end */
     xLength = 0;
     fwrite(&xLength, sizeof(int), 1, BuildFileDescriptor);
@@ -152,13 +159,7 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
     OpenTargetFile(READ_BINARY, "GenerationFile.dat", &BuildFileDescriptor);
     int numBuildingsX, numBuildingsY;
     BuildingData building;
-    if(StableList == NULL) {
-        printf("No Stable locations, exiting generation.");
-        (void) getchar();
-        (void) getchar();
 
-        exit(1);
-    }
 
     fread(&numBuildingsX, sizeof(int), 1, BuildFileDescriptor);
     fread(&numBuildingsY, sizeof(int), 1, BuildFileDescriptor);
@@ -177,6 +178,11 @@ void ReadBuildFile(int * streetDir, int * avenueDir) {
         /* Read next record */
         AddBuilding(&StableList, &ChargerList, building);
         fread(&building, sizeof(building), 1, BuildFileDescriptor);
+    }
+    if(StableList == NULL) {
+        printf("No Stable locations, exiting generation.");
+        (void) getchar();
+        exit(1);
     }
     (void) getchar();
     fclose(BuildFileDescriptor);
