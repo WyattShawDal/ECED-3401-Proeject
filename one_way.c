@@ -63,43 +63,10 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         current = notVisitedQueue->front;
         //Add current node to visitedQueue
         enQueue(current, NULL, visitedQueue, YES);
-
         if(current->coordinate.x != end.x || current->coordinate.y != end.y) {
             for(int direction = SOUTH;direction <= WEST;direction++) {
                 searchAdjacentTiles(direction, current->coordinate, current);
             }
-//#define OLDSEARCHADJACENTTILES
-#ifdef OLDSEARCHADJACENTTILES
-            Cord nextPosition;
-            //If current position is NOT destination
-            if(dynamicMap[position.x][position.y].validDirection[EAST] == true) {
-                //If EAST is a valid direction from current position
-                nextPosition = position;
-                nextPosition.x++;
-                if(!searchQueue(nextPosition,visitedQueue)) //If nextPosition hasn't been visited
-                    //Create node for nextPosition and add to notVisitedQueue
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[WEST] == true) {
-                nextPosition = position;
-                nextPosition.x--;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[NORTH] == true) {
-                nextPosition = position;
-                nextPosition.y--;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[SOUTH] == true) {
-                nextPosition = position;
-                nextPosition.y++;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-#endif
-
         } else {
             //Current position = destination position, path found, save in TileNode destination
             dest = current;
@@ -108,23 +75,7 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         deQueue(notVisitedQueue, NO);
     }
 
-//#define INSTRUCTIONPRINT
-#ifdef INSTRUCTIONPRINT
-    TileNode* temp = current;
-    while(temp->parent != NULL) {
-        printf("%d %d\n", temp->coordinate.x, temp->coordinate.y);
-        temp = temp->parent;
-    }
-    InstructionNode* temp2 = reverseInstructions(current);
-    while(temp2->child != NULL) {
-        printf("%d %d\n", temp2->nextPosition.x, temp2->nextPosition.y);
-        temp2 = temp2->child;
-    }
-#endif
     InstructionNode * returnInstruction = reverseInstructions(current);
-
-    //emptyList(&notVisitedQueue, NO);
-    //emptyList(&visitedQueue, NO);
 
     clearBFS(&notVisitedQueue, &visitedQueue);
 

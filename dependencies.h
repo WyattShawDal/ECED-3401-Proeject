@@ -9,11 +9,6 @@
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
 
-#define TWOWAY //Allows for two-way navigation
-//#define DEBUG //Allows for diagnostic printing
-//#define OLD //Functions from one-way experimenting
-//#define OLD1 //Fixed readability and efficiency by Cameron on 31st of October
-
 /* C Headers */
 #include "stdio.h" // included for regular c functionality printf, scanf etc
 #include "stdlib.h"
@@ -21,8 +16,6 @@
 #include <ctype.h> // included for tolower
 #include "stdbool.h"
 #include <string.h>
-#include <io.h>
-#include <fcntl.h>     /* for _O_TEXT and _O_BINARY */
 /* Raylib Headers */
 #include "raylib.h" // included for graphical output
 #include "raymath.h" // required by raylib.h
@@ -56,16 +49,16 @@
 
     //others
     #define EVINBASE 10000
+    #define EVINMAX 10050
     #define CUSTOMERBASE 1000
     #define DELIVERYBASE 500
     #define NOMOVEMENT 0
     #define MAXSTRLEN 100
     #define TILESHIFT 2
     #define FONTSCALING 1.426
-#define DELIVERYNAMELEN 15
+    #define DELIVERYNAMELEN 15
 
-/* Macros */
-#define TRUNCATE(name)	name[strlen(name)-1] = '\0'
+
 
 
 /* Global Externs */

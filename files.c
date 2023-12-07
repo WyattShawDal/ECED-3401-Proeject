@@ -6,26 +6,14 @@
 */
 
 #include "dependencies.h"
-const char* genFile = "genFile.dat";
-//#define TestingFunction
-#ifdef TestingFunction
-const char* eventFile = "TestEventFile.txt";
-const char* relativeCustomerFile = "TestRelativeCustomerFile.dat";
-const char* customerFile = "TestCustomerFile.txt";
-#else
-const char* eventFile = "EventFile.txt";
+
 const char* lastDeliveries = "lastDeliveries";
 const char* relativeCustomerFile = "RelativeCustomerFile.dat";
 const char* customerFile = "CustomerFile.txt";
 char deliveryFile[DELIVERYNAMELEN];
 const char* vehicleFile = "VehicleFile.dat";
 
-#endif
-/**
- * @brief create a binary file for writing for generation
- *
- */
-
+/* _F_Mode_ did not work with our CMAKE compiler options, this is our alternative */
 bool OpenTargetFile(OPERATION OPERATION, const char *fileName, FILE **FPointer) {
 
     if(OPERATION == WRITE_BINARY) {
@@ -488,13 +476,16 @@ VehicleEntry GetVehicleEntry (int MODE, int recordNum) {
             else
                 returnEntry.data.EVIN = -1; //No entry for given EVIN
             break;
+        default:
+            printf("No mode matches the specified input\n");
+            break;
     }
 
     return returnEntry;
-};
+}
 
 void PrintVehicleFile(int EVIN) {
-    int index = 0;
+    int index;
     VehicleEntry current;
     if(EVIN == -1) { //Passed in EVIN -1, print all vehicle records
         printf("Vehicle file contains:\n");
@@ -539,7 +530,7 @@ void RecordFinalVehicleStates(void) {
 
         currentVehicle = currentVehicle->next;
     }
-};
+}
 
 void CloseFiles(void) {
     fclose(VehicleFileDescriptor);

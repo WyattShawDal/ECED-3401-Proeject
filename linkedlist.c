@@ -160,7 +160,6 @@ void enQueue(TileNode* new_tile, TileNode* parent, queue* q, int visited) {
 
     //Assign parent when enQueuing to the notVisitedList
     if(visited == NO) new_tile->parent = parent;
-
     if(q->front == NULL) { //If empty queue
         q->front = new_tile;
         q->rear = new_tile;

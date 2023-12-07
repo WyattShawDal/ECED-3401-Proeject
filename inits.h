@@ -14,7 +14,7 @@
 void InitAEDV(AEDV *vehicle, int locationX, int locationY, int destinationX, int destinationY, int identifierCode);
 /**
  * @brief initializes values of the tiles in the map
- * @note Uses setPerimeterRoads() and setInternalTiles()
+ * @note Uses SetPerimeterRoads() and SetInternalTiles()
  * @warning Must be called after GenerateBuildFile()
  */
 void InitTiles();
@@ -23,7 +23,7 @@ void InitTiles();
  * @param i col
  * @param j row
  */
-void setPerimeterRoads(int i, int j);
+void SetPerimeterRoads(int i, int j);
 /**
  * @brief sets the value of the internal tiles according to road directions set
  * @param i
@@ -31,14 +31,14 @@ void setPerimeterRoads(int i, int j);
  * @param firstStreetDirection
  * @param firstAvenueDirection
  */
-void setInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
+void SetInternalTiles(int i, int j, int firstStreetDirection, int firstAvenueDirection);
 /**
 * @brief  the size of the map array using the input rows and columns
 */
-void setDirection(int i, int j);
-void setJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenueDirection);
+void SetTileDirection(int i, int j);
+void SetJunctionDirection(int i, int j, int firstStreetDirection, int firstAvenueDirection);
 
-void allocDynamicMap();
+void AllocDynamicMap();
 
 /**
  * @brief populates AEDV struct with inital values

@@ -53,8 +53,8 @@ int main() {
         UpdateDrawFrame();
     }
     RecordFinalVehicleStates();
+    //add printall macro
     PrintVehicleFile(-1);
-
     printf("Simulation complete, press enter to exit: ");
     (void)getchar();
     (void)getchar();

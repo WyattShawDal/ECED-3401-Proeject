@@ -66,10 +66,6 @@ AEDVNode* AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode );
  */
 void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN);
 
-/******* NOT USED *********/
-void MoveToListBeginning(AEDVNode** listRoot, AEDVNode* addNode);
-
-
 AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode);
 
 /**
@@ -78,12 +74,6 @@ AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode);
  * @param Event event struct to add
  */
 void AddEvent(EventNode** root, EventData Event);
-
-/**
- * @brief removes the earliest event from the list of eventNodes
- * @param root pointer to the list of events, passed by reference
- */
-void RemoveEvent(EventNode** root);
 
 /**
  * @brief adds an order node to the end of the order list

@@ -17,12 +17,11 @@ int EventHandler(int time,EventNode **current);
 
 /**
  * @brief Takes in two customers data structs and packages into an order for an AEDV
- * @param Root
  * @param Order
  * @param Delivery
  * @return packaged order
  */
-OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery);
+OrderData OrderHandler(Customer Order, Customer Delivery);
 
 /**
  * @brief adjusts coordinates to fit with grid parameters

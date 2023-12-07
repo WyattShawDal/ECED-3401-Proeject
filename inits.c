@@ -67,7 +67,7 @@ void SpawnAEDVs(void) {
     do{
         printf("Enter a EVIN to use (10000 - 10049), -1 to begin simulation: ");
         scanf("%d",&EVIN);
-        if(EVIN < 10050 && EVIN >= 10000) {
+        if(EVIN < EVINMAX && EVIN >= EVINBASE) {
             valid = true;
             previousEntry = GetVehicleEntry(VEHICLE_NUMBER,EVIN);
             if(previousEntry.data.EVIN == -1) {

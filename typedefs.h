@@ -19,6 +19,13 @@ typedef struct Coordinate {
     int y;
 } Cord;
 
+typedef enum Magic {
+    PRINTALL = -1,
+    BLOCKSIZE = 4,
+    NOVEHICLE = -1
+
+}MAGICNUMBERS;
+
 typedef enum EntryType {
     HEADER = 0,
     ENTRY,

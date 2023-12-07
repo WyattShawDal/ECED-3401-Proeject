@@ -13,7 +13,6 @@
  *  A B C D
  *
  */
-
 //PUT ORDERS INTO ARRAYS OF AS MANY AS POSSIBLE THAT ARE INACTIVE
 void AEDVHandler() {
     AEDVNode *currentAEDV = InactiveList; //Get first AEDV in the inactive list
@@ -49,7 +48,7 @@ int EventHandler(int time, EventNode **root) {
     int temp = time;
     if(toupper(current->eventData.type) == 'D') {
         //Get first set of order data
-        OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+        OrderHandler(GetCustomerInfo(current->eventData.originID),
                      GetCustomerInfo(current->eventData.destinationID));
         //If there are no more events after this one
         if ((current = current->nextEvent) == NULL) {
@@ -68,7 +67,7 @@ int EventHandler(int time, EventNode **root) {
                 //printf("Two events with same time\n");
 
                 //Call order handler to process the next order
-                OrderHandler(&OrderList, GetCustomerInfo(current->eventData.originID),
+                OrderHandler(GetCustomerInfo(current->eventData.originID),
                              GetCustomerInfo(current->eventData.destinationID));
                 current = current->nextEvent;
                 *root = current;
@@ -76,13 +75,6 @@ int EventHandler(int time, EventNode **root) {
             }
             //printf("Time of next event = %d\n", time);
         }
-    }
-    /* maybe combine these and pass the type to the handler... */
-    else if(toupper(current->eventData.type) == 'C') {
-        //start construction
-    }
-    else if(toupper(current->eventData.type) == 'E') {
-        // end construction
     }
     else {
         current = current->nextEvent;
@@ -93,7 +85,7 @@ int EventHandler(int time, EventNode **root) {
     return time;
 }
 
-OrderData OrderHandler(OrderNode** Root, Customer Order, Customer Delivery) {
+OrderData OrderHandler(Customer Order, Customer Delivery) {
     OrderData newOrder;
 
     newOrder.activeCustomers[0] = Order;
@@ -162,13 +154,13 @@ Cord AdjustOrder(Cord location) {
         location.x += TILESHIFT;
     }
     else {
-        location.x = (location.x*4) +TILESHIFT;
+        location.x = (location.x*BLOCKSIZE) +TILESHIFT;
     }
     if(location.y == 0) {
         location.y += TILESHIFT;
     }
     else {
-        location.y = (location.y*4) +TILESHIFT;
+        location.y = (location.y*BLOCKSIZE) +TILESHIFT;
     }
     return location;
 }

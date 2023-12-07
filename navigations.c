@@ -22,7 +22,6 @@ void OneWayNavigation() {
     AEDVNode* currentVehicle = ActiveList;
     AEDVNode* savedVal;
 
-
     //Loop through the list of AEDV's
     while(currentVehicle != NULL) {
         savedVal = currentVehicle->next; //Save next AEDV in active list
@@ -30,7 +29,6 @@ void OneWayNavigation() {
         if(currentVehicle->data.nextMove == NULL) {
             NoMoveCalculated(currentVehicle);
         }
-
         if(currentVehicle->data.currStatus == DROPOFF || currentVehicle->data.currStatus == PICKUP || currentVehicle->data.currStatus == ETGOHOME) {
             currentVehicle->data.position = currentVehicle->data.nextMove->nextPosition; //Update location
             InstructionNode * tempMove = currentVehicle->data.nextMove;
