@@ -25,8 +25,10 @@ Camera2D camera = { 0 };
 //Int Vars
 int MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 
+//Lists of AEDV's
 AEDVNode * ActiveList = NULL;
 AEDVNode * InactiveList = NULL;
+//Lists of buildings
 BuildingNode * StableList = NULL;
 BuildingNode * ChargerList = NULL;
 //Files Lists
@@ -34,6 +36,7 @@ EventNode * EventList = NULL;
 OrderNode * OrderList = NULL;
 //Map
 Tile **dynamicMap;
+//Breadth-first-search queues
 queue * notVisitedQueue;
 queue * visitedQueue;
 
@@ -53,16 +56,16 @@ int main() {
         UpdateDrawFrame();
     }
     RecordFinalVehicleStates();
-    //add printall macro
-    PrintVehicleFile(-1);
+    PrintVehicleFile(0,ALL);
     printf("Simulation complete, press enter to exit: ");
     (void)getchar();
     (void)getchar();
+
     // De-Initialization
-    // Close window and OpenGL context
-    CloseWindow();
-    FreeRoutine();
-    CloseFiles();
+
+    CloseWindow(); // Close window and OpenGL context
+    FreeRoutine(); //Free remaining linked lists
+    CloseFiles(); //Close files
     return 0;
 }
 

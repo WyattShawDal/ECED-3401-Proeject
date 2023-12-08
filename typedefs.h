@@ -13,19 +13,18 @@
 #define MAX_ORDER_COUNT 5
 #define MAX_VEHICLES_FILE 50
 
+
 /* Included at top so all typedefs can use definition easily*/
 typedef struct Coordinate {
     int x;
     int y;
 } Cord;
 
-typedef enum Magic {
-    PRINTALL = -1,
-    BLOCKSIZE = 4,
-    NOVEHICLE = -1
+/* Enums */
 
-}MAGICNUMBERS;
-
+typedef enum ErrorReturn {
+    NO_VEHICLE = -1,
+}ErrorReturn;
 typedef enum EntryType {
     HEADER = 0,
     ENTRY,
@@ -36,7 +35,6 @@ typedef enum AEDVSpawn{
     NEW_AEDV,
     EXISTING_AEDV,
 }AEDVSpawn;
-/* Enums */
 
 typedef enum VehicleFileGen{
     KEEP_FILE,
@@ -70,6 +68,7 @@ typedef enum PrintMode{
     ALL,
     CUSTOMER,
     PACKAGE,
+    VEHICLE,
 }PrintMode;
 typedef enum Status {
     IDLE,
@@ -82,26 +81,27 @@ typedef enum Status {
     ETGOHOME,
 }AEDV_STATUS;
 
-typedef struct STATUS_PRINT{
-    int status;
-    char* statusString;
-}STATUS_PRINT;
-
 typedef enum Visit {
     NO,
     YES
 }VISITED;
+
 typedef enum OP {READ_BINARY, WRITE_BINARY, READ_WRITE_BINARY_NEW, READ_TEXT, WRITE_TEXT, READ_WRITE_BINARY_EXISTING, INVALID_OP} OPERATION;
 typedef enum BLDG_TYPE { CHG = 0, STB, B, INVALID_TYPE }BUILDING_TYPE;
 typedef enum QUAD {NE, NW, SE, SW, INVALID_QUAD }QUADRANT_TYPE;
 
 /* Structs */
+
+typedef struct STATUS_PRINT{
+    int status;
+    char* statusString;
+}STATUS_PRINT;
+
 typedef struct Tile {
     Cord location;
     TILE_TYPE Type;
     bool validDirection[4]; //[SOUTH,NORTH,EAST,WEST] (typdef in dependencies.h).
 }Tile;
-
 
 typedef struct event {
     char type;
@@ -110,7 +110,6 @@ typedef struct event {
     int destinationID;
     int weight;
 }EventData;
-/* Need to add +1 to listed length */
 
 typedef struct Customer{
     int custNum;
@@ -120,6 +119,7 @@ typedef struct Customer{
     char entrance[BUILDINGLEN];
     int floor;
 }Customer;
+
 typedef struct order {
     Cord pickUp;
     Cord dropOff;
@@ -197,13 +197,13 @@ typedef struct AEDV {
     InstructionNode * nextMove;
 }AEDV;
 
-typedef struct Node {
+typedef struct Node { //AEDVNode contained within either the active or inactive list
     AEDV data;
     OrderData orderList[MAX_ORDER_COUNT];
     struct Node *next;
 }AEDVNode;
 
-typedef struct DeliveryHeader{
+typedef struct DeliveryHeader{ //Delivery file
     int firstEmptyDelivery;
 }DeliveryHeader;
 
@@ -212,12 +212,12 @@ typedef union DeliveryEntry {
     OrderData data;
 }DeliveryEntry;
 
-typedef struct LastDeliveryEntry{
+typedef struct LastDeliveryEntry{ //Last delivery file
     int custNum;
     int lastDelivery;
 }LastDeliveryEntry;
 
-typedef struct VehicleHeader {
+typedef struct VehicleHeader { //Vehicle file
     int recentEntry[MAX_VEHICLES_FILE];
     int nextOpenEntry;
 }VehicleHeader;

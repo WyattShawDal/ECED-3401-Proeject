@@ -61,6 +61,7 @@ int EventHandler(int time, EventNode **root) {
             *root = current;
             //update time to check the next event's time
             time = current->eventData.time;
+
             //if the first event is the same as the last event
             while (temp == time) {
                 temp = time;
@@ -71,7 +72,10 @@ int EventHandler(int time, EventNode **root) {
                              GetCustomerInfo(current->eventData.destinationID));
                 current = current->nextEvent;
                 *root = current;
-                time = current->eventData.time;
+                if(current != NULL) //If events remain
+                    time = current->eventData.time;
+                else
+                    temp = 0; //Exit the while loop
             }
             //printf("Time of next event = %d\n", time);
         }
@@ -137,7 +141,13 @@ OrderData OrderHandler(Customer Order, Customer Delivery) {
     else {
         printf("Unexpected Entrance Location, %s", Order.entrance);
     }
-    AddOrderToList(&OrderList, newOrder);
+    //If origin or destination off the map, don't add to order list.
+    if(newOrder.pickUp.x >= MAX_COLS || newOrder.pickUp.y >= MAX_ROWS)
+        printf("Customer %d is out of bounds, cannot complete delivery\n",Order.custNum);
+    else if (newOrder.dropOff.x >= MAX_COLS || newOrder.dropOff.y >= MAX_ROWS)
+        printf("Customer %d is out of bounds, cannot complete delivery\n",Delivery.custNum);
+    else AddOrderToList(&OrderList, newOrder);
+
     return newOrder;
 }
 

@@ -162,13 +162,13 @@ void CommandHandler() {
         QueryDeliveryInfo(PACKAGE,packageID);
     }
     if(IsKeyPressed(KEY_V)) {
-        PrintVehicleFile(-1);
+        PrintVehicleFile(0,ALL);
     }
     if(IsKeyPressed(KEY_E)) {
         int EVIN;
         printf("Enter the EVIN to search: ");
         scanf("%d",&EVIN);
-        PrintVehicleFile(EVIN);
+        PrintVehicleFile(EVIN,VEHICLE);
     }
     if(IsKeyPressed(KEY_M)) {
         int EVIN;

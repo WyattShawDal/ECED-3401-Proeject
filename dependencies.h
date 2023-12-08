@@ -55,6 +55,7 @@
     #define NOMOVEMENT 0
     #define MAXSTRLEN 100
     #define TILESHIFT 2
+    #define BLOCKSIZE 4
     #define FONTSCALING 1.426
     #define DELIVERYNAMELEN 15
 
@@ -85,8 +86,6 @@ extern FILE* BuildFileDescriptor;
 extern FILE* DeliveryFileDescriptor;
 extern FILE* LastDeliveryDescriptor;
 extern FILE* VehicleFileDescriptor;
-
-//extern STATUS_PRINT stprint[];
 
 
 

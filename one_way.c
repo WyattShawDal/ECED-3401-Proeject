@@ -21,6 +21,7 @@ InstructionNode* reverseInstructions(TileNode* end){
     currCopy->child = NULL;
 
     //Move through old list, copying next to nextCopy and linking nextCopy to the new list
+    //Old list is not freed until ClearBFS is called, otherwise the links in the queues would be lost
     while(curr->parent != NULL) {
         next = curr->parent;
         nextCopy = malloc(sizeof(InstructionNode));
@@ -46,6 +47,7 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
      * */
 
     if(start.x == end.x && start.y == end.y) {
+        //If start == end, return a single instruction that makes one move to the current location
         InstructionNode* instruction = malloc(sizeof(InstructionNode));
         instruction->child = NULL;
         instruction->nextPosition = start;
@@ -74,16 +76,19 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
         //Remove current node from notVisitedQueue
         deQueue(notVisitedQueue, NO);
     }
-
+    //Reverse the linked list
     InstructionNode * returnInstruction = reverseInstructions(current);
 
+    //Free the queues to allow for use in future calculations
     clearBFS(&notVisitedQueue, &visitedQueue);
 
+    //Return node of the first instruction
     return returnInstruction;
 }
 
 void searchAdjacentTiles(int direction, Cord position, TileNode* parent) {
 
+    //Search if vehicle could move to adjacent tiles from current position
     if(dynamicMap[position.x][position.y].validDirection[direction] == true) {
         Cord nextPosition = position;
         switch(direction) {
@@ -100,6 +105,7 @@ void searchAdjacentTiles(int direction, Cord position, TileNode* parent) {
                 nextPosition.x--;
                 break;
         }
+        //If the adjacent node is not in the visitedQueue, add it to the visitedQueue
         if(!searchQueue(nextPosition,visitedQueue))
             enQueue(new_tile(nextPosition), parent, notVisitedQueue, NO);
     }

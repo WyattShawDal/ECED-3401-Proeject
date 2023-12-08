@@ -427,7 +427,7 @@ void CreateVehicleFile(int MODE) {
     }
     OpenTargetFile(READ_WRITE_BINARY_EXISTING,vehicleFile,&VehicleFileDescriptor);
     if(!choice)
-        PrintVehicleFile(-1); //Print contents of file if it isn't overwritten
+        PrintVehicleFile(0,ALL); //Print contents of file if it isn't overwritten
 }
 
 void AddToVehicleFile(VehicleEntry newEntry) {
@@ -460,11 +460,11 @@ VehicleEntry GetVehicleEntry (int MODE, int recordNum) {
             fseek(VehicleFileDescriptor,0,SEEK_SET);
             fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
             break;
-        case ENTRY:
+        case ENTRY: //Get entry specified by index
             fseek(VehicleFileDescriptor,(recordNum + 1)*sizeof(VehicleEntry),SEEK_SET);
             fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
             break;
-        case VEHICLE_NUMBER:
+        case VEHICLE_NUMBER: //Get most recent entry of EVIN
             fseek(VehicleFileDescriptor,0,SEEK_SET);
             fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor); //Get header
             index = returnEntry.header.recentEntry[recordNum - EVINBASE];
@@ -474,7 +474,7 @@ VehicleEntry GetVehicleEntry (int MODE, int recordNum) {
                 fread(&returnEntry,sizeof(VehicleEntry),1,VehicleFileDescriptor);
             }
             else
-                returnEntry.data.EVIN = -1; //No entry for given EVIN
+                returnEntry.data.EVIN = NO_VEHICLE; //No entry for given EVIN
             break;
         default:
             printf("No mode matches the specified input\n");
@@ -484,10 +484,10 @@ VehicleEntry GetVehicleEntry (int MODE, int recordNum) {
     return returnEntry;
 }
 
-void PrintVehicleFile(int EVIN) {
+void PrintVehicleFile(int EVIN, int MODE) {
     int index;
     VehicleEntry current;
-    if(EVIN == -1) { //Passed in EVIN -1, print all vehicle records
+    if(MODE == ALL) { //Passed MODE ALL, print all vehicle records
         printf("Vehicle file contains:\n");
         fseek(VehicleFileDescriptor,sizeof(VehicleEntry),SEEK_SET);
         while(fread(&current,sizeof(VehicleEntry),1,VehicleFileDescriptor) != 0) {
@@ -497,7 +497,7 @@ void PrintVehicleFile(int EVIN) {
     else if(!IsValidEVIN(EVIN)) { //EVIN out of range
         printf("EVIN %d out of range\n",EVIN);
     }
-    else if((current = GetVehicleEntry(VEHICLE_NUMBER,EVIN)).data.EVIN != -1) {//Get first record, if it exists print all records for that EVIN
+    else if((current = GetVehicleEntry(VEHICLE_NUMBER,EVIN)).data.EVIN != NO_VEHICLE) {//Get first record, if it exists print all records for that EVIN
         PrintVehicleEntry(current);
         index = current.data.nextEntry;
         while(index != -1) {
@@ -506,7 +506,7 @@ void PrintVehicleFile(int EVIN) {
             PrintVehicleEntry(current);
             index = current.data.nextEntry;
         }
-    } else {//GetVehicleEntry returned -1, meaning no entry for that EVIN exists
+    } else {//GetVehicleEntry returned NO_VEHICLE, meaning no entry for that EVIN exists
         printf("No records exist for EVIN %d\n",EVIN);
     }
     printf("\n");
@@ -523,6 +523,7 @@ void PrintVehicleEntry(VehicleEntry entry) {
 void RecordFinalVehicleStates(void) {
     VehicleEntry newEntry;
     AEDVNode * currentVehicle = InactiveList;
+    //Loop through inactive list and add the states to the vehicle file
     while(currentVehicle != NULL) {
         newEntry.data.EVIN = currentVehicle->data.EVIN;
         newEntry.data.stats = currentVehicle->data.stats;

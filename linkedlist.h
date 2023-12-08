@@ -81,11 +81,18 @@ void AddEvent(EventNode** root, EventData Event);
  * @param Order order struct to add
  */
 void AddOrderToList(OrderNode** root, OrderData Order);
+
 /**
  * @brief frees lists of AEDV's and map tiles
  */
 void FreeRoutine(void);
 
-void AddBuilding(BuildingNode** stableList, BuildingNode** ChargerList, BuildingData building);
+/**
+ * Adds a new building to
+ * @param stableList
+ * @param ChargerList
+ * @param building
+ */
+void AddBuilding(BuildingNode** stableList, BuildingNode** chargerList, BuildingData building);
 
 #endif //EXAMPLE_LINKEDLIST_H

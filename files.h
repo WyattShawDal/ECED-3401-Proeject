@@ -111,11 +111,11 @@ VehicleEntry GetVehicleEntry (int MODE, int recordNum);
 void RecordFinalVehicleStates(void);
 
 /**
- * @brief prints all entries in vehicle file if EVIN = -1,
- * prints all entries for given EVIN otherwise
- * @param EVIN
+ * @brief prints entries from the vehicle file
+ * @param EVIN ignored if MODE = ALL
+ * @param MODE ALL prints every entry in the vehicle file, VEHICLE prints all entries with the given EVIN
  */
-void PrintVehicleFile(int EVIN);
+void PrintVehicleFile(int EVIN, int MODE);
 
 /**
  * @brief handles printf statements for printing vehicle file entries
