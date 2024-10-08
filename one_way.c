@@ -21,6 +21,7 @@ InstructionNode* reverseInstructions(TileNode* end){
     currCopy->child = NULL;
 
     //Move through old list, copying next to nextCopy and linking nextCopy to the new list
+    //Old list is not freed until ClearBFS is called, otherwise the links in the queues would be lost
     while(curr->parent != NULL) {
         next = curr->parent;
         nextCopy = malloc(sizeof(InstructionNode));
@@ -45,73 +46,69 @@ InstructionNode* pathCalculation(Cord start, Cord end) {
      * Returns the first node in the linked list, which contains the first move the AEDV will need to perform.
      * */
 
-    Cord position = start;
-    Cord nextPosition;
+    if(start.x == end.x && start.y == end.y) {
+        //If start == end, return a single instruction that makes one move to the current location
+        InstructionNode* instruction = malloc(sizeof(InstructionNode));
+        instruction->child = NULL;
+        instruction->nextPosition = start;
+        return instruction;
+    }
 
     TileNode* current = new_tile(start);
-    TileNode* dest;
+    TileNode* dest = NULL;
 
     //Add origin to notVisitedQueue
     enQueue(current, NULL,notVisitedQueue, NO);
 
     //Move through notVisitedQueue
-    while(notVisitedQueue->front != NULL) {
+    while((notVisitedQueue->front != NULL) && (dest == NULL)) {
         current = notVisitedQueue->front;
         //Add current node to visitedQueue
         enQueue(current, NULL, visitedQueue, YES);
-        position = current->coordinate;
-
         if(current->coordinate.x != end.x || current->coordinate.y != end.y) {
-            //If current position is NOT destination
-            if(dynamicMap[position.x][position.y].validDirection[EAST] == true) {
-                //If EAST is a valid direction from current position
-                nextPosition = position;
-                nextPosition.x++;
-                if(!searchQueue(nextPosition,visitedQueue)) //If nextPosition hasn't been visited
-                    //Create node for nextPosition and add to notVisitedQueue
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[WEST] == true) {
-                nextPosition = position;
-                nextPosition.x--;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[NORTH] == true) {
-                nextPosition = position;
-                nextPosition.y--;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
-            }
-            if(dynamicMap[position.x][position.y].validDirection[SOUTH] == true) {
-                nextPosition = position;
-                nextPosition.y++;
-                if(!searchQueue(nextPosition,visitedQueue))
-                    enQueue(new_tile(nextPosition),current,notVisitedQueue, NO);
+            for(int direction = SOUTH;direction <= WEST;direction++) {
+                searchAdjacentTiles(direction, current->coordinate, current);
             }
         } else {
             //Current position = destination position, path found, save in TileNode destination
             dest = current;
-            break;
         }
         //Remove current node from notVisitedQueue
         deQueue(notVisitedQueue, NO);
     }
+    //Reverse the linked list
+    InstructionNode * returnInstruction = reverseInstructions(current);
 
-//#define INSTRUCTIONPRINT
-#ifdef INSTRUCTIONPRINT
-    TileNode* temp = current;
-    while(temp->parent != NULL) {
-        printf("%d %d\n", temp->coordinate.x, temp->coordinate.y);
-        temp = temp->parent;
+    //Free the queues to allow for use in future calculations
+    clearBFS(&notVisitedQueue, &visitedQueue);
+
+    //Return node of the first instruction
+    return returnInstruction;
+}
+
+void searchAdjacentTiles(int direction, Cord position, TileNode* parent) {
+
+    //Search if vehicle could move to adjacent tiles from current position
+    if(dynamicMap[position.x][position.y].validDirection[direction] == true) {
+        Cord nextPosition = position;
+        switch(direction) {
+            case SOUTH:
+                nextPosition.y++;
+                break;
+            case NORTH:
+                nextPosition.y--;
+                break;
+            case EAST:
+                nextPosition.x++;
+                break;
+            case WEST:
+                nextPosition.x--;
+                break;
+        }
+        //If the adjacent node is not in the visitedQueue, add it to the visitedQueue
+        if(!searchQueue(nextPosition,visitedQueue))
+            enQueue(new_tile(nextPosition), parent, notVisitedQueue, NO);
     }
-    InstructionNode* temp2 = reverseInstructions(current);
-    while(temp2->child != NULL) {
-        printf("%d %d\n", temp2->nextPosition.x, temp2->nextPosition.y);
-        temp2 = temp2->child;
-    }
-#endif
-    return reverseInstructions(current);
 }
 
 

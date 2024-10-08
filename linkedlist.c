@@ -1,30 +1,70 @@
 /*
- *Author: Wyatt Shaw 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
  *Module Info: Contains linked list function definitions
 */
 #include "dependencies.h"
 
-void AddToListBeginning(Node** listRoot, int locationX, int locationY, int destinationX, int destinationY, int identifierCode) {
-    Node* new_vehicle = malloc(sizeof(Node));
+AEDVNode* AddAEDV(AEDVNode** listRoot, Cord spawnLocation, int identifierCode) {
+    AEDVNode* new_vehicle = malloc(sizeof(AEDVNode));
     if(new_vehicle == NULL) {
         TraceLog(LOG_ERROR, "Heap Exceeded In AEDV Allocation");
         exit(-1);
     }
-    new_vehicle->data.EVIN = EVINBASE + identifierCode;
+    new_vehicle->data.EVIN = identifierCode;
     new_vehicle->data.drawSize = (Vector2) {cellWidth, cellHeight};
-    new_vehicle->data.position =  (Cord){locationX, locationY};
-    new_vehicle->data.destination =  (Cord){destinationX, destinationY};
-    new_vehicle->data.color = (Color) {GetRandomValue(0, 255), GetRandomValue(0, 127), GetRandomValue(0, 127), 255};
-    new_vehicle->data.currStatus = TRANSIT;
-
+    new_vehicle->data.position =  spawnLocation;
+    new_vehicle->data.color = RED;
+    new_vehicle->data.currStatus = RESET_PICKUP;
+    new_vehicle->data.nextMove = NULL;
+    new_vehicle->data.currentOrderNumber = 0;
     new_vehicle->next = *listRoot;
+
     *listRoot = new_vehicle;
+
+    return new_vehicle;
 }
 
-void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
-    Node* prev = NULL;
-    Node* curr = *Origin;
+void AddBuilding(BuildingNode** stableList, BuildingNode** chargerList, BuildingData building) {
+    BuildingNode* newBuilding = malloc(sizeof(BuildingNode));
+    if(newBuilding == NULL) {
+        TraceLog(LOG_ERROR, "Heap exceeded in building allocation");
+        exit(-1);
+    }
+    if(building.type == INVALID_TYPE || building.quad == INVALID_QUAD) {
+        free(newBuilding);
+        return;
+    }
+    newBuilding->data = building;
+    //add to the stable list
+    if(newBuilding->data.type == STB) {
+        newBuilding->nextBuilding = *stableList;
+        *stableList = newBuilding;
+    }
+    // add to the charger list
+    else if (newBuilding->data.type == CHG) {
+        newBuilding->nextBuilding = *chargerList;
+        *chargerList = newBuilding;
+    }
+    //add to both
+    else {
+        BuildingNode* newBuildingCopy = malloc(sizeof(BuildingNode));
+        if(newBuilding == NULL) {
+            TraceLog(LOG_ERROR, "Heap exceeded in building allocation");
+            exit(-1);
+        }
+        newBuildingCopy->data = building;
+        newBuilding->nextBuilding = *stableList;
+        *stableList = newBuilding;
+
+        newBuildingCopy->nextBuilding = *chargerList;
+        *chargerList = newBuildingCopy;
+    }
+}
+
+void SwapBetweenLists(AEDVNode** Origin, AEDVNode** Destination, int SwapEVIN) {
+    AEDVNode* prev = NULL;
+    AEDVNode* curr = *Origin;
     bool found = false;
     while(curr->next != NULL) {
         if(curr->data.EVIN == SwapEVIN) {
@@ -34,7 +74,6 @@ void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
         prev = curr;
         curr = curr->next;
     }
-
     if((!found) && (prev != NULL)) {
         prev->next = NULL;
         //node is at the end (curr)
@@ -47,38 +86,26 @@ void SwapBetweenLists(Node** Origin, Node** Destination, int SwapEVIN) {
         prev->next = curr->next;
         //node is in the middle (curr)
     }
-
-    Node* temp = curr;
+    AEDVNode* temp = curr;
     temp->next = *Destination;
     *Destination = temp;
-
-    Node* ne = Destination;
-    Node* old = Origin;
 }
 
-void MoveToListBeginning(Node** listRoot, Node* addNode) {
-
-}
-Node* FindInList(Node* listRoot, int identifierCode) {
-    Node* curr = listRoot;
+AEDVNode* FindInList(AEDVNode* listRoot, int identifierCode) {
+    AEDVNode* curr = listRoot;
     bool found = false;
 
-    while(curr->next != NULL) {
+    while(curr != NULL) {
         if(curr->data.EVIN == identifierCode) {
             found = true; //curr now points to the node with the given identifier code.
             break;
         }
         curr = curr->next;
     }
-    if((!found) && (curr->data.EVIN == identifierCode))
-        found = true; //checks if the value lies at either the last node, or the only node of a 1 list.
-
     if(found) return curr;
     else return NULL;
 }
-
-
-void AddEvent(EventNode** root, EVENT Event) {
+void AddEvent(EventNode** root, EventData Event) {
     EventNode *newEvent = malloc(sizeof(EventNode));
     if(newEvent == NULL) {
         exit(-1);
@@ -97,12 +124,12 @@ void AddEvent(EventNode** root, EVENT Event) {
     curr->nextEvent = newEvent;
 }
 //Adds order to end of the order list, so oldest is at head of list.
-void AddOrderToList(OrderNode** root, OrderData Event) {
-    OrderNode *newOrder = malloc(sizeof(EventNode));
+void AddOrderToList(OrderNode** root, OrderData Order) {
+    OrderNode *newOrder = malloc(sizeof(OrderNode));
     if(newOrder == NULL) {
         exit(-1);
     }
-    newOrder->data = Event;
+    newOrder->data = Order;
     newOrder->nextOrder = NULL;
     if(*root == NULL) {
         newOrder->nextOrder = NULL;
@@ -133,7 +160,6 @@ void enQueue(TileNode* new_tile, TileNode* parent, queue* q, int visited) {
 
     //Assign parent when enQueuing to the notVisitedList
     if(visited == NO) new_tile->parent = parent;
-
     if(q->front == NULL) { //If empty queue
         q->front = new_tile;
         q->rear = new_tile;
@@ -177,43 +203,65 @@ bool searchQueue(Cord loc, queue* q) {
     }
     return found;
 }
+void clearBFS(queue** NVQ, queue** VQ) {
 
-bool emptyList(queue* q, int visited) {
-    /*Empties a specified queue, returns true if the queue was empty*/
+    TileNode * temp = (*VQ)->front;
+    TileNode * tempPrev;
+    while(temp != NULL) {
+        tempPrev = temp;
+        temp = temp->visitedPrev;
+        free(tempPrev);
 
-    TileNode* temp = q->front;
-    TileNode* freeTemp;
-    bool wasEmpty = true;
-
-    if(temp != NULL) {
-        wasEmpty = false;
-        if(visited == NO) { //Use the queuePrev param (empty the notVisitedQueue)
-            //Loop through with two pointers, freeing the previous pointer (freeTemp)
-            while(temp->queuePrev != NULL) {
-                freeTemp = temp;
-                temp = temp->queuePrev;
-                free(freeTemp);
-            }
-        } else { //Use the visitedPrev parameter (empty the visitedQueue)
-            while(temp->visitedPrev != NULL) {
-                freeTemp = temp;
-                temp = temp->visitedPrev;
-                free(freeTemp);
-            }
-        }
-        //Free the last element
-        free(temp);
     }
-    //Mark the queue as empty
-    q->front = NULL;
-    q->rear = NULL;
-    return wasEmpty;
+
+    temp = (*NVQ)->front;
+    while(temp != NULL) {
+        tempPrev = temp;
+        temp = temp->queuePrev;
+        free(tempPrev);
+
+    }
+
+    (*NVQ)->front = NULL;
+    (*NVQ)->rear = NULL;
+
+    (*VQ)->front = NULL;
+    (*VQ)->rear = NULL;
 }
+
+
 
 TileNode* new_tile(Cord loc) {
     /*Creates new TileNode with given coordinates, returns the pointer to the tile*/
 
-    TileNode* tile = malloc(sizeof(TileNode));
+    TileNode* tile = (TileNode*) malloc(sizeof(TileNode));
+    if(tile == NULL) {
+        printf("FUCKYOU");
+        exit(-10);
+    }
     tile->coordinate = loc;
     return tile;
+}
+
+void FreeRoutine(void) {
+    AEDVNode* temp = InactiveList;
+    AEDVNode* prevTemp;
+    //Free InactiveList
+    while(temp != NULL) {
+        prevTemp = temp;
+        temp = temp->next;
+        free(prevTemp);
+    }
+    //Free ActiveList (if user exits program before all deliveries are made).
+    temp = ActiveList;
+    while(temp != NULL) {
+        prevTemp = temp;
+        temp = temp->next;
+        free(prevTemp);
+    }
+    //Free map
+    for (int i = 0; i < MAX_ROWS; ++i) {
+        free(dynamicMap[i]);
+    }
+    free(dynamicMap);
 }

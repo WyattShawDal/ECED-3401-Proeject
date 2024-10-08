@@ -1,10 +1,11 @@
 /*
- *Author: Wyatt on 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
+ *Module Info: Contains functions declarations for operation of the map
 */
 
-#ifndef EXAMPLE_DRAWING_H
-#define EXAMPLE_DRAWING_H
+#ifndef EXAMPLE_MAP_OPERATION_H
+#define EXAMPLE_MAP_OPERATION_H
 #include "dependencies.h"
 
 /**
@@ -19,6 +20,8 @@ void DrawMap(Tile tile);
 /**
  * @brief allows for moving and resizing of the camera
  */
-void CameraControl();
 void UpdateMap();
-#endif //EXAMPLE_DRAWING_H
+
+
+void DrawVehicleMovements(AEDVNode* currentVehicle);
+#endif //EXAMPLE_MAP_OPERATION_H

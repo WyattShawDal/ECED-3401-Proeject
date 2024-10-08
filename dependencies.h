@@ -1,3 +1,4 @@
+
 /*
  * Created By: Wyatt Shaw and Cameron Archibald
  * Date: October 31st 2023
@@ -8,11 +9,6 @@
 #ifndef EXAMPLE_DEPENDENCIES_H
 #define EXAMPLE_DEPENDENCIES_H
 
-#define TWOWAY //Allows for two-way navigation
-//#define DEBUG //Allows for diagnostic printing
-//#define OLD //Functions from one-way experimenting
-//#define OLD1 //Fixed readability and efficiency by Cameron on 31st of October
-
 /* C Headers */
 #include "stdio.h" // included for regular c functionality printf, scanf etc
 #include "stdlib.h"
@@ -20,8 +16,6 @@
 #include <ctype.h> // included for tolower
 #include "stdbool.h"
 #include <string.h>
-#include <io.h>
-#include <fcntl.h>     /* for _O_TEXT and _O_BINARY */
 /* Raylib Headers */
 #include "raylib.h" // included for graphical output
 #include "raymath.h" // required by raylib.h
@@ -29,12 +23,14 @@
 
 /* Project Headers */
 #include "typedefs.h" // included for function prototypes
-#include "drawing.h" // included for functions that change the window
+#include "map_operation.h" // included for functions that change the window
 #include "navigations.h" // inlcuded for functions that relate to the movement and navigation of AEDVs
 #include "inits.h" // included for functions that run at startup
 #include "linkedlist.h"
 #include "files.h"
 #include "handlers.h"
+#include "essentials.h"
+#include "one_way.h"
 
 /* Magic Number Defines */
     //directions
@@ -46,40 +42,50 @@
     #define DEFAULTZOOM 0.94f
     #define DEFAULTOFFSET 45
     #define DEFAULTFONTSIZE 20
+
+    #define frameRate 10 // Ticks/second
+    #define delaySecsPerFloor 25 //15 seconds up, 10 seconds down
+    #define delayScale 200 // divide by this number to scale the delay
+
     //others
     #define EVINBASE 10000
+    #define EVINMAX 10050
     #define CUSTOMERBASE 1000
     #define DELIVERYBASE 500
     #define NOMOVEMENT 0
     #define MAXSTRLEN 100
-    #define FILEOK 1
-    #define FILE_ERROR -1
+    #define TILESHIFT 2
+    #define BLOCKSIZE 4
+    #define FONTSCALING 1.426
+    #define DELIVERYNAMELEN 15
 
-/* Macros */
-#define TRUNCATE(name)	name[strlen(name)-1] = '\0'
+
 
 
 /* Global Externs */
-extern int maxAEDV, MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
-extern Tile** dynamicMap;
-extern AEDV *listOfVehicles[4];
+extern int MAX_COLS, MAX_ROWS, cellWidth, cellHeight, frameCount;
 extern const int screenWidth;
 extern const int screenHeight;
+
+extern Tile** dynamicMap;
+
 extern Camera2D camera;
-extern Node * ActiveList;
-extern Node * InactiveList;
+
+extern AEDVNode * ActiveList;
+extern AEDVNode * InactiveList;
 extern EventNode * EventList;
 extern OrderNode * OrderList;
+extern BuildingNode * StableList;
+extern BuildingNode * ChargerList;
 
-
-extern FILE* RelCustomerFileDescriptor;
-extern FILE* FileDescriptor;
-
-extern TileNode * queueFront;
-extern TileNode * queueRear;
 extern queue * notVisitedQueue;
 extern queue * visitedQueue;
 
+extern FILE* RelCustomerFileDescriptor;
+extern FILE* BuildFileDescriptor;
+extern FILE* DeliveryFileDescriptor;
+extern FILE* LastDeliveryDescriptor;
+extern FILE* VehicleFileDescriptor;
 
 
 

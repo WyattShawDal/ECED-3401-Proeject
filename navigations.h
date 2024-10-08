@@ -1,81 +1,52 @@
 /*
- *Author: Wyatt on 
+ *Author: Wyatt Shaw & Cameron Archibald
  *Created on: 2023-11-12
+ *Module Info: Contains function definitions for general navigation functions
 */
 
 #ifndef EXAMPLE_NAVIGATIONS_H
 #define EXAMPLE_NAVIGATIONS_H
 #include "dependencies.h"
-/**
- * @brief allows user to update AEDV commands
- */
-void AssignNewOrders();
-/**
- * @brief Calculates and then updates the position of the AEDV in the map
- * @param vehicle AEDV to move around
- * @note algorithm works on a two-way rule free road system
- */
-void MapNavigation(AEDV *vehicle);
-/**
- * @brief Calculates North/South Movement
- * @param vehicle AEDV to move
- * @param direction North/South
- */
-void AvenueMovement(AEDV *vehicle, int direction);
-/**
- * @brief Calculates East/West Movement
- * @param vehicle AEDV to move
- * @param direction Esat/West
- */
-void StreetMovement(AEDV *vehicle, int direction);
-/**
- * @brief One way pathing navigation algorithm
- *
- * @param vehicle
- *
- * @note Algorithm is dumb, only checking one tile ahead and without considering rules of the road. Ommitted from Task 5 Code
- */
-void OneWayNavigation(AEDV * vehicle);
-/**
- * @brief function used for one way navigation, determines whether the input direction is able to be travelled
- * @param vehicle
- * @param direction
- * @note used in one way, omitted for task 5
- * @return True or False
- */
-bool IsValidDirection(AEDV* vehicle, int direction);
-/**
- *
- * @param currentTile
- * @param vehicle
- * @note used in one way, omitted for task 5
- */
-void StreetMoves(int currentTile, AEDV *vehicle);
-/**
- *
- * @param vehicle
- * @param destinationTile
- * @param desiredJunctions
- * @note used in one way omitted in task 5
- */
-void FindAdjacentJunctions(AEDV* vehicle, int destinationTile, Cord* desiredJunctions);
-/**
- *
- * @param vehicle
- * @param desiredJunctions
- * @param destinationTile
- * @note utilized in one way, omitted in task 5
- * @return
- */
-bool AtDesiredJunction(AEDV* vehicle, Cord* desiredJunctions, int destinationTile);
-/**
- * @brief uses generation rules to determine if the tile chosen is a deliverable location
- * @param col
- * @param row
- * @note function uses col and row instead of a tile type because it can be called before tiles have been generated
- * @return
- */
-bool isValidDestination(int col, int row);
 
+/**
+ * @brief handles decision making for AEDV movement and pathing
+ */
+void OneWayNavigation();
 
+/**
+ * @brief updates a given vehicles stats that are written to the vehicle file at then end
+ * @param currentVehicle
+ */
+void UpdateVehicleStats(AEDVNode ** currentVehicle);
+
+/**
+ * @brief handles assigning new paths and loading/unload for a vehicle
+ * @param currentVehicle
+ */
+void NoMoveCalculated(AEDVNode * currentVehicle);
+
+/**
+ * @brief updates time for pickup/drop off of delivery
+ * @param currentVehicle
+ * @param orderNum Index of order held by AEDV to update
+ * @param mode PICKUP updates the pickup time of the vehicle's order to current time
+ *             DROPOFF "" dropoff time ""
+ */
+void UpdateDeliveryStats(AEDVNode ** currentVehicle, int orderNum, int mode);
+
+/**
+ * @brief finds the closest stable or charger from current position
+ * @param position
+ * @param mode STABLE searches the list of stables, CHARGER searches the list of chargers
+ * @return Pointer to the BuildingNode of the closest building
+ */
+BuildingNode* FindClosestBuilding(Cord position, int mode);
+
+/**
+ * @brief uses Pythagorean theorem find distance between two points
+ * @param pos1
+ * @param pos2
+ * @return returns distance
+ */
+double FindDiagonalDistance(Cord pos1, Cord pos2);
 #endif //EXAMPLE_NAVIGATIONS_H
